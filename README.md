@@ -1,2 +1,0 @@
-# inmobiliariaULP_Becerra_Diaz_Gabriel_Ezequiel
-
