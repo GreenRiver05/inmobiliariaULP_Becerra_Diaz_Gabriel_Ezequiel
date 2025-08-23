@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 
 //Define el espacio de nombres propio del proyecto, agrupando tus clases e interfaces bajo una misma etiqueta lógica
-namespace Inmobiliaria_.Net_Core.Models
+namespace inmobiliariaBD.Models
 
 {
     public interface IRepositorio<T>

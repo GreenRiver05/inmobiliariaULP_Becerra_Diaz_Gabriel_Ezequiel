@@ -13,7 +13,7 @@ using System.Linq;
 //soporte para programación asincrónica (Task, async, await).
 using System.Threading.Tasks;
 
-namespace Inmobiliaria_.Net_Core.Models
+namespace inmobiliariaBD.Models
 {
     public abstract class RepositorioBase
     {
