@@ -15,6 +15,8 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        // Retorno la vista con el mismo nombre que el controlador si no especifico otra.
+        //sigue la convención de nombres.
         return View();
     }
 

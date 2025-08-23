@@ -1,27 +1,37 @@
 var builder = WebApplication.CreateBuilder(args);
+// Inicializa el constructor de la aplicación web, cargando configuración, servicios y argumentos.
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+// Registra el servicio MVC con soporte para controladores y vistas (sin API ni Razor Pages).
 
 var app = builder.Build();
+// Compila la aplicación con los servicios configurados.
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // En producción, redirige errores a una vista controlada en /Home/Error.
+
     app.UseHsts();
+    // Activa HTTP Strict Transport Security (HSTS) por 30 días para reforzar HTTPS.
 }
 
 app.UseHttpsRedirection();
+// Redirige automáticamente las solicitudes HTTP a HTTPS.
+
 app.UseStaticFiles();
+// Habilita el acceso a archivos estáticos (CSS, JS, imágenes) desde wwwroot.
 
 app.UseRouting();
+// Habilita el sistema de enrutamiento para mapear URLs a controladores.
 
 app.UseAuthorization();
+// Aplica políticas de autorización (aunque no hay autenticación configurada aún).
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+// Define la ruta por defecto: si no se especifica, usa HomeController y acción Index.
 
 app.Run();
+// Inicia la aplicación y comienza a escuchar solicitudes HTTP.
