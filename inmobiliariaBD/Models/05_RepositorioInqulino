@@ -8,30 +8,29 @@ using System.Threading.Tasks;
 
 namespace inmobiliariaBD.Models
 {
-
-    public class RepositorioPropietario : RepositorioBase, IRepositorio<Propietario>
+    public class RepositorioInquilino : RepositorioBase, IRepositorio<Inquilino>
     {
-        public RepositorioPropietario(IConfiguration configuration) : base(configuration)
+        public RepositorioInquilino(IConfiguration configuration) : base(configuration)
         {
         }
 
-        public int Alta(Propietario p)
+        public int Alta(Inquilino i)
         {
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Propietario (Dni, Estado)
-                             VALUES (@dni, @estado);
+                string sql = @"INSERT INTO Inquilino(Dni, Estado)
+                             VALUES(@dni, @estado);
                              SELECT SCOPE_IDENTITY();";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@dni", p.Dni);
-                    command.Parameters.AddWithValue("@estado", p.Estado);
+                    command.Parameters.AddWithValue("@dni", i.Dni);
+                    command.Parameters.AddWithValue("@estado", i.Estado);
 
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
-                    p.Id = res;
+                    i.IdInquilino = res; 
                     connection.Close();
                 }
             }
@@ -43,7 +42,7 @@ namespace inmobiliariaBD.Models
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"DELETE FROM Propietario
+                string sql = @"DELETE FROM Inquilino
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -57,19 +56,19 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int Modificacion(Propietario p)
+        public int Modificacion(Inquilino i)
         {
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"UPDATE Propietario
+                string sql = @"UPDATE Inquilino
                              SET Estado=@estado
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@dni", p.Dni);
-                    command.Parameters.AddWithValue("@estado", p.Estado);
+                    command.Parameters.AddWithValue("@dni", i.Dni);
+                    command.Parameters.AddWithValue("@estado", i.Estado);
 
                     connection.Open();
                     res = command.ExecuteNonQuery();
@@ -79,59 +78,67 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public IList<Propietario> ObtenerTodos()
+        public IList<Inquilino> ObtenerTodos()
         {
-            IList<Propietario> res = new List<Propietario>();
+            IList<Inquilino> res = new List<Inquilino>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = @"SELECT Dni, Estado 
-                             FROM Propietario";
+                             FROM Inquilino4";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     connection.Open();
-                    var reader = command.ExecuteReader();
-                    while (reader.Read())
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        Propietario p = new Propietario
+                        while (reader.Read())
                         {
-                            Dni = reader.GetInt32(0),
-                            Estado = reader.GetBoolean(1)
-                        };
-                        res.Add(p);
+                            Inquilino i = new Inquilino
+                            {
+                                Dni = reader.GetInt32(0),
+                                Estado = reader.GetBoolean(1)
+                            };
+                            res.Add(i);
+                        }
                     }
                     connection.Close();
                 }
             }
             return res;
+
+
         }
 
-        public Propietario ObtenerPorId(int id)
+        public Inquilino ObtenerPorId(int dni)
         {
-            Propietario p = null;
+            Inquilino i = null;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"SELECT id
-                             FROM Propietario
+                string sql = @"SELECT Dni, Estado
+                             FROM Inquilino
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@dni", id);
+                    command.Parameters.AddWithValue("@dni", dni);
                     connection.Open();
-                    var reader = command.ExecuteReader();
-                    if (reader.Read())
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        p = new Propietario
+                        if (reader.Read())
                         {
-                            Dni = reader.GetInt32(0),
-                            Estado = reader.GetBoolean(1)
-                        };
+                            i = new Inquilino
+                            {
+                                Dni = reader.GetInt32(0),
+                                Estado = reader.GetBoolean(1)
+                            };
+                        }
                     }
                     connection.Close();
                 }
             }
-            return p;
+            return i;
         }
+
     }
+
 }
