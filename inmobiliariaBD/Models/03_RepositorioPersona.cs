@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace inmobiliariaBD.Models
 {
 
-    public class RepositorioPersona : RepositorioBase, IRepositorio<Persona>
+    public class RepositorioPersona : RepositorioBase, IRepositorioPersona
     {
         public RepositorioPersona(IConfiguration configuration) : base(configuration)
         {
@@ -109,7 +109,8 @@ namespace inmobiliariaBD.Models
                                 Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 Estado = reader.GetBoolean(5),
-                                Avatar = reader.IsDBNull(6) ? null : reader.GetString(6)
+                                Avatar = reader.IsDBNull(6) ? null : (byte[])reader.GetValue(6)
+
                             };
                             res.Add(p);
                         }
@@ -145,7 +146,7 @@ namespace inmobiliariaBD.Models
                                 Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 Estado = reader.GetBoolean(5),
-                                Avatar = reader.IsDBNull(6) ? null : reader.GetString(6)
+                                Avatar = reader.IsDBNull(6) ? null : (byte[])reader.GetValue(6)
                             };
                         }
                     }
@@ -155,5 +156,14 @@ namespace inmobiliariaBD.Models
             return p;
         }
 
+        public Persona ObtenerPorDni(int dni)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Persona> BuscarPorNombre(string nombre)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

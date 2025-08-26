@@ -4,6 +4,11 @@ namespace inmobiliariaBD.Models
 {
     public class Persona
     {
+        
+        // las propiedades son como los atributos pero con get y set
+        // los atributos se crean por detras de las propiedades
+        // las propiedades son publicas y los atributos privados
+
         [Key]
         [Display(Name = "DNI")]
         public int Dni { get; set; }

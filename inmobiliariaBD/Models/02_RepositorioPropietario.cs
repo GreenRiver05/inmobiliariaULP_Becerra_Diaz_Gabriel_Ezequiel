@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace inmobiliariaBD.Models
 {
 
-    public class RepositorioPropietario : RepositorioBase, IRepositorio<Propietario>
+    public class RepositorioPropietario : RepositorioBase, IRepositorioPropietario
     {
         public RepositorioPropietario(IConfiguration configuration) : base(configuration)
         {
@@ -108,7 +108,7 @@ namespace inmobiliariaBD.Models
 
         public Propietario ObtenerPorId(int id)
         {
-            Propietario p = null;
+            Propietario? p = null;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = @"SELECT id
@@ -132,6 +132,16 @@ namespace inmobiliariaBD.Models
                 }
             }
             return p;
+        }
+
+        public Propietario ObtenerPorDni(int dni)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Propietario> BuscarPorNombre(string nombre)
+        {
+            throw new NotImplementedException();
         }
     }
 }

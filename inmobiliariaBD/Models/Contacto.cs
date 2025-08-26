@@ -6,7 +6,7 @@ namespace inmobiliariaBD.Models
     public class Contacto
     {
         [Key]
-        [Display(Name = "nro° interno")]
+        [Display(Name = "N° interno")]
         public int Id { get; set; }
 
         [Required]

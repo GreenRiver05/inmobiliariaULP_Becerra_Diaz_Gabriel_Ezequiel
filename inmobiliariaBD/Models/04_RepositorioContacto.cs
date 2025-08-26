@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace inmobiliariaBD.Models
 {
-    public class RepositorioContacto : RepositorioBase, IRepositorio<Contacto>
+    public class RepositorioContacto : RepositorioBase, IRepositorioContacto
     {
         public RepositorioContacto(IConfiguration configuration) : base(configuration)
         {
@@ -148,9 +148,11 @@ namespace inmobiliariaBD.Models
             }
             return c;
         }
-        
 
-
+        public IList<Persona> BuscarPorDni(int dni)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

@@ -1,8 +1,15 @@
+using inmobiliariaBD.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 // Inicializa el constructor de la aplicación web, cargando configuración, servicios y argumentos.
 
 builder.Services.AddControllersWithViews();
 // Registra el servicio MVC con soporte para controladores y vistas (sin API ni Razor Pages).
+
+builder.Services.AddScoped<IRepositorioPropietario, RepositorioPropietario>();
+
+
+
 
 var app = builder.Build();
 // Compila la aplicación con los servicios configurados.

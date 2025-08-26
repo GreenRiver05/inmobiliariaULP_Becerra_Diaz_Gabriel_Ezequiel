@@ -6,7 +6,7 @@ namespace inmobiliariaBD.Models
     public class Propietario
     {
         [Key]
-        [Display(Name = "N°")]
+        [Display(Name = "N° Interno")]
         public int Id { get; set; }
 
         [Required]

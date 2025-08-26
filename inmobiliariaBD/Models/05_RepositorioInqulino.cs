@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace inmobiliariaBD.Models
 {
-    public class RepositorioInquilino : RepositorioBase, IRepositorio<Inquilino>
+    public class RepositorioInquilino : RepositorioBase, IRepositorioInquilino
     {
         public RepositorioInquilino(IConfiguration configuration) : base(configuration)
         {
@@ -139,6 +139,10 @@ namespace inmobiliariaBD.Models
             return i;
         }
 
+        public Persona ObtenerPorDni(int dni)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
