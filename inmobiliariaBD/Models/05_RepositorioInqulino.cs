@@ -30,23 +30,25 @@ namespace inmobiliariaBD.Models
 
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
-                    i.IdInquilino = res; 
+                    i.Id = res; 
                     connection.Close();
                 }
             }
             return res;
         }
 
-        public int Baja(int dni)
+        public int ModificarEstado(int dni, bool estado)
         {
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"DELETE FROM Inquilino
+                string sql = @"UPDATE Inquilino
+                             SET Estado=@estado
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@estado", estado);
                     command.Parameters.AddWithValue("@dni", dni);
                     connection.Open();
                     res = command.ExecuteNonQuery();
@@ -54,7 +56,7 @@ namespace inmobiliariaBD.Models
                 }
             }
             return res;
-        }
+        }   
 
         public int Modificacion(Inquilino i)
         {

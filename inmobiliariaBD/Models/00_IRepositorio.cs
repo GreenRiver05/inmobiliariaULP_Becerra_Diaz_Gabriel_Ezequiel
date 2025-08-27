@@ -18,7 +18,7 @@ namespace inmobiliariaBD.Models
     public interface IRepositorio<T>
     {
         int Alta(T p);
-        int Baja(int id);
+        int ModificarEstado(int id, bool estado);
         int Modificacion(T p);
 
         IList<T> ObtenerTodos();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +19,12 @@ namespace inmobiliariaBD.Models
         public int Alta(Propietario p)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO Propietario (Dni, Estado)
                              VALUES (@dni, @estado);
-                             SELECT SCOPE_IDENTITY();";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                             SELECT LAST_INSERT_ID();";
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
@@ -38,16 +39,18 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int Baja(int dni)
+        public int ModificarEstado(int dni, bool estado)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"DELETE FROM Propietario
+                string sql = @"UPDATE Propietario
+                             SET Estado=@estado
                              WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@estado", estado);
                     command.Parameters.AddWithValue("@dni", dni);
                     connection.Open();
                     res = command.ExecuteNonQuery();
@@ -57,15 +60,16 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
+
         public int Modificacion(Propietario p)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Propietario
                              SET Estado=@estado
                              WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
@@ -82,11 +86,12 @@ namespace inmobiliariaBD.Models
         public IList<Propietario> ObtenerTodos()
         {
             IList<Propietario> res = new List<Propietario>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT Dni, Estado 
-                             FROM Propietario";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                string sql = @"SELECT p.id, pe.nombre, pe.apellido, p.dni, pe.direccion, pe.localidad, pe.correo, pe.telefono, p.estado
+                             FROM propietario as p
+                             JOIN persona pe ON pe.dni = p.dni";
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     connection.Open();
@@ -95,8 +100,18 @@ namespace inmobiliariaBD.Models
                     {
                         Propietario p = new Propietario
                         {
-                            Dni = reader.GetInt32(0),
-                            Estado = reader.GetBoolean(1)
+                            Id = reader.GetInt32(0),
+                            Persona = new Persona
+                            {
+                                Nombre = reader.GetString(1),
+                                Apellido = reader.GetString(2),
+                                Direccion = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                Localidad = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                Correo = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                Telefono = reader.GetInt32(7)
+                            },
+                            Dni = reader.GetInt32(3),
+                            Estado = reader.GetBoolean(8)
                         };
                         res.Add(p);
                     }
@@ -109,12 +124,12 @@ namespace inmobiliariaBD.Models
         public Propietario ObtenerPorId(int id)
         {
             Propietario? p = null;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT id
                              FROM Propietario
                              WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", id);

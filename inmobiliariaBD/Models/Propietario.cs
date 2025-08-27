@@ -19,7 +19,7 @@ namespace inmobiliariaBD.Models
         //[ForeignKey("Dni")]
         [ForeignKey(nameof(Dni))]
         [Display(Name = "Persona")]
-        public Persona Persona { get; set; }
+        public Persona? Persona { get; set; }
     }
 
 }

@@ -20,8 +20,8 @@ namespace inmobiliariaBD.Models
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Persona (Dni, Nombre, Apellido, Direccion, Localidad, Estado, Avatar)
-                             VALUES (@dni, @nombre, @apellido, @direccion, @localidad, @estado, @avatar);";
+                string sql = @"INSERT INTO Persona (Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado)
+                             VALUES (@dni, @nombre, @apellido, @direccion, @localidad, @correo, @telefono, 1);";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
@@ -30,9 +30,9 @@ namespace inmobiliariaBD.Models
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
                     command.Parameters.AddWithValue("@direccion", (object?)p.Direccion ?? DBNull.Value);
                     command.Parameters.AddWithValue("@localidad", (object?)p.Localidad ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@estado", p.Estado);
-                    command.Parameters.AddWithValue("@avatar", (object?)p.Avatar ?? DBNull.Value);
-
+                    command.Parameters.AddWithValue("@correo", (object?)p.Correo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@telefono", p.Telefono);
+                    
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
                     connection.Close();
@@ -41,15 +41,18 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int Baja(int dni)
+        public int ModificarEstado(int dni, bool estado)
         {
             int res = -1;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = $"DELETE FROM Persona WHERE Dni=@dni";
+                string sql = @"UPDATE Persona
+                             SET Estado=@estado
+                             WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@estado", estado);
                     command.Parameters.AddWithValue("@dni", dni);
                     connection.Open();
                     res = command.ExecuteNonQuery();
@@ -65,7 +68,7 @@ namespace inmobiliariaBD.Models
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = @"UPDATE Persona
-                             SET Nombre=@nombre, Apellido=@apellido, Direccion=@direccion Localidad=@localidad, Estado=@estado, Avatar=@avatar
+                             SET Nombre=@nombre, Apellido=@apellido, Direccion=@direccion Localidad=@localidad, Correo=@correo, Telefono=@telefono
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -75,8 +78,8 @@ namespace inmobiliariaBD.Models
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
                     command.Parameters.AddWithValue("@direccion", (object?)p.Direccion ?? DBNull.Value);
                     command.Parameters.AddWithValue("@localidad", (object?)p.Localidad ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@estado", p.Estado);
-                    command.Parameters.AddWithValue("@avatar", (object?)p.Avatar ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@correo", (object?)p.Correo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@telefono", p.Telefono);
 
                     connection.Open();
                     res = command.ExecuteNonQuery();
@@ -91,7 +94,7 @@ namespace inmobiliariaBD.Models
             IList<Persona> res = new List<Persona>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Estado, Avatar
+                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado
                              FROM Persona";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -108,8 +111,9 @@ namespace inmobiliariaBD.Models
                                 Apellido = reader.GetString(2),
                                 Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Estado = reader.GetBoolean(5),
-                                Avatar = reader.IsDBNull(6) ? null : (byte[])reader.GetValue(6)
+                                Correo = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                Telefono = reader.GetInt32(6),
+                                Estado = reader.GetBoolean(7)
 
                             };
                             res.Add(p);
@@ -126,7 +130,7 @@ namespace inmobiliariaBD.Models
             Persona p = null;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Estado, Avatar
+                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefeno, Estado
                              FROM Persona 
                              WHERE Dni=@dni";
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -145,8 +149,9 @@ namespace inmobiliariaBD.Models
                                 Apellido = reader.GetString(2),
                                 Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
                                 Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Estado = reader.GetBoolean(5),
-                                Avatar = reader.IsDBNull(6) ? null : (byte[])reader.GetValue(6)
+                                Correo = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                Telefono = reader.GetInt32(6),
+                                Estado = reader.GetBoolean(7)
                             };
                         }
                     }
@@ -165,5 +170,7 @@ namespace inmobiliariaBD.Models
         {
             throw new NotImplementedException();
         }
+
+    
     }
 }

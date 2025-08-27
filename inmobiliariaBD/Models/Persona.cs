@@ -4,7 +4,7 @@ namespace inmobiliariaBD.Models
 {
     public class Persona
     {
-        
+
         // las propiedades son como los atributos pero con get y set
         // los atributos se crean por detras de las propiedades
         // las propiedades son publicas y los atributos privados
@@ -24,10 +24,16 @@ namespace inmobiliariaBD.Models
 
         public string? Localidad { get; set; }
 
+        public string? Correo { get; set; }
+
+        [Display(Name = "Teléfono")]
+        [Required]
+        public int Telefono { get; set; }
+
         [Required]
         public bool Estado { get; set; }
 
-        public byte[]? Avatar { get; set; }
+
     }
 
 }

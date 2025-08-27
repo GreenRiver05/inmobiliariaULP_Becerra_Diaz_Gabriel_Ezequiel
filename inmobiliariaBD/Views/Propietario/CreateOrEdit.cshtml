@@ -1,0 +1,62 @@
+@model inmobiliariaBD.Models.Propietario
+
+<h2>@(Model.Id == 0 ? "Nuevo Propietario" : "Editar Propietario")</h2>
+
+<form asp-action="Guardar" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Dni"></label>
+        <input asp-for="Dni" class="form-control" />
+        <span asp-validation-for="Dni" class="text-danger"></span>
+    </div>
+
+    @if (Model.Persona == null)
+    {
+        <div class="alert alert-info">No se encontró una persona con ese DNI. Ingrese los datos para crearla.</div>
+
+        <div class="form-group">
+            <label>Nombre</label>
+            <input name="Nombre" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Apellido</label>
+            <input name="Apellido" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Dirección</label>
+            <input name="Direccion" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Localidad</label>
+            <input name="Localidad" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Correo</label>
+            <input name="Correo" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono</label>
+            <input name="Telefono" class="form-control" />
+        </div>
+
+        <input type="hidden" name="EstadoPersona" value="true" />
+    }
+    else
+    {
+        <div class="alert alert-success">Ya existe una persona con ese DNI. Se vinculará automáticamente.</div>
+        <p><strong>@Model.Persona.Nombre @Model.Persona.Apellido</strong></p>
+    }
+
+    <div class="form-group">
+        <label asp-for="Estado"></label>
+        <input asp-for="Estado" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>

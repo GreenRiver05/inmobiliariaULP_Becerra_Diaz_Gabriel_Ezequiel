@@ -1,0 +1,39 @@
+@model IEnumerable<inmobiliariaBD.Models.Propietario>
+
+@{
+    ViewData["Title"] = "Listado de Propietarios";
+}
+
+<h2 class="mb-3">Listado de Propietarios</h2>
+
+<a asp-action="Crear" class="btn btn-success mb-3">➕ Crear nuevo propietario</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Nombre)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
+            <th>@Html.DisplayNameFor(model => model.Dni)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Id</td>
+                <td>@p.Persona.Nombre</td>
+                <td>@p.Persona.Apellido</td>
+                <td>@p.Dni</td>
+                <td>@p.Persona.Telefono</td>
+                <td>
+                    <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-info btn-sm">🔍 Detalles</a>
+                    <a asp-action="Editar" asp-route-id="@p.Id" class="btn btn-primary btn-sm">✏️ Editar</a>
+                    <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
