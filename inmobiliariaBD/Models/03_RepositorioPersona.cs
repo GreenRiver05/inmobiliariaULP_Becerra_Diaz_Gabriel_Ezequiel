@@ -21,7 +21,7 @@ namespace inmobiliariaBD.Models
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO Persona (Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado)
-                             VALUES (@dni, @nombre, @apellido, @direccion, @localidad, @correo, @telefono, 1);";
+                             VALUES (@dni, @nombre, @apellido, @direccion, @localidad, @correo, @telefono, true);";
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;

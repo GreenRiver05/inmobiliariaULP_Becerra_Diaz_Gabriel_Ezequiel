@@ -13,7 +13,7 @@ namespace inmobiliariaBD.Models
         [Display(Name = "DNI")]
         public int Dni { get; set; }
 
-        [Required]
+        
         public bool Estado { get; set; }
 
         //[ForeignKey("Dni")]

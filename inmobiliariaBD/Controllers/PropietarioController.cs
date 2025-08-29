@@ -15,11 +15,13 @@ namespace inmobiliariaBD.Controllers
     {
         private readonly IConfiguration config;
         private readonly IRepositorioPropietario repositorio;
+        private readonly IRepositorioPersona repositorioPersona;
 
-        public PropietarioController(IConfiguration config, IRepositorioPropietario repo)
+        public PropietarioController(IConfiguration config, IRepositorioPropietario repo, IRepositorioPersona repositorioPersona)
         {
             this.config = config;
             this.repositorio = repo;
+            this.repositorioPersona = repositorioPersona;
         }
 
 
@@ -30,10 +32,63 @@ namespace inmobiliariaBD.Controllers
             return View(lista);
         }
 
-        public ActionResult Create()
+
+        [HttpGet]
+        public IActionResult CreateOrEdit(int? id)
         {
-            return View();
+            Propietario modelo = id.HasValue
+                ? repositorio.ObtenerPorId(id.Value)
+                : new Propietario();
+
+            return View(modelo);
         }
+
+        [HttpPost]
+        public IActionResult Guardar(Propietario propietario)
+        {
+
+
+            // 1. Validación del modelo
+            if (!ModelState.IsValid)
+            {
+                // Podés devolver la vista con los errores para que el usuario los corrija
+                return View("CreateOrEdit", propietario);
+
+            }
+
+            // if (propietario.Persona == null)
+            // {
+            //     return BadRequest("Faltan los datos Principales.");
+            // }
+            // no hace falta por que ya usamos [Required] en el modelo y el ModelState.IsValid lo valida
+
+            Persona personaExistente = repositorioPersona.ObtenerPorDni(propietario.Dni);
+
+            if (personaExistente == null)
+            {
+                repositorioPersona.Alta(propietario.Persona);
+            }
+            else
+            {
+                repositorioPersona.Modificacion(propietario.Persona);
+
+            }
+
+            if (propietario.Id == 0)
+            {
+                repositorio.Alta(propietario);
+                TempData["Mensaje"] = "Propietario creado correctamente.";
+            }
+            else
+            {
+                repositorio.Modificacion(propietario);
+                TempData["Mensaje"] = "Propietario actualizado correctamente.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

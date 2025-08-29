@@ -30,7 +30,7 @@ namespace inmobiliariaBD.Models
         [Required]
         public int Telefono { get; set; }
 
-        [Required]
+       
         public bool Estado { get; set; }
 
 

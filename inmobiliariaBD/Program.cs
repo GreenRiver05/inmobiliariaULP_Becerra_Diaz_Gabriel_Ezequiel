@@ -7,7 +7,8 @@ builder.Services.AddControllersWithViews();
 // Registra el servicio MVC con soporte para controladores y vistas (sin API ni Razor Pages).
 
 builder.Services.AddScoped<IRepositorioPropietario, RepositorioPropietario>();
-
+builder.Services.AddScoped<IRepositorioPersona, RepositorioPersona>();
+// Registra los repositorios personalizados para inyección de dependencias con ciclo de vida Scoped.
 
 
 

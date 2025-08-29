@@ -22,13 +22,13 @@ namespace inmobiliariaBD.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO Propietario (Dni, Estado)
-                             VALUES (@dni, @estado);
+                             VALUES (@dni, true);
                              SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
-                    command.Parameters.AddWithValue("@estado", p.Estado);
+                    
 
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
@@ -126,21 +126,33 @@ namespace inmobiliariaBD.Models
             Propietario? p = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT id
-                             FROM Propietario
-                             WHERE Dni=@dni";
+                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono, pe.estado
+                             FROM propietario p 
+                             JOIN persona pe ON pe.dni = p.dni
+                             WHERE p.id = @id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@dni", id);
+                    command.Parameters.AddWithValue("@id", id);
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         p = new Propietario
                         {
-                            Dni = reader.GetInt32(0),
-                            Estado = reader.GetBoolean(1)
+                            Id = reader.GetInt32(0),
+                            Dni = reader.GetInt32(1),
+                            Persona = new Persona
+                            {
+                                Nombre = reader.GetString(3),
+                                Apellido = reader.GetString(4),
+                                Direccion = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                Localidad = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                Correo = reader.IsDBNull(7) ? null : reader.GetString(7),
+                                Telefono = reader.GetInt32(8),
+                                Estado = reader.GetBoolean(9)
+                            },
+                            Estado = reader.GetBoolean(2)
                         };
                     }
                     connection.Close();
