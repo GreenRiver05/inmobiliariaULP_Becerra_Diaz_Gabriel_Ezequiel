@@ -2,7 +2,9 @@ namespace inmobiliariaBD.Models
 {
     public interface IRepositorioInquilino : IRepositorio<Inquilino>
     {
-        Persona ObtenerPorDni(int dni);
+        Inquilino ObtenerPorDni(int dni);
+        IList<Inquilino> BuscarPorNombre(string nombre);
+        
         
     }
 }

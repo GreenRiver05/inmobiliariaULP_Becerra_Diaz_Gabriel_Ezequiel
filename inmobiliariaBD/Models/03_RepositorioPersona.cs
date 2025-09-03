@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,21 +19,21 @@ namespace inmobiliariaBD.Models
         public int Alta(Persona p)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"INSERT INTO Persona (Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado)
                              VALUES (@dni, @nombre, @apellido, @direccion, @localidad, @correo, @telefono, true);";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
                     command.Parameters.AddWithValue("@nombre", p.Nombre);
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
-                    command.Parameters.AddWithValue("@direccion", (object?)p.Direccion ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@localidad", (object?)p.Localidad ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@correo", (object?)p.Correo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@direccion", p.Direccion == null ? DBNull.Value : p.Direccion);
+                    command.Parameters.AddWithValue("@localidad",p.Localidad == null ? DBNull.Value : p.Localidad);
+                    command.Parameters.AddWithValue("@correo", p.Correo == null ? DBNull.Value : p.Correo);
                     command.Parameters.AddWithValue("@telefono", p.Telefono);
-                    
+
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
                     connection.Close();
@@ -41,19 +42,19 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int ModificarEstado(int dni, bool estado)
+        public int ModificarEstado(Persona p)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Persona
                              SET Estado=@estado
                              WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@estado", estado);
-                    command.Parameters.AddWithValue("@dni", dni);
+                    command.Parameters.AddWithValue("@estado", p.Estado);
+                    command.Parameters.AddWithValue("@dni", p.Dni);
                     connection.Open();
                     res = command.ExecuteNonQuery();
                     connection.Close();
@@ -65,20 +66,20 @@ namespace inmobiliariaBD.Models
         public int Modificacion(Persona p)
         {
             int res = -1;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Persona
-                             SET Nombre=@nombre, Apellido=@apellido, Direccion=@direccion Localidad=@localidad, Correo=@correo, Telefono=@telefono
+                             SET Dni=@dni, Nombre=@nombre, Apellido=@apellido, Direccion=@direccion, Localidad=@localidad, Correo=@correo, Telefono=@telefono
                              WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
                     command.Parameters.AddWithValue("@nombre", p.Nombre);
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
-                    command.Parameters.AddWithValue("@direccion", (object?)p.Direccion ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@localidad", (object?)p.Localidad ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@correo", (object?)p.Correo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@direccion", p.Direccion == null ? DBNull.Value : p.Direccion);
+                    command.Parameters.AddWithValue("@localidad", p.Localidad == null ? DBNull.Value : p.Localidad);
+                    command.Parameters.AddWithValue("@correo", p.Correo == null ? DBNull.Value : p.Correo);
                     command.Parameters.AddWithValue("@telefono", p.Telefono);
 
                     connection.Open();
@@ -92,32 +93,30 @@ namespace inmobiliariaBD.Models
         public IList<Persona> ObtenerTodos()
         {
             IList<Persona> res = new List<Persona>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado
                              FROM Persona";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
                     connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        Persona p = new Persona
                         {
-                            Persona p = new Persona
-                            {
-                                Dni = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                Apellido = reader.GetString(2),
-                                Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Correo = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                Telefono = reader.GetInt32(6),
-                                Estado = reader.GetBoolean(7)
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Nombre = reader.GetString(nameof(p.Nombre)),
+                            Apellido = reader.GetString(nameof(p.Apellido)),
+                            Direccion = reader.IsDBNull(nameof(p.Direccion)) ? null : reader.GetString(nameof(p.Direccion)),
+                            Localidad = reader.IsDBNull(nameof(p.Localidad)) ? null : reader.GetString(nameof(p.Localidad)),
+                            Correo = reader.IsDBNull(nameof(p.Correo)) ? null : reader.GetString(nameof(p.Correo)),
+                            Telefono = reader.GetInt64(nameof(p.Telefono)),
+                            Estado = reader.GetBoolean(nameof(p.Estado))
 
-                            };
-                            res.Add(p);
-                        }
+                        };
+                        res.Add(p);
                     }
                     connection.Close();
                 }
@@ -127,43 +126,42 @@ namespace inmobiliariaBD.Models
 
         public Persona ObtenerPorId(int id)
         {
-            Persona p = null;
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefeno, Estado
-                             FROM Persona 
-                             WHERE Dni=@dni";
-                using (SqlCommand command = new SqlCommand(sql, connection))
-                {
-                    command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@dni", id);
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            p = new Persona
-                            {
-                                Dni = reader.GetInt32(0),
-                                Nombre = reader.GetString(1),
-                                Apellido = reader.GetString(2),
-                                Direccion = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                Localidad = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Correo = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                Telefono = reader.GetInt32(6),
-                                Estado = reader.GetBoolean(7)
-                            };
-                        }
-                    }
-                    connection.Close();
-                }
-            }
-            return p;
+            throw new NotImplementedException();
         }
 
         public Persona ObtenerPorDni(int dni)
         {
-            throw new NotImplementedException();
+            Persona p = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT Dni, Nombre, Apellido, Direccion, Localidad, Correo, Telefono, Estado
+                             FROM Persona 
+                             WHERE Dni=@dni";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@dni", dni);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        p = new Persona
+                        {
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Nombre = reader.GetString(nameof(p.Nombre)),
+                            Apellido = reader.GetString(nameof(p.Apellido)),
+                            Direccion = reader.IsDBNull(nameof(p.Direccion)) ? null : reader.GetString(nameof(p.Direccion)),
+                            Localidad = reader.IsDBNull(nameof(p.Localidad)) ? null : reader.GetString(nameof(p.Localidad)),
+                            Correo = reader.IsDBNull(nameof(p.Correo)) ? null : reader.GetString(nameof(p.Correo)),
+                            Telefono = reader.GetInt64(nameof(p.Telefono)),
+                            Estado = reader.GetBoolean(nameof(p.Estado))
+                        };
+                    }
+
+                    connection.Close();
+                }
+            }
+            return p;
         }
 
         public IList<Persona> BuscarPorNombre(string nombre)
@@ -171,6 +169,6 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-    
+
     }
 }

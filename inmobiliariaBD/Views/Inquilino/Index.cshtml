@@ -1,7 +1,7 @@
-@model IEnumerable<inmobiliariaBD.Models.Propietario>
+@model IEnumerable<inmobiliariaBD.Models.Inquilino>
 
 @{
-    ViewData["Title"] = "Listado de Propietarios";
+    ViewData["Title"] = "Listado de Inquilinos";
 }
 @if (TempData["Mensaje"] != null)
 {
@@ -11,9 +11,9 @@
 }
 
 
-<h2 class="mb-3">Listado de Propietarios</h2>
+<h2 class="mb-3">Listado de Inquilinos</h2>
 
-<a asp-action="CreateOrEdit" class="btn btn-success mb-3">➕ Crear nuevo propietario</a>
+<a asp-action="CreateOrEdit" class="btn btn-success mb-3">➕ Crear nuevo Inquilino</a>
 
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
@@ -27,18 +27,18 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var p in Model)
+        @foreach (var i in Model)
         {
             <tr>
-                <td>@p.Id</td>
-                <td>@p.Persona.Nombre</td>
-                <td>@p.Persona.Apellido</td>
-                <td>@p.Dni</td>
-                <td>@p.Persona.Telefono</td>
+                <td>@i.Id</td>
+                <td>@i.Persona.Nombre</td>
+                <td>@i.Persona.Apellido</td>
+                <td>@i.Dni</td>
+                <td>@i.Persona.Telefono</td>
                 <td>
-                    <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-info btn-sm">🔍 Detalles</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@p.Id" class="btn btn-primary btn-sm">✏️ Editar</a>
-                    <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍 Detalles</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-primary btn-sm">✏️ Editar</a>
+                    <a asp-action="Eliminar" asp-route-id="@i.Id" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
                 </td>
             </tr>
         }
@@ -55,7 +55,7 @@
         <li>paginacion ❌</li>
         <li>Ordenar lista ❌</li>
         <li>colocar estado o filtrar por estado ❌</li>
-        <li>buscar propietario ❌</li>
+        <li>buscar Inquilino ❌</li>
         <li>ABM ✅</li> 
 
     </ul>

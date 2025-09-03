@@ -1,12 +1,11 @@
-@model inmobiliariaBD.Models.Propietario
+@model inmobiliariaBD.Models.Inquilino
 @if (TempData["Mensaje"] != null)
 {
     <div class="alert alert-info">@TempData["Mensaje"]</div>
 }
 
 
-
-<h2>@(Model.Id == null ? "Nuevo Propietario" : "Editar Propietario")</h2>
+<h2>@(Model.Id == null ? "Nuevo Inquilino" : "Editar Inquilino")</h2>
 
 <form asp-action="Guardar" method="post">
     <input type="hidden" asp-for="Id" />
@@ -18,11 +17,11 @@
     {
         @if (ViewBag.PersonaEncontrada)
         {
-            <div class="alert alert-success">Se encontró al Propietario. Puede editar sus datos.</div>
+            <div class="alert alert-success">Se encontró al Inquilino. Puede editar sus datos.</div>
         }
         else
         {
-            <div class="alert alert-warning">No se encontró un Propietario con ese DNI. Ingrese los datos para crearla.</div>
+            <div class="alert alert-warning">No se encontró un Inquilino con ese DNI. Ingrese los datos para crearlo.</div>
         }
 
     } *@
@@ -97,7 +96,7 @@
 <div class="d-flex gap-3 justify-content-center my-4">
     @if (Model.Id != null)
     {
-        <form asp-action="AltaBaja" asp-controller="Propietario" method="post">
+        <form asp-action="AltaBaja" asp-controller="Inquilino" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
             <button type="submit" class="btn @(Model.Estado ? "btn-danger" : "btn-success")">
                 @(Model.Estado ? "Dar de baja" : "Dar de alta")
@@ -121,7 +120,6 @@
         <li>Verificar que no modifica si cambio el dni - Vista editar ❌</li>
         <li>Implementar el modal para buscar por dni ❌</li>
         <li>Sacar spinners de los campos numericos ✅</li>
-        
     </ul>
 </div>
 

@@ -28,7 +28,7 @@ namespace inmobiliariaBD.Models
                 {
                     command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@dni", p.Dni);
-                    
+
 
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
@@ -39,7 +39,7 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int ModificarEstado(int dni, bool estado)
+        public int ModificarEstado(Propietario p)
         {
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
@@ -50,8 +50,8 @@ namespace inmobiliariaBD.Models
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@estado", estado);
-                    command.Parameters.AddWithValue("@dni", dni);
+                    command.Parameters.AddWithValue("@estado", p.Estado);
+                    command.Parameters.AddWithValue("@dni", p.Dni);
                     connection.Open();
                     res = command.ExecuteNonQuery();
                     connection.Close();
@@ -60,14 +60,13 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-
         public int Modificacion(Propietario p)
         {
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Propietario
-                             SET Estado=@estado
+                             SET Estado=@estado, Dni=@dni
                              WHERE Dni=@dni";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -100,18 +99,18 @@ namespace inmobiliariaBD.Models
                     {
                         Propietario p = new Propietario
                         {
-                            Id = reader.GetInt32(0),
+                            Id = reader.GetInt32(nameof(p.Id)),
                             Persona = new Persona
                             {
-                                Nombre = reader.GetString(1),
-                                Apellido = reader.GetString(2),
-                                Direccion = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                Localidad = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                Correo = reader.IsDBNull(6) ? null : reader.GetString(6),
-                                Telefono = reader.GetInt32(7)
+                                Nombre = reader.GetString(nameof(p.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(p.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(p.Persona.Direccion)) ? null : reader.GetString(nameof(p.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(p.Persona.Localidad)) ? null : reader.GetString(nameof(p.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(p.Persona.Correo)) ? null : reader.GetString(nameof(p.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(p.Persona.Telefono))
                             },
-                            Dni = reader.GetInt32(3),
-                            Estado = reader.GetBoolean(8)
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Estado = reader.GetBoolean(nameof(p.Estado))
                         };
                         res.Add(p);
                     }
@@ -126,7 +125,7 @@ namespace inmobiliariaBD.Models
             Propietario? p = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono, pe.estado
+                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
                              FROM propietario p 
                              JOIN persona pe ON pe.dni = p.dni
                              WHERE p.id = @id";
@@ -140,19 +139,18 @@ namespace inmobiliariaBD.Models
                     {
                         p = new Propietario
                         {
-                            Id = reader.GetInt32(0),
-                            Dni = reader.GetInt32(1),
+                            Id = reader.GetInt32(nameof(p.Id)),
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Estado = reader.GetBoolean(nameof(p.Estado)),
                             Persona = new Persona
                             {
-                                Nombre = reader.GetString(3),
-                                Apellido = reader.GetString(4),
-                                Direccion = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                Localidad = reader.IsDBNull(6) ? null : reader.GetString(6),
-                                Correo = reader.IsDBNull(7) ? null : reader.GetString(7),
-                                Telefono = reader.GetInt32(8),
-                                Estado = reader.GetBoolean(9)
-                            },
-                            Estado = reader.GetBoolean(2)
+                                Nombre = reader.GetString(nameof(p.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(p.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(p.Persona.Direccion)) ? null : reader.GetString(nameof(p.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(p.Persona.Localidad)) ? null : reader.GetString(nameof(p.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(p.Persona.Correo)) ? null : reader.GetString(nameof(p.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(p.Persona.Telefono))
+                            }
                         };
                     }
                     connection.Close();
@@ -163,7 +161,41 @@ namespace inmobiliariaBD.Models
 
         public Propietario ObtenerPorDni(int dni)
         {
-            throw new NotImplementedException();
+            Propietario? p = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
+                             FROM propietario p 
+                             JOIN persona pe ON pe.dni = p.dni
+                             WHERE p.dni = @dni";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@dni", dni);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        p = new Propietario
+                        {
+                            Id = reader.GetInt32(nameof(p.Id)),
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Estado = reader.GetBoolean(nameof(p.Estado)),
+                            Persona = new Persona
+                            {
+                                Nombre = reader.GetString(nameof(p.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(p.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(p.Persona.Direccion)) ? null : reader.GetString(nameof(p.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(p.Persona.Localidad)) ? null : reader.GetString(nameof(p.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(p.Persona.Correo)) ? null : reader.GetString(nameof(p.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(p.Persona.Telefono))
+                            },
+                        };
+                    }
+                    connection.Close();
+                }
+            }
+            return p;
         }
 
         public IList<Propietario> BuscarPorNombre(string nombre)

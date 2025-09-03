@@ -36,22 +36,63 @@ namespace inmobiliariaBD.Controllers
         [HttpGet]
         public IActionResult CreateOrEdit(int? id)
         {
-            Propietario modelo = id.HasValue
-                ? repositorio.ObtenerPorId(id.Value)
-                : new Propietario();
+            Propietario p;
 
-            return View(modelo);
+            if (id.HasValue)
+            {
+                p = repositorio.ObtenerPorId(id.Value);
+                ViewBag.MostrarModal = false;
+            }
+            else
+            {
+                p = new Propietario { Persona = new Persona() };  // Inicializar la propiedad Persona para evitar null reference
+                ViewBag.MostrarModal = true;
+            }
+
+            return View(p);
+
         }
+
+
+
+        [HttpPost]
+        public IActionResult BuscarPorDni(Propietario propietario)
+        {
+            Propietario p = repositorio.ObtenerPorDni(propietario.Dni);
+            ViewBag.UsuarioEncontrado = true;
+            if (p == null)
+            {
+                p = new Propietario { Persona = new Persona() };
+                ViewBag.UsuarioEncontrado = false;
+                // TempData["Error"] = "El DNI ya está registrado para otro propietario.";
+                //return View("CreateOrEdit", propietario);
+            }
+
+            ViewBag.MostrarModal = false;
+            return View("CreateOrEdit", p);
+        }
+
 
         [HttpPost]
         public IActionResult Guardar(Propietario propietario)
         {
 
+            //Console.WriteLine("Guardando propietario con DNI: " + propietario.Dni);
+            // 1. Valido el modelo
 
-            // 1. Validación del modelo
+            if (propietario.Dni == 0)
+            {
+                ModelState.AddModelError("Dni", "El DNI es obligatorio.");
+            }
+
+            if (propietario.Persona.Telefono == 0)
+            {
+                ModelState.AddModelError("Persona.Telefono", "El teléfono es obligatorio.");
+            }
+
             if (!ModelState.IsValid)
             {
-                // Podés devolver la vista con los errores para que el usuario los corrija
+                ViewBag.MostrarModal = false;
                 return View("CreateOrEdit", propietario);
 
             }
@@ -60,21 +101,26 @@ namespace inmobiliariaBD.Controllers
             // {
             //     return BadRequest("Faltan los datos Principales.");
             // }
-            // no hace falta por que ya usamos [Required] en el modelo y el ModelState.IsValid lo valida
+            // no hace falta por que [Required] en el modelo y el ModelState.IsValid lo valida
 
             Persona personaExistente = repositorioPersona.ObtenerPorDni(propietario.Dni);
+            Console.WriteLine(propietario.Persona);
+            Console.WriteLine(propietario);
 
             if (personaExistente == null)
             {
+                propietario.Persona.Dni = propietario.Dni;
                 repositorioPersona.Alta(propietario.Persona);
             }
             else
             {
+                Console.WriteLine("Modificando persona existente con DNI: " + propietario.Dni);
+                propietario.Persona.Dni = propietario.Dni;
                 repositorioPersona.Modificacion(propietario.Persona);
 
             }
 
-            if (propietario.Id == 0)
+            if (propietario.Id == 0 || propietario.Id == null)
             {
                 repositorio.Alta(propietario);
                 TempData["Mensaje"] = "Propietario creado correctamente.";
@@ -91,97 +137,21 @@ namespace inmobiliariaBD.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Propietario p)
+        public IActionResult AltaBaja(int id)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    int res = repositorio.Alta(p);
-                    if (res > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "No se pudo agregar el propietario");
-                        return View(p);
-                    }
-                }
-                else
-                {
-                    return View(p);
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(p);
-            }
+            var propietario = repositorio.ObtenerPorId(id);
+
+            if (propietario == null) return NotFound();
+
+            propietario.Estado = !propietario.Estado;
+            repositorio.ModificarEstado(propietario);
+            TempData["Mensaje"] = $"El propietario fue {(propietario.Estado ? "activado" : "dado de baja")}.";
+
+            return RedirectToAction("CreateOrEdit", new { id = propietario.Id });
         }
 
 
-        public ActionResult Edit(int id)
-        {
-            var p = repositorio.ObtenerPorId(id);
-            return View(p);
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Propietario p)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    int res = repositorio.Modificacion(p);
-                    if (res > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "No se pudo modificar el propietario");
-                        return View(p);
-                    }
-                }
-                else
-                {
-                    return View(p);
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(p);
-            }
-        }
-
-        public ActionResult Delete(int id)
-        {
-            var p = repositorio.ObtenerPorId(id);
-            return View(p);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Propietario p)
-        {
-            try
-            {
-                int res = repositorio.ModificarEstado(id, false);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(p);
-            }
-
-        }
     }
 
 }
