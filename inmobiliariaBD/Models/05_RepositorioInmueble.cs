@@ -99,13 +99,13 @@ namespace inmobiliariaBD.Models
             IList<Inmueble> res = new List<Inmueble>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.Id, i.PropietarioId, i.TipoId, i.Direccion, i.Localidad, i.Longitud, i.Latitud, i.Uso, i.Ambientes, i.Observacion, i.Estado, i.Precio,
-                               p.Dni, p.Estado, pe.Nombre, pe.Apellido, pe.Direccion, pe.Localidad, pe.Correo, pe.Telefono,
-                               t.Tipo, t.Descripcion
+                string sql = @"SELECT i.Id, i.propietario_id, i.tipo_id, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado, i.precio,
+                               p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
+                               t.tipo, t.descripcion
                                FROM Inmueble i
-                               INNER JOIN Propietario p ON i.PropietarioId = p.Id
-                               INNER JOIN Persona pe ON p.Dni = pe.Dni
-                               INNER JOIN TipoInmueble t ON i.TipoId = t.Id";
+                               INNER JOIN Propietario p ON i.propietario_id = p.id 
+                               INNER JOIN Persona pe ON p.dni = pe.dni
+                               INNER JOIN tipo_inmueble t ON i.tipo_id = t.id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
