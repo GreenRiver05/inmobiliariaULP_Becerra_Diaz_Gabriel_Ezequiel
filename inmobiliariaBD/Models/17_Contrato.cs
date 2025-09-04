@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using inmobiliariaBD.Models;
 
-namespace inmboliariaBD.Models
+
+namespace inmobiliariaBD.Models
 {
     public class Contrato
     {
@@ -18,16 +18,17 @@ namespace inmboliariaBD.Models
         [Display(Name = "Codigo Inmueble")]
         public int InmuebleId { get; set; }
 
-        [Required (ErrorMessage = "El campo {0} es obligatorio")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public decimal Monto { get; set; }
 
-        [Required (ErrorMessage = "El campo {0} es obligatorio")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public DateTime Desde { get; set; }
 
-        [Required (ErrorMessage = "El campo {0} es obligatorio")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public DateTime Hasta { get; set; }
 
-        [Required (ErrorMessage = "El campo {0} es obligatorio")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        //Vigente, Finalizado, Rescindido
         public string Estado { get; set; }
 
         //[ForeignKey("InquilinoId")]
@@ -40,10 +41,10 @@ namespace inmboliariaBD.Models
         [Display(Name = "Inmueble")]
         public Inmueble? Inmueble { get; set; }
 
-        [Display(Name = "Pagos")]
-        public List<Pago>? Pagos { get; set; }
+        // [Display(Name = "Pagos")]
+        // public List<Pago>? Pagos { get; set; }
 
-        [Display(Name = "Multas")]
-        public List<Multa>? Multas { get; set; }
+        // [Display(Name = "Multas")]
+        // public List<Multa>? Multas { get; set; }
     }
 }
