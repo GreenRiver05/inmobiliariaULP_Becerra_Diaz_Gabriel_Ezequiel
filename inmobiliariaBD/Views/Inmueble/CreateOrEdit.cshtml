@@ -1,0 +1,144 @@
+@model inmobiliariaBD.Models.Inmueble
+
+@{
+    ViewData["Title"] = Model.Id == null ? "Nuevo Inmueble" : "Editar Inmueble";
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-info">@TempData["Mensaje"]</div>
+}
+
+
+
+<h2>@(Model.Id == null ? "Nuevo Inmueble" : "Editar Inmueble")</h2>
+
+<form asp-action="Guardar" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row">
+        <div class="form-group col-md-6 mb-3">
+            <label asp-for="Direccion"></label>
+            <input asp-for="Direccion" class="form-control" />
+            <span asp-validation-for="Direccion" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4 mb-3">
+            <label asp-for="Localidad"></label>
+            <input asp-for="Localidad" class="form-control" />
+            <span asp-validation-for="Localidad" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4 mb-3">
+            <label asp-for="Uso"></label>
+            <input asp-for="Uso" class="form-control" />
+            <span asp-validation-for="Uso" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-2 mb-3">
+            <label asp-for="Ambientes"></label>
+            <input asp-for="Ambientes" class="form-control no-spinner" />
+            <span asp-validation-for="Ambientes" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-3 mb-3">
+            <label asp-for="Precio"></label>
+            <input asp-for="Precio" class="form-control no-spinner" />
+            <span asp-validation-for="Precio" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-3 mb-3">
+            <label asp-for="Estado"></label>
+            <select asp-for="Estado" class="form-select">
+                <option value="">-- Seleccione Estado --</option>
+                <option value="Disponible">Disponible</option>
+                <option value="Alquilado">Alquilado</option>
+                <option value="No Disponible">No Disponible</option>
+            </select>
+            <span asp-validation-for="Estado" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4 mb-3">
+            <label asp-for="TipoId"></label>
+            <select asp-for="TipoId" asp-items="ViewBag.TiposInmueble" class="form-select"></select>
+            <span asp-validation-for="TipoId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4 mb-3">
+            <label asp-for="PropietarioId"></label>
+            <select asp-for="PropietarioId" asp-items="ViewBag.Propietarios" class="form-select"></select>
+            <span asp-validation-for="PropietarioId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-6 mb-3">
+            <label asp-for="Observacion"></label>
+            <textarea asp-for="Observacion" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group col-md-3 mb-3">
+            <label asp-for="Latitud"></label>
+            <input asp-for="Latitud" class="form-control no-spinner" />
+            <span asp-validation-for="Latitud" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-3 mb-3">
+            <label asp-for="Longitud"></label>
+            <input asp-for="Longitud" class="form-control no-spinner" />
+            <span asp-validation-for="Longitud" class="text-danger"></span>
+        </div>
+
+        @if (Model.Id != 0)
+        {
+            <div class="form-group col-md-4">
+                <div class="d-flex align-items-center gap-2 mt-4">
+                    <label class="mb-0">Estado:</label>
+                    @if (Model.Estado == "Disponible")
+                    {
+                        <span class="badge bg-success px-3 py-2">Disponible</span>
+                    }
+                    else if (Model.Estado == "Alquilado")
+                    {
+                        <span class="badge bg-warning px-3 py-2">Alquilado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary px-3 py-2">No Disponible</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex gap-3 justify-content-center my-4">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<div class="d-flex gap-3 justify-content-center my-4">
+    @if (Model.Id != 0)
+    {
+        <form asp-action="AltaBaja" asp-controller="Inmueble" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn @(Model.Estado == "Disponible" ? "btn-danger" : "btn-success")">
+                @(Model.Estado == "Disponible" ? "Dar de baja" : "Dar de alta")
+            </button>
+        </form>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+</div>
+
+
+<div class="validaciones-info mt-4 mb-0">
+    <h5>🔍 Validaciones y/o implementaciones:</h5>
+    <ul>
+        <li>Sacar spinners de los campos numéricos ✅</li>
+        <li>ABM funcional ❌</li>
+
+    </ul>
+</div>
+
+@* Incluye los scripts para validar campos en el navegador: Required, Email, Range, etc. 
+   Sirve para mostrar errores sin tener que enviar el formulario. *@
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -32,3 +32,8 @@ body {
 .no-spinner {
     -moz-appearance: textfield;
 }
+
+.validaciones-info{
+  border-top: 2px solid #ccc;
+  padding: 10px
+}

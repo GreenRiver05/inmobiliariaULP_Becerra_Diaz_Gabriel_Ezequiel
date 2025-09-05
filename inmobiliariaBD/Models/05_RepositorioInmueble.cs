@@ -226,7 +226,32 @@ namespace inmobiliariaBD.Models
             return i;
         }
 
-
+        public IList<TipoInmueble> ObtenerTiposInmueble()
+        {
+            IList<TipoInmueble> res = new List<TipoInmueble>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT * FROM tipo_inmueble";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        TipoInmueble t = new TipoInmueble
+                        {
+                            Id = reader.GetInt32(nameof(t.Id)),
+                            Tipo = reader.GetString(nameof(t.Tipo)),
+                            Descripcion = reader.IsDBNull(nameof(t.Descripcion)) ? null : reader.GetString(nameof(t.Descripcion))
+                        };
+                        res.Add(t);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
 
 
 

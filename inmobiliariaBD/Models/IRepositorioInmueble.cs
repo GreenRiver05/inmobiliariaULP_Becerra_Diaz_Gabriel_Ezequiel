@@ -8,5 +8,6 @@ namespace inmobiliariaBD.Models
         IList<Inmueble> BuscarPorTipo(int tipoId);
         IList<Inmueble> BuscarPorPrecio(decimal precioMin, decimal precioMax);
         IList<Inmueble> BuscarPorEstado(string estado);
+        IList<TipoInmueble> ObtenerTiposInmueble();
     }
 }

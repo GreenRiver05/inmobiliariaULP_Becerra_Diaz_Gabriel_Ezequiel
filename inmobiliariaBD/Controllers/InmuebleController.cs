@@ -1,5 +1,6 @@
 using inmobiliariaBD.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace inmobiliariaBD.Controllers
 {
@@ -28,26 +29,47 @@ namespace inmobiliariaBD.Controllers
         public IActionResult CreateOrEdit(int? id)
         {
             Inmueble i;
-            
+
             if (id.HasValue)
             {
                 i = repositorio.ObtenerPorId(id.Value);
-                
+
             }
             else
             {
                 i = new Inmueble
                 {
                     Propietario = new Propietario { Persona = new Persona() },
-                   TipoInmueble = new TipoInmueble()   
-                };  
+                    TipoInmueble = new TipoInmueble()
+                };
             }
+
+            // Arma el combo de propietarios para la vista:
+            // - Value: el Id del propietario (como string)
+            // - Text: DNI - Apellido, Nombre (datos tomados desde la propiedad Persona)
+            // Esto se usa en Razor con asp-items para poblar el <select> de PropietarioId
+            //.Select(...) → Recorre cada propietario y lo transforma en un SelectListItem, que es lo que Razor necesita para armar un <select>
+            //.ToList() → Convierte el resultado en una lista que se guarda en ViewBag.Propietarios
+            ViewBag.Propietarios = repositorioPropietario.ObtenerTodos()
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = $"{p.Persona.Apellido}, {p.Persona.Nombre} - {p.Dni}  "
+                }).ToList();
+
+            ViewBag.TiposInmueble = repositorio.ObtenerTiposInmueble()
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Tipo
+                }).ToList();
+
             return View(i);
         }
 
 
         [HttpPost]
-        public IActionResult CreateOrEdit(Inmueble inmueble)
+        public IActionResult Guardar(Inmueble inmueble)
         {
             if (ModelState.IsValid)
             {
@@ -63,8 +85,8 @@ namespace inmobiliariaBD.Controllers
             }
             else
             {
-                ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
-                return View(inmueble);
+                ViewBag.Error = "No se pudo guardar el inmueble";
+                return View("CreateOrEdit", inmueble);
             }
         }
 
