@@ -40,6 +40,8 @@ namespace inmobiliariaBD.Controllers
 
             if (id.HasValue)
             {
+                //se colaca id.value por que id es nullable y el metodo ObtenerPorId no acepta nullable
+                // asi que se usa id.value para obtener el valor real
                 p = repositorio.ObtenerPorId(id.Value);
                 ViewBag.MostrarModal = false;
             }

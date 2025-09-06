@@ -32,6 +32,8 @@ namespace inmobiliariaBD.Controllers
 
             if (id.HasValue)
             {
+                //se colaca id.value por que id es nullable y el metodo ObtenerPorId no acepta nullable
+                // asi que se usa id.value para obtener el valor real
                 i = repositorio.ObtenerPorId(id.Value);
 
             }
@@ -76,10 +78,12 @@ namespace inmobiliariaBD.Controllers
                 if (inmueble.Id > 0)
                 {
                     repositorio.Modificacion(inmueble);
+                    TempData["Mensaje"] = "El inmueble se modificó correctamente";
                 }
                 else
                 {
                     repositorio.Alta(inmueble);
+                    TempData["Mensaje"] = "El inmueble se creó correctamente";
                 }
                 return RedirectToAction("Index");
             }

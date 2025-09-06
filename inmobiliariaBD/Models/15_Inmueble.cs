@@ -56,7 +56,7 @@ namespace inmobiliariaBD.Models
         //[ForeignKey("TipoId")]
         [ForeignKey(nameof(TipoId))]
         [Display(Name = "Tipo de Inmueble")]
-        public TipoInmueble TipoInmueble { get; set; }
+        public TipoInmueble? TipoInmueble { get; set; }
 
         // public List<Contrato>? Contratos { get; set; }
     }

@@ -14,7 +14,7 @@ namespace inmobiliariaBD.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Inmueble (PropietarioId, TipoId, Direccion, Localidad, Longitud, Latitud, Uso, Ambientes, Observacion, Estado, Precio)
+                string sql = @"INSERT INTO Inmueble (Propietario_Id, Tipo_Id, Direccion, Localidad, Longitud, Latitud, Uso, Ambientes, Observacion, Estado, Precio)
                              VALUES (@propietarioId, @tipoId, @direccion, @localidad, @longitud, @latitud, @uso, @ambientes, @observacion, @estado, @precio);
                              SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
@@ -69,7 +69,7 @@ namespace inmobiliariaBD.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Inmueble
-                             SET PropietarioId=@propietarioId, TipoId=@tipoId, Direccion=@direccion, Localidad=@localidad, Longitud=@longitud, Latitud=@latitud, Uso=@uso, Ambientes=@ambientes, Observacion=@observacion, Estado=@estado, Precio=@precio
+                             SET Propietario_Id=@propietarioId, Tipo_Id=@tipoId, Direccion=@direccion, Localidad=@localidad, Longitud=@longitud, Latitud=@latitud, Uso=@uso, Ambientes=@ambientes, Observacion=@observacion, Estado=@estado, Precio=@precio
                              WHERE Id=@id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -99,8 +99,12 @@ namespace inmobiliariaBD.Models
             IList<Inmueble> res = new List<Inmueble>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.Id, i.propietario_id, i.tipo_id, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado, i.precio,
-                               p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
+
+                // poner alias en el SQL para que el reader no se maree con los dos 'estado", uno del inmueble y otro del propietario.
+                // Sin esto, GetBoolean("Estado") puede agarrar el string 'Disponible' y explotar.
+
+                string sql = @"SELECT i.Id, i.propietario_id AS PropietarioId , i.tipo_id AS TipoId, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado AS estadoInmueble, i.precio,
+                               p.dni, p.estado AS estadoPropietario, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
                                t.tipo, t.descripcion
                                FROM Inmueble i
                                INNER JOIN Propietario p ON i.propietario_id = p.id 
@@ -125,18 +129,19 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString(nameof(i.Estado)),
+                            Estado = reader.GetString("estadoInmueble"),
                             Precio = reader.GetDecimal(nameof(i.Precio)),
 
                             Propietario = new Propietario
                             {
                                 Id = reader.GetInt32(nameof(i.PropietarioId)),
                                 Dni = reader.GetInt32(nameof(i.Propietario.Dni)),
-                                Estado = reader.GetBoolean(nameof(i.Propietario.Estado)),
+                                Estado = reader.GetBoolean("estadoPropietario"),
                                 Persona = new Persona
                                 {
                                     Nombre = reader.GetString(nameof(i.Propietario.Persona.Nombre)),
                                     Apellido = reader.GetString(nameof(i.Propietario.Persona.Apellido)),
+                                    Dni = reader.GetInt32(nameof(i.Propietario.Dni)),
                                     Direccion = reader.IsDBNull(nameof(i.Propietario.Persona.Direccion)) ? null : reader.GetString(nameof(i.Propietario.Persona.Direccion)),
                                     Localidad = reader.IsDBNull(nameof(i.Propietario.Persona.Localidad)) ? null : reader.GetString(nameof(i.Propietario.Persona.Localidad)),
                                     Correo = reader.IsDBNull(nameof(i.Propietario.Persona.Correo)) ? null : reader.GetString(nameof(i.Propietario.Persona.Correo)),
@@ -164,13 +169,13 @@ namespace inmobiliariaBD.Models
             Inmueble? i = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.Id, i.PropietarioId, i.TipoId, i.Direccion, i.Localidad, i.Longitud, i.Latitud, i.Uso, i.Ambientes, i.Observacion, i.Estado, i.Precio,
-                               p.Dni, p.Estado, pe.Nombre, pe.Apellido, pe.Direccion, pe.Localidad, pe.Correo, pe.Telefono,
+                string sql = @"SELECT i.Id, i.Propietario_Id AS PropietarioID, i.Tipo_Id AS TipoId, i.Direccion, i.Localidad, i.Longitud, i.Latitud, i.Uso, i.Ambientes, i.Observacion, i.Estado AS estadoInmueble, i.Precio,
+                               p.Dni, p.Estado AS estadoPropietario, pe.Nombre, pe.Apellido, pe.Direccion, pe.Localidad, pe.Correo, pe.Telefono,
                                t.Tipo, t.Descripcion
                                FROM Inmueble i
-                               INNER JOIN Propietario p ON i.PropietarioId = p.Id
+                               INNER JOIN Propietario p ON i.Propietario_Id = p.Id
                                INNER JOIN Persona pe ON p.Dni = pe.Dni
-                               INNER JOIN TipoInmueble t ON i.TipoId = t.Id
+                               INNER JOIN Tipo_Inmueble t ON i.Tipo_Id = t.Id
                                WHERE i.Id = @id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -192,14 +197,14 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString(nameof(i.Estado)),
+                            Estado = reader.GetString("estadoInmueble"),
                             Precio = reader.GetDecimal(nameof(i.Precio)),
 
                             Propietario = new Propietario
                             {
                                 Id = reader.GetInt32(nameof(i.PropietarioId)),
                                 Dni = reader.GetInt32(nameof(i.Propietario.Dni)),
-                                Estado = reader.GetBoolean(nameof(i.Propietario.Estado)),
+                                Estado = reader.GetBoolean("estadoPropietario"),
                                 Persona = new Persona
                                 {
                                     Nombre = reader.GetString(nameof(i.Propietario.Persona.Nombre)),

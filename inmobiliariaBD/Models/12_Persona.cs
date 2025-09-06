@@ -46,5 +46,10 @@ namespace inmobiliariaBD.Models
 
         }
 
+        public string ToStringSimple()
+        {
+            return $"{Nombre} {Apellido} ({Dni})";
+        }
+
     }
 }

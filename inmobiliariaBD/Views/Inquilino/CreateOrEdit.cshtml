@@ -1,4 +1,8 @@
 @model inmobiliariaBD.Models.Inquilino
+
+@{
+    ViewData["Title"] = Model.Id == null ? "Nuevo Inquilino" : "Editar Inquilino";
+}
 @if (TempData["Mensaje"] != null)
 {
     <div class="alert alert-info">@TempData["Mensaje"]</div>

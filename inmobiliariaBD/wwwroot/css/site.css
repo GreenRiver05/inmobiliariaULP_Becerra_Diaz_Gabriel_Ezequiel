@@ -37,3 +37,19 @@ body {
   border-top: 2px solid #ccc;
   padding: 10px
 }
+
+
+/*------------------Estilos para la tabla de inmuebles INDEX-----------*/
+.tabla-inmuebles {
+    table-layout: auto;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.tabla-inmuebles th,
+.tabla-inmuebles td {
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;   
+    padding: 0.5rem;
+}
