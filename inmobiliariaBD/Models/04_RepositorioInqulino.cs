@@ -208,6 +208,11 @@ namespace inmobiliariaBD.Models
         {
             throw new NotImplementedException();
         }
+
+        public int Baja(Inquilino p)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

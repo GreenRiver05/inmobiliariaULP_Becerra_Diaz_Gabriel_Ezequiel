@@ -1,3 +1,4 @@
+using System.Globalization;
 using inmobiliariaBD.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -69,21 +70,22 @@ namespace inmobiliariaBD.Controllers
             return View(i);
         }
 
-
+       
         [HttpPost]
         public IActionResult Guardar(Inmueble inmueble)
         {
             if (ModelState.IsValid)
             {
+
                 if (inmueble.Id > 0)
                 {
                     repositorio.Modificacion(inmueble);
-                    TempData["Mensaje"] = "El inmueble se modificó correctamente";
+                    TempData["Mensaje"] = $"El inmueble {inmueble.Id} se modificó correctamente";
                 }
                 else
                 {
                     repositorio.Alta(inmueble);
-                    TempData["Mensaje"] = "El inmueble se creó correctamente";
+                    TempData["Mensaje"] = $"El inmueble {inmueble.Id} se creó correctamente";
                 }
                 return RedirectToAction("Index");
             }
@@ -95,6 +97,21 @@ namespace inmobiliariaBD.Controllers
         }
 
 
+        [HttpPost]
+        public IActionResult ModificarEstado(int id, string nuevoEstado)
+        {
+            var inmueble = repositorio.ObtenerPorId(id);
+            if (inmueble == null)
+            {
+                return NotFound();
+            }
+
+            inmueble.Estado = nuevoEstado;
+            repositorio.ModificarEstado(inmueble);
+            TempData["Mensaje"] = $"El estado del inmueble se cambió a {nuevoEstado}.";
+
+            return RedirectToAction("CreateOrEdit", new { id = inmueble.Id });
+        }
 
         public ActionResult Details(int id)
         {

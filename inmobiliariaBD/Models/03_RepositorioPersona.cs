@@ -169,6 +169,9 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-
+        public int Baja(Persona p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

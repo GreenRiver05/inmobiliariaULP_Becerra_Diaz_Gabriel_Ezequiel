@@ -32,7 +32,6 @@ namespace inmobiliariaBD.Controllers
             return View(lista);
         }
 
-
         [HttpGet]
         public IActionResult CreateOrEdit(int? id)
         {
@@ -55,28 +54,8 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-
-
         [HttpPost]
-        public IActionResult BuscarPorDni(Propietario propietario)
-        {
-            Propietario p = repositorio.ObtenerPorDni(propietario.Dni);
-            ViewBag.UsuarioEncontrado = true;
-            if (p == null)
-            {
-                p = new Propietario { Persona = new Persona() };
-                ViewBag.UsuarioEncontrado = false;
-                // TempData["Error"] = "El DNI ya está registrado para otro propietario.";
-                //return View("CreateOrEdit", propietario);
-            }
-
-            ViewBag.MostrarModal = false;
-            return View("CreateOrEdit", p);
-        }
-
-
-        [HttpPost]
-        public IActionResult Guardar(Propietario propietario)
+        public IActionResult CreateOrEdit(Propietario propietario)
         {
 
             //Console.WriteLine("Guardando propietario con DNI: " + propietario.Dni);
@@ -136,10 +115,27 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
 
+        // [HttpGet]
+        // public IActionResult Baja(int id)
+        // {
 
+        //     var propietario = repositorio.ObtenerPorId(id);
+        //     return View(propietario);
+        // }
 
         [HttpPost]
-        public IActionResult AltaBaja(int id)
+        public IActionResult Baja(int id)
+        {
+            var propietario = repositorio.ObtenerPorId(id);
+            
+            repositorio.Baja(propietario);
+            TempData["Mensaje"] = $"Se Elimino Correctamente al Propietario {propietario.Persona.ToStringSimple} ";
+            return RedirectToAction("Index");
+
+        }
+
+        [HttpPost]
+        public IActionResult ModificarEstado(int id)
         {
             var propietario = repositorio.ObtenerPorId(id);
 
@@ -154,6 +150,21 @@ namespace inmobiliariaBD.Controllers
 
 
 
+        public IActionResult BuscarPorDni(Propietario propietario)
+        {
+            Propietario p = repositorio.ObtenerPorDni(propietario.Dni);
+            ViewBag.UsuarioEncontrado = true;
+            if (p == null)
+            {
+                p = new Propietario { Persona = new Persona() };
+                ViewBag.UsuarioEncontrado = false;
+                // TempData["Error"] = "El DNI ya está registrado para otro propietario.";
+                //return View("CreateOrEdit", propietario);
+            }
+
+            ViewBag.MostrarModal = false;
+            return View("CreateOrEdit", p);
+        }
     }
 
 }

@@ -23,6 +23,7 @@
             <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
             <th>@Html.DisplayNameFor(model => model.Dni)</th>
             <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -35,10 +36,11 @@
                 <td>@i.Persona.Apellido</td>
                 <td>@i.Dni</td>
                 <td>@i.Persona.Telefono</td>
+                <td>@i.Persona.Correo</td>
                 <td>
-                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍 Detalles</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-primary btn-sm">✏️ Editar</a>
-                    <a asp-action="Eliminar" asp-route-id="@i.Id" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-warning btn-sm">✏️</a>
+                    <a asp-action="Eliminar" asp-route-id="@i.Id" class="btn btn-danger btn-sm">🗑️</a>
                 </td>
             </tr>
         }
@@ -56,7 +58,7 @@
         <li>Ordenar lista ❌</li>
         <li>colocar estado o filtrar por estado ❌</li>
         <li>buscar Inquilino ❌</li>
-        <li>ABM ✅</li> 
+        <li>ABM ✅</li>
 
     </ul>
 </div>

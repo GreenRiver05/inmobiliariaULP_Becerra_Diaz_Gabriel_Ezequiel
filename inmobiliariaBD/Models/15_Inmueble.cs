@@ -24,11 +24,6 @@ namespace inmobiliariaBD.Models
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public string Localidad { get; set; }
 
-        [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        public decimal Longitud { get; set; }
-
-        [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        public decimal Latitud { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         //Comercial, Residencial
@@ -44,9 +39,22 @@ namespace inmobiliariaBD.Models
         //Disponible, Alquilado, No Disponible
         public string Estado { get; set; }
 
-        [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        public decimal Precio { get; set; }
+        // Use string en Precio, Latitud y Longitud porque el tema del punto y la coma me estaba volviendo loco.
+        // El binding automático no respetaba la coma como separador decimal, y me tiraba errores silenciosos.
+        // Así que decidí manejar todo como texto, validar con Regex el formato que quiero (coma decimal, punto opcional para miles, signo negativo si aplica),
+        // y guardar tal cual en la BD.
 
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [RegularExpression(@"^\d{1,3}(\.\d{3})*(,\d{1,2})?$", ErrorMessage = "Respeste formato (ej: 1.234,56).")]
+        public string Precio { get; set; }
+
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [RegularExpression(@"^-?\d+(,\d{1,6})?$", ErrorMessage = "Respete formato (ej: 34,123456)")]
+        public string Longitud { get; set; }
+
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [RegularExpression(@"^-?\d+(,\d{1,6})?$", ErrorMessage = "Respete formato (ej: -64,123456)")]
+        public string Latitud { get; set; }
 
         //[ForeignKey("PropietarioId")]
         [ForeignKey(nameof(PropietarioId))]

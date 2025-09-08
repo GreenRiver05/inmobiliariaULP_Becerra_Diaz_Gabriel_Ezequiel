@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "Listado de Inmuebles";
 }
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-info">@TempData["Mensaje"]</div>
+}
 
 <h2>Listado de Inmuebles</h2>
 <a asp-action="CreateOrEdit" class="btn btn-success mb-3">➕ Crear nuevo Inmueble</a>
@@ -29,14 +33,13 @@
                 <td>@inmueble.Direccion</td>
                 <td>@inmueble.Localidad</td>
                 <td>@inmueble.Estado</td>
-                @*Formatea el precio como moneda sin decimales según la cultura regional (ej: $150.000 en es-AR)*@
-                <td>@inmueble.Precio.ToString("C0")</td>
+                <td>$@inmueble.Precio</td>
                 <td>@inmueble.Propietario.Persona.ToStringSimple()</td>
                 <td>@inmueble.TipoInmueble.Tipo</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@inmueble.Id" class="btn btn-info btn-sm">Ver</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@inmueble.Id" class="btn btn-warning btn-sm">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@inmueble.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                    <a asp-action="Details" asp-route-id="@inmueble.Id" class="btn btn-info btn-sm">🔍</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@inmueble.Id" class="btn btn-warning btn-sm">✏️</a>
+                    <a asp-action="Delete" asp-route-id="@inmueble.Id" class="btn btn-danger btn-sm">🗑️</a>
                 </td>
             </tr>
         }

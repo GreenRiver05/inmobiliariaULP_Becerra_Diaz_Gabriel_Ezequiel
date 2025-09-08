@@ -18,6 +18,8 @@ namespace inmobiliariaBD.Models
     public interface IRepositorio<T>
     {
         int Alta(T p);
+
+        int Baja(T p);
         int ModificarEstado(T p);
         int Modificacion(T p);
 

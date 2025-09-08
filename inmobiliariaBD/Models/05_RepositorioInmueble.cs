@@ -124,13 +124,13 @@ namespace inmobiliariaBD.Models
                             TipoId = reader.GetInt32(nameof(i.TipoId)),
                             Direccion = reader.GetString(nameof(i.Direccion)),
                             Localidad = reader.GetString(nameof(i.Localidad)),
-                            Longitud = reader.GetDecimal(nameof(i.Longitud)),
-                            Latitud = reader.GetDecimal(nameof(i.Latitud)),
+                            Longitud = reader.GetString(nameof(i.Longitud)),
+                            Latitud = reader.GetString(nameof(i.Latitud)),
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
                             Estado = reader.GetString("estadoInmueble"),
-                            Precio = reader.GetDecimal(nameof(i.Precio)),
+                            Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
                             {
@@ -192,13 +192,13 @@ namespace inmobiliariaBD.Models
                             TipoId = reader.GetInt32(nameof(i.TipoId)),
                             Direccion = reader.GetString(nameof(i.Direccion)),
                             Localidad = reader.GetString(nameof(i.Localidad)),
-                            Longitud = reader.GetDecimal(nameof(i.Longitud)),
-                            Latitud = reader.GetDecimal(nameof(i.Latitud)),
+                            Longitud = reader.GetString(nameof(i.Longitud)),
+                            Latitud = reader.GetString(nameof(i.Latitud)),
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
                             Estado = reader.GetString("estadoInmueble"),
-                            Precio = reader.GetDecimal(nameof(i.Precio)),
+                            Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
                             {
@@ -290,7 +290,9 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-
-
+        public int Baja(Inmueble p)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

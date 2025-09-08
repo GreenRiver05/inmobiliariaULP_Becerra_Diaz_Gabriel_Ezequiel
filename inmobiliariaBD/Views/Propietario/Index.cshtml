@@ -23,6 +23,7 @@
             <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
             <th>@Html.DisplayNameFor(model => model.Dni)</th>
             <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -35,10 +36,18 @@
                 <td>@p.Persona.Apellido</td>
                 <td>@p.Dni</td>
                 <td>@p.Persona.Telefono</td>
+                <td>@p.Persona.Correo</td>
                 <td>
-                    <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-info btn-sm">🔍 Detalles</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@p.Id" class="btn btn-primary btn-sm">✏️ Editar</a>
-                    <a asp-action="Eliminar" asp-route-id="@p.Id" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+                    <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-info btn-sm">🔍</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@p.Id" class="btn btn-warning btn-sm">✏️</a>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#confirmModal" data-id="@p.Id" data-nombre="@p.Persona.Nombre"
+                        data-apellido="@p.Persona.Apellido" data-dni="@p.Dni" data-telefono="@p.Persona.Telefono"
+                        data-correo="@p.Persona.Correo">
+                        🗑️
+                    </button>
+
+
                 </td>
             </tr>
         }
@@ -60,3 +69,63 @@
 
     </ul>
 </div>
+
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="modal-form" method="post" action="/Propietario/Baja">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro que querés eliminar al siguiente propietario?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>N° Interno:</strong> <span id="modal-id"></span></li>
+                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span>
+                        </li>
+                        <li><strong>DNI:</strong> <span id="modal-dni"></span></li>
+                        <li><strong>Teléfono:</strong> <span id="modal-telefono"></span></li>
+                        <li><strong>Correo:</strong> <span id="modal-correo"></span></li>
+                    </ul>
+                    <input type="hidden" name="id" id="form-id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmModal = document.getElementById('confirmModal');
+            if (!confirmModal) return;
+            confirmModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+
+                const id = button.getAttribute('data-id');
+                const nombre = button.getAttribute('data-nombre');
+                const apellido = button.getAttribute('data-apellido');
+                const dni = button.getAttribute('data-dni');
+                const telefono = button.getAttribute('data-telefono');
+                const correo = button.getAttribute('data-correo');
+
+                document.getElementById('modal-id').textContent = id;
+                document.getElementById('modal-nombre').textContent = nombre;
+                document.getElementById('modal-apellido').textContent = apellido;
+                document.getElementById('modal-dni').textContent = dni;
+                document.getElementById('modal-telefono').textContent = telefono;
+                document.getElementById('modal-correo').textContent = correo;
+
+               document.getElementById('form-id').value = id;
+            });
+        });
+    </script>
+}

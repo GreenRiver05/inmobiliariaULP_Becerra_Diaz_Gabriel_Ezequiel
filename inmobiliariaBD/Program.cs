@@ -1,3 +1,4 @@
+using System.Globalization;
 using inmobiliariaBD.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,9 +15,15 @@ builder.Services.AddScoped<IRepositorioInmueble, RepositorioInmueble>();
 // Registra los repositorios personalizados para inyección de dependencias con ciclo de vida Scoped.
 
 
+var cultura = new CultureInfo("es-AR");
+CultureInfo.DefaultThreadCurrentCulture = cultura;
+CultureInfo.DefaultThreadCurrentUICulture = cultura;
+
+
 
 var app = builder.Build();
 // Compila la aplicación con los servicios configurados.
+
 
 if (!app.Environment.IsDevelopment())
 {
