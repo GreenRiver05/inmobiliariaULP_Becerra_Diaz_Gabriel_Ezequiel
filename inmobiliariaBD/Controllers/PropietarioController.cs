@@ -127,9 +127,9 @@ namespace inmobiliariaBD.Controllers
         public IActionResult Baja(int id)
         {
             var propietario = repositorio.ObtenerPorId(id);
-            
+
             repositorio.Baja(propietario);
-            TempData["Mensaje"] = $"Se Elimino Correctamente al Propietario {propietario.Persona.ToStringSimple} ";
+            TempData["Mensaje"] = $"Se Elimino Correctamente al Propietario {propietario.Persona.ToStringSimple()} ";
             return RedirectToAction("Index");
 
         }
