@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-09-2025 a las 03:26:13
+-- Tiempo de generación: 11-09-2025 a las 03:23:27
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -80,7 +80,7 @@ CREATE TABLE `inmueble` (
 INSERT INTO `inmueble` (`id`, `propietario_id`, `tipo_id`, `direccion`, `localidad`, `longitud`, `latitud`, `uso`, `ambientes`, `observacion`, `estado`, `precio`) VALUES
 (1, 1, 4, 'Maipu 999', 'Villa Mercedes', '-6545783', '-3367571', 'Residencial', 4, 'Departamento luminoso en segundo piso, con balcón al frente y cochera cubierta. Apto crédito. Recientemente pintado y con instalación eléctrica nueva', 'Alquilado', '1000'),
 (2, 2, 1, 'Europa 323', 'Villa Mercedes', '-6546667', '-3366667', 'Comercial', 3, 'Departamento interno en planta baja, ideal para personas mayores. Patio compartido, cocina separada y excelente iluminación natural durante la mañana', 'Disponible', '10000,05'),
-(3, 1, 1, 'Avenida Siempreviva 742', 'Springfield', '-6546389', '-3367512', 'Residencial', 4, 'Casa familiar ubicada en zona residencial tranquila, con patio amplio, cochera cubierta y posibilidad de ampliación. Ideal para familias con niños o mascotas.', 'No Disponible', '30000'),
+(3, 1, 1, 'Avenida Siempreviva 742', 'Springfield', '-6546389', '-3367512', 'Residencial', 4, 'Casa familiar ubicada en zona residencial tranquila, con patio amplio, cochera cubierta y posibilidad de ampliación. Ideal para familias con niños o mascotas.', 'Alquilado', '30000'),
 (4, 2, 2, 'Moreno 111', 'Villa Mercedes', '-65458614', '-33669062', 'Residencial', 4, 'Probando', 'Disponible', '400');
 
 -- --------------------------------------------------------
@@ -159,17 +159,18 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`dni`, `nombre`, `apellido`, `direccion`, `localidad`, `correo`, `telefono`, `estado`) VALUES
+(657657, 'gjhgjhg', 'jhgjhg', 'jhgjhg', 'jhgjhg', 'hgfhgfhgf', 76576567, 1),
 (20000313, 'Periquita Rocio', 'Lupilo', 'España 123', 'San Luis', 'PeriquitaRL@gmail.com', 2664456963, 1),
 (20000321, 'Sofia', 'Peralta', 'Heroes de Malvina 345', 'San luis', 'SofiaP@gmail.com', 2664232369, 1),
 (20000365, 'Esteban ', 'Fernandez', 'Barranca 345', 'San Luis', 'Esteban@gmail.com', 2664653268, 1),
 (20000999, 'Maximiliano Lucas', 'Ruso Veracruz', 'Pueyrredon 3433', 'Villa Mercedes', 'MaximilianoRV@gmail.com', 2664444666, 1),
-(30000121, 'Fernanda', 'Romero Diaz', NULL, NULL, NULL, 2657875464, 1),
 (30000123, 'Federico Muñoz', 'Rodriguez', 'Pedernera 3432', 'Villa Mercedes', 'FedeR@mail.com', 2657445556, 1),
 (30000212, 'Rocio Tamara', 'Maldonado Urquiza', 'Pedernera 3432', 'Villa Mercedes', 'RocioM@mail.com', 2657562326, 1),
 (30000213, 'Franco', 'Barcheta', 'Moreno 3454', 'Villa Mercedes', 'FedericoB@mail.com', 2657445326, 1),
 (30000459, 'Agustina Rocio', 'Rodriguez', 'Mitre 3434', 'Villa Mercedes', 'Agustinarr@mail.com', 2657446523, 1),
+(30000656, 'Fernanda', 'Romero Diaz', 'Bolivia 332', NULL, NULL, 2657875464, 1),
 (50000555, 'Tomas Rodrigo Agustin', 'Sosa Felipe', 'Rivadavia 4565', 'Buenos Aires', 'Tomasras@hotmail.com', 1134565645, 1),
-(55555555, 'eliminar', 'prueba', 'no hay', 'nohay', 'nohay@mail.com', 4444444, 1);
+(66666666, 'algo nuevo', 'si cambio', NULL, 'cambio', 'noesobli', 26554654, 1);
 
 -- --------------------------------------------------------
 
@@ -190,7 +191,7 @@ CREATE TABLE `propietario` (
 INSERT INTO `propietario` (`id`, `dni`, `estado`) VALUES
 (1, 30000123, 1),
 (2, 30000212, 0),
-(3, 30000121, 0),
+(3, 30000656, 0),
 (4, 30000213, 0),
 (5, 50000555, 1),
 (6, 30000459, 0);
@@ -326,13 +327,13 @@ ALTER TABLE `gestion`
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
 --
 ALTER TABLE `inquilino`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `multa`
@@ -350,7 +351,7 @@ ALTER TABLE `pago`
 -- AUTO_INCREMENT de la tabla `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_inmueble`
