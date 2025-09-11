@@ -70,9 +70,8 @@ namespace inmobiliariaBD.Controllers
             return View(i);
         }
 
-       
         [HttpPost]
-        public IActionResult Guardar(Inmueble inmueble)
+        public IActionResult CreateOrEdit(Inmueble inmueble)
         {
             if (ModelState.IsValid)
             {
@@ -96,7 +95,13 @@ namespace inmobiliariaBD.Controllers
             }
         }
 
-
+        public IActionResult Baja(int id)
+        {
+            var inmueble = repositorio.ObtenerPorId(id);
+            repositorio.Baja(inmueble);
+            TempData["Mensaje"] = $"Se Elimino Correctamente el inmueble";
+            return RedirectToAction("Index");
+}
         [HttpPost]
         public IActionResult ModificarEstado(int id, string nuevoEstado)
         {

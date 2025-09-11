@@ -22,7 +22,7 @@
 
 <h2>@(Model.Id == null ? "Nuevo Inmueble" : "Editar Inmueble")</h2>
 
-<form asp-action="Guardar" method="post">
+<form asp-action="CreateOrEdit" method="post">
     <input type="hidden" asp-for="Id" />
 
     <div class="row">
@@ -179,7 +179,7 @@
     <h5>🔍 Validaciones y/o implementaciones:</h5>
     <ul>
         <li>Sacar spinners de los campos numéricos ✅</li>
-        <li>Validar los campos numericos con coma ❌</li>
+        <li>Validar los campos numericos con coma ✅</li>
         <li>Cambiar los mensajes de validacion ❌</li>
         <li>ABM funcional ❌</li>
 

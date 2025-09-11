@@ -37,6 +37,26 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
+        public int Baja(Inquilino i)
+        {
+            int res = -1;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"DELETE FROM Inquilino 
+                             WHERE id=@id;";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@id", i.Id);
+
+                    connection.Open();
+                    res = command.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
+            return res;
+        }
+
         public int ModificarEstado(Inquilino i)
         {
             int res = -1;
@@ -209,10 +229,7 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public int Baja(Inquilino p)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
 }

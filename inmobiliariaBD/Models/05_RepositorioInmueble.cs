@@ -258,6 +258,24 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
+        public int Baja(Inmueble i)
+        {
+            int res = -1;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"DELETE FROM Inmueble
+                             WHERE id=@id;";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@id", i.Id);
+                    connection.Open();
+                    res = command.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
+            return res;
+        }
 
 
         public IList<Inmueble> BuscarPorDireccion(string direccion)
@@ -290,9 +308,5 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public int Baja(Inmueble p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

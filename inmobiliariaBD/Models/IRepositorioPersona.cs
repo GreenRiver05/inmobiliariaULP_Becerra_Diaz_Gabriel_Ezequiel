@@ -4,5 +4,8 @@ namespace inmobiliariaBD.Models
     {
         Persona ObtenerPorDni(int dni);
         IList<Persona> BuscarPorNombre(string nombre);
+
+        int Modificar(Persona p, int dniAnterior);
+
     }
 }

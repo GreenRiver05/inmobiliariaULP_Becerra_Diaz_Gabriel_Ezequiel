@@ -30,7 +30,7 @@ namespace inmobiliariaBD.Models
                     command.Parameters.AddWithValue("@nombre", p.Nombre);
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
                     command.Parameters.AddWithValue("@direccion", p.Direccion == null ? DBNull.Value : p.Direccion);
-                    command.Parameters.AddWithValue("@localidad",p.Localidad == null ? DBNull.Value : p.Localidad);
+                    command.Parameters.AddWithValue("@localidad", p.Localidad == null ? DBNull.Value : p.Localidad);
                     command.Parameters.AddWithValue("@correo", p.Correo == null ? DBNull.Value : p.Correo);
                     command.Parameters.AddWithValue("@telefono", p.Telefono);
 
@@ -63,17 +63,18 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public int Modificacion(Persona p)
+        public int Modificar(Persona p, int dniAnterior)
         {
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Persona
                              SET Dni=@dni, Nombre=@nombre, Apellido=@apellido, Direccion=@direccion, Localidad=@localidad, Correo=@correo, Telefono=@telefono
-                             WHERE Dni=@dni";
+                             WHERE Dni=@dniAnterior";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@dniAnterior", dniAnterior);
                     command.Parameters.AddWithValue("@dni", p.Dni);
                     command.Parameters.AddWithValue("@nombre", p.Nombre);
                     command.Parameters.AddWithValue("@apellido", p.Apellido);
@@ -124,11 +125,6 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public Persona ObtenerPorId(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public Persona ObtenerPorDni(int dni)
         {
             Persona p = null;
@@ -164,12 +160,22 @@ namespace inmobiliariaBD.Models
             return p;
         }
 
+        public int Baja(Persona p)
+        {
+            throw new NotImplementedException();
+        }
+
         public IList<Persona> BuscarPorNombre(string nombre)
         {
             throw new NotImplementedException();
         }
 
-        public int Baja(Persona p)
+        public Persona ObtenerPorId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Modificacion(Persona p)
         {
             throw new NotImplementedException();
         }

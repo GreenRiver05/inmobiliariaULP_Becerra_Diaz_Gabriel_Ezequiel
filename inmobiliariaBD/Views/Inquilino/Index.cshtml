@@ -40,8 +40,13 @@
                 <td>
                     <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍</a>
                     <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-warning btn-sm">✏️</a>
-                    <a asp-action="Eliminar" asp-route-id="@i.Id" class="btn btn-danger btn-sm">🗑️</a>
-                </td>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#confirmModal" data-id="@i.Id" data-nombre="@i.Persona.Nombre"
+                        data-apellido="@i.Persona.Apellido" data-dni="@i.Dni" data-telefono="@i.Persona.Telefono"
+                        data-correo="@i.Persona.Correo">
+                        🗑️
+                    </button>
+                </td>    
             </tr>
         }
     </tbody>
@@ -52,13 +57,73 @@
     <h5>🔍 Validaciones y/o implementaciones:</h5>
     <ul>
 
-        <li>implementar eliminacion o AltaBaja logica (en acciones) ❌</li>
+        <li>implementar eliminacion ✅</li>
         <li>implementar detalles ❌</li>
         <li>paginacion ❌</li>
         <li>Ordenar lista ❌</li>
+        <li>Validaciones antes de eliminar (si tiene o no contrato) ❌</li>
         <li>colocar estado o filtrar por estado ❌</li>
         <li>buscar Inquilino ❌</li>
         <li>ABM ✅</li>
 
     </ul>
 </div>
+
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="modal-form" method="post" action="/Inquilino/Baja">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro que querés eliminar al siguiente Inquilino?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>N° Interno:</strong> <span id="modal-id"></span></li>
+                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span></li>
+                        <li><strong>DNI:</strong> <span id="modal-dni"></span></li>
+                        <li><strong>Teléfono:</strong> <span id="modal-telefono"></span></li>
+                        <li><strong>Correo:</strong> <span id="modal-correo"></span></li>
+                    </ul>
+                    <input type="hidden" name="id" id="form-id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmModal = document.getElementById('confirmModal');
+            if (!confirmModal) return;
+            confirmModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+
+                const id = button.getAttribute('data-id');
+                const nombre = button.getAttribute('data-nombre');
+                const apellido = button.getAttribute('data-apellido');
+                const dni = button.getAttribute('data-dni');
+                const telefono = button.getAttribute('data-telefono');
+                const correo = button.getAttribute('data-correo');
+
+                document.getElementById('modal-id').textContent = id;
+                document.getElementById('modal-nombre').textContent = nombre;
+                document.getElementById('modal-apellido').textContent = apellido;
+                document.getElementById('modal-dni').textContent = dni;
+                document.getElementById('modal-telefono').textContent = telefono;
+                document.getElementById('modal-correo').textContent = correo;
+
+               document.getElementById('form-id').value = id;
+            });
+        });
+    </script>
+}

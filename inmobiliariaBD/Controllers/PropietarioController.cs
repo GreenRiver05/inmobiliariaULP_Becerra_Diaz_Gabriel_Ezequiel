@@ -30,6 +30,7 @@ namespace inmobiliariaBD.Controllers
         {
             var lista = repositorio.ObtenerTodos();
             return View(lista);
+
         }
 
         [HttpGet]
@@ -84,30 +85,37 @@ namespace inmobiliariaBD.Controllers
             // }
             // no hace falta por que [Required] en el modelo y el ModelState.IsValid lo valida
 
-            Persona personaExistente = repositorioPersona.ObtenerPorDni(propietario.Dni);
-            Console.WriteLine(propietario.Persona);
-            Console.WriteLine(propietario);
+            // Console.WriteLine(propietario.Persona);
+            // Console.WriteLine(propietario);
 
-            if (personaExistente == null)
-            {
-                propietario.Persona.Dni = propietario.Dni;
-                repositorioPersona.Alta(propietario.Persona);
-            }
-            else
-            {
-                Console.WriteLine("Modificando persona existente con DNI: " + propietario.Dni);
-                propietario.Persona.Dni = propietario.Dni;
-                repositorioPersona.Modificacion(propietario.Persona);
 
-            }
-
+            propietario.Persona.Dni = propietario.Dni;
             if (propietario.Id == 0 || propietario.Id == null)
             {
+
+                Persona personaExistente = repositorioPersona.ObtenerPorDni(propietario.Dni);
+
+                if (personaExistente == null)
+                {
+                    repositorioPersona.Alta(propietario.Persona);
+                }
+                else
+                {
+                    // Console.WriteLine("Modificando persona existente con DNI: " + propietario.Dni);
+
+                }
+
                 repositorio.Alta(propietario);
                 TempData["Mensaje"] = "Propietario creado correctamente.";
             }
             else
             {
+
+
+                Propietario propietariOriginal = repositorio.ObtenerPorId(propietario.Id.Value);
+                int dniAnterior = propietariOriginal.Dni;
+
+                repositorioPersona.Modificar(propietario.Persona, dniAnterior);
                 repositorio.Modificacion(propietario);
                 TempData["Mensaje"] = "Propietario actualizado correctamente.";
             }
@@ -115,19 +123,11 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
 
-        // [HttpGet]
-        // public IActionResult Baja(int id)
-        // {
-
-        //     var propietario = repositorio.ObtenerPorId(id);
-        //     return View(propietario);
-        // }
-
         [HttpPost]
         public IActionResult Baja(int id)
         {
             var propietario = repositorio.ObtenerPorId(id);
-
+            propietario.Persona.Dni = propietario.Dni;
             repositorio.Baja(propietario);
             TempData["Mensaje"] = $"Se Elimino Correctamente al Propietario {propietario.Persona.ToStringSimple()} ";
             return RedirectToAction("Index");
@@ -147,8 +147,6 @@ namespace inmobiliariaBD.Controllers
 
             return RedirectToAction("CreateOrEdit", new { id = propietario.Id });
         }
-
-
 
         public IActionResult BuscarPorDni(Propietario propietario)
         {

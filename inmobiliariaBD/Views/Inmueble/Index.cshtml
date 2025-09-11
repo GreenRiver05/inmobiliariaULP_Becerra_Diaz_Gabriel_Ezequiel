@@ -26,22 +26,106 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var inmueble in Model)
+        @foreach (var i in Model)
         {
             <tr>
-                <td>@inmueble.Id</td>
-                <td>@inmueble.Direccion</td>
-                <td>@inmueble.Localidad</td>
-                <td>@inmueble.Estado</td>
-                <td>$@inmueble.Precio</td>
-                <td>@inmueble.Propietario.Persona.ToStringSimple()</td>
-                <td>@inmueble.TipoInmueble.Tipo</td>
+                <td>@i.Id</td>
+                <td>@i.Direccion</td>
+                <td>@i.Localidad</td>
+                <td>@i.Estado</td>
+                <td>$@i.Precio</td>
+                <td>@i.Propietario.Persona.ToStringSimple()</td>
+                <td>@i.TipoInmueble.Tipo</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@inmueble.Id" class="btn btn-info btn-sm">🔍</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@inmueble.Id" class="btn btn-warning btn-sm">✏️</a>
-                    <a asp-action="Delete" asp-route-id="@inmueble.Id" class="btn btn-danger btn-sm">🗑️</a>
+                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-warning btn-sm">✏️</a>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#confirmModal" data-inmueble-id="@i.Id" data-direccion="@i.Direccion"
+                        data-localidad="@i.Localidad" data-precio="@i.Precio"
+                        data-propietario="@i.Propietario.Persona.ToStringSimple()" data-tipo="@i.TipoInmueble.Tipo">
+                        🗑️
+                    </button>
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+
+<div class="validaciones-info mt-4 mb-0">
+    <h5>🔍 Validaciones y/o implementaciones:</h5>
+    <ul>
+
+        <li>implementar eliminacion ✅</li>
+        <li>implementar detalles ❌</li>
+        <li>paginacion ❌</li>
+        <li>Ordenar lista ❌</li>
+        <li>Validaciones antes de eliminar (si tiene o no Contrato) ❌</li>
+        <li>colocar estado o filtrar por estado ❌</li>
+        <li>buscar inmueble ❌</li>
+        <li>ABM ✅</li>
+
+    </ul>
+</div>
+
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="modal-form" method="post" action="/Inmueble/Baja">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro que querés eliminar el siguiente inmueble?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>ID Interno:</strong> <span id="modal-id"></span></li>
+                        <li><strong>Dirección:</strong> <span id="modal-direccion"></span></li>
+                        <li><strong>Localidad:</strong> <span id="modal-localidad"></span></li>
+                        <li><strong>Tipo:</strong> <span id="modal-tipo"></span></li>
+                        <li><strong>Precio:</strong> $<span id="modal-precio"></span></li>
+                        <li><strong>Propietario:</strong> <span id="modal-propietario"></span></li>
+                    </ul>
+                    <input type="hidden" name="id" id="form-id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmModal = document.getElementById('confirmModal');
+            if (!confirmModal) return;
+
+            confirmModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+
+                const id = button.getAttribute('data-inmueble-id');
+                const direccion = button.getAttribute('data-direccion');
+                const localidad = button.getAttribute('data-localidad');
+                const tipo = button.getAttribute('data-tipo');
+                const precio = button.getAttribute('data-precio');
+                const propietario = button.getAttribute('data-propietario');
+
+                document.getElementById('modal-id').textContent = id;
+                document.getElementById('modal-direccion').textContent = direccion;
+                document.getElementById('modal-localidad').textContent = localidad;
+                document.getElementById('modal-tipo').textContent = tipo;
+                document.getElementById('modal-precio').textContent = precio;
+                document.getElementById('modal-propietario').textContent = propietario;
+
+                document.getElementById('form-id').value = id;
+            });
+        });
+    </script>
+}

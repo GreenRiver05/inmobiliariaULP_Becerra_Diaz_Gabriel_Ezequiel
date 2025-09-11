@@ -11,7 +11,7 @@
 
 <h2>@(Model.Id == null ? "Nuevo Inquilino" : "Editar Inquilino")</h2>
 
-<form asp-action="Guardar" method="post">
+<form asp-action="CreateOrEdit" method="post">
     <input type="hidden" asp-for="Id" />
     @* @if (Model.Id != null)
     {
@@ -100,7 +100,7 @@
 <div class="d-flex gap-3 justify-content-center my-4">
     @if (Model.Id != null)
     {
-        <form asp-action="AltaBaja" asp-controller="Inquilino" method="post">
+        <form asp-action="ModificarEstado" asp-controller="Inquilino" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
             <button type="submit" class="btn @(Model.Estado ? "btn-danger" : "btn-success")">
                 @(Model.Estado ? "Dar de baja" : "Dar de alta")

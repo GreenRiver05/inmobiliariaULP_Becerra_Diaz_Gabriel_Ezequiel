@@ -32,7 +32,6 @@ namespace inmobiliariaBD.Controllers
             return View(lista);
         }
 
-
         [HttpGet]
         public IActionResult CreateOrEdit(int? id)
         {
@@ -55,31 +54,8 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-
-
         [HttpPost]
-        public IActionResult BuscarPorDni(Inquilino inquilino)
-        {
-
-            Inquilino i = repositorio.ObtenerPorDni(inquilino.Dni);
-            ViewBag.UsuarioEncontrado = true;
-
-            if (i == null)
-            {
-                i = new Inquilino { Persona = new Persona() };
-                ViewBag.UsuarioEncontrado = false;
-
-                // TempData["Error"] = "El DNI ya está registrado para otro Inquilino.";
-                //return View("CreateOrEdit", inquilino);
-            }
-
-            ViewBag.MostrarModal = false;
-            return View("CreateOrEdit", i);
-        }
-
-
-        [HttpPost]
-        public IActionResult Guardar(Inquilino inquilino)
+        public IActionResult CreateOrEdit(Inquilino inquilino)
         {
 
             // 1. Valido el modelo
@@ -107,40 +83,53 @@ namespace inmobiliariaBD.Controllers
             // }
             // no hace falta por que [Required] en el modelo y el ModelState.IsValid lo valida
 
-            Persona personaExistente = repositorioPersona.ObtenerPorDni(inquilino.Dni);
-
-
-            if (personaExistente == null)
-            {
-                inquilino.Persona.Dni = inquilino.Dni;
-                repositorioPersona.Alta(inquilino.Persona);
-            }
-            else
-            {
-                Console.WriteLine("Modificando persona existente con DNI: " + inquilino.Dni);
-                inquilino.Persona.Dni = inquilino.Dni;
-                repositorioPersona.Modificacion(inquilino.Persona);
-
-            }
-
+            inquilino.Persona.Dni = inquilino.Dni;
             if (inquilino.Id == 0 || inquilino.Id == null)
             {
+
+                Persona personaExistente = repositorioPersona.ObtenerPorDni(inquilino.Dni);
+
+                if (personaExistente == null)
+                {
+                    repositorioPersona.Alta(inquilino.Persona);
+                }
+                else
+                {
+                    // Console.WriteLine("Modificando persona existente con DNI: " + inquilino.Dni);
+
+                }
+
                 repositorio.Alta(inquilino);
-                TempData["Mensaje"] = "Inquilino creado correctamente.";
+                TempData["Mensaje"] = "inquilino creado correctamente.";
             }
             else
             {
+
+
+                Inquilino inquilinoriginal = repositorio.ObtenerPorId(inquilino.Id.Value);
+                int dniAnterior = inquilinoriginal.Dni;
+
+                repositorioPersona.Modificar(inquilino.Persona, dniAnterior);
                 repositorio.Modificacion(inquilino);
-                TempData["Mensaje"] = "Inquilino actualizado correctamente.";
+                TempData["Mensaje"] = "inquilino actualizado correctamente.";
             }
 
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public IActionResult Baja(int id)
+        {
+            var inquilino = repositorio.ObtenerPorId(id);
+            inquilino.Persona.Dni = inquilino.Dni;
+            repositorio.Baja(inquilino);
+            TempData["Mensaje"] = $"Se Elimino Correctamente al Inquilino {inquilino.Persona.ToStringSimple()} ";
+            return RedirectToAction("Index");
 
+        }
 
         [HttpPost]
-        public IActionResult AltaBaja(int id)
+        public IActionResult ModificarEstado(int id)
         {
             var inquilino = repositorio.ObtenerPorId(id);
 
@@ -153,6 +142,25 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("CreateOrEdit", new { id = inquilino.Id });
         }
 
+        [HttpPost]
+        public IActionResult BuscarPorDni(Inquilino inquilino)
+        {
+
+            Inquilino i = repositorio.ObtenerPorDni(inquilino.Dni);
+            ViewBag.UsuarioEncontrado = true;
+
+            if (i == null)
+            {
+                i = new Inquilino { Persona = new Persona() };
+                ViewBag.UsuarioEncontrado = false;
+
+                // TempData["Error"] = "El DNI ya está registrado para otro Inquilino.";
+                //return View("CreateOrEdit", inquilino);
+            }
+
+            ViewBag.MostrarModal = false;
+            return View("CreateOrEdit", i);
+        }
 
     }
 }
