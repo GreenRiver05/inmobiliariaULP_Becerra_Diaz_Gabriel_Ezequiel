@@ -108,7 +108,7 @@ namespace inmobiliariaBD.Models
                 return res;
             }
         }
-       
+
         public IList<Contrato> ObtenerTodos()
         {
             IList<Contrato> res = new List<Contrato>();
@@ -198,17 +198,61 @@ namespace inmobiliariaBD.Models
             return c;
         }
 
+        public IList<Contrato> ObtenerPorInquilino(int inquilinoID)
+        {
+            IList<Contrato> res = new List<Contrato>();
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+                             SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado, i.direccion, i.localidad   
+                             FROM contrato c
+                             JOIN inquilino inq ON inq.id = c.inquilino_Id
+                             JOIN inmueble i ON i.id = c.inmueble_Id
+                             WHERE c.inquilino_Id = @inquilinoID";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@inquilinoID", inquilinoID);
+
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Contrato c = new Contrato
+                        {
+                            Id = reader.GetInt32(nameof(c.Id)),
+                            InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
+                            InmuebleId = reader.GetInt32(nameof(c.InmuebleId)),
+                            Monto = reader.GetString(nameof(c.Monto)),
+                            Desde = reader.GetDateTime(nameof(c.Desde)),
+                            Hasta = reader.GetDateTime(nameof(c.Hasta)),
+                            Estado = reader.GetString(nameof(c.Estado)),
+                            Inmueble = new Inmueble
+                            {
+                                Id = reader.GetInt32(nameof(c.Inmueble.Id)),
+                                Direccion = reader.GetString(nameof(c.Inmueble.Direccion)),
+                                Localidad = reader.GetString(nameof(c.Inmueble.Localidad))
+                            }
+                        };
+                        res.Add(c);
+                    }
+                    connection.Close();
+                }
+            }
+
+            return res;
+        }
+
+
+
         public IList<Contrato> BuscarPorEstado(string estado)
         {
             throw new NotImplementedException();
         }
 
         public IList<Contrato> BuscarPorInmueble(int inmuebleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IList<Contrato> BuscarPorInquilino(int inquilinoId)
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,97 @@
+@model inmobiliariaBD.Models.Inquilino
+
+@{
+    ViewData["Title"] = "Detalle de Inquilino";
+}
+@{
+    var contratos = ViewBag.Contratos as List<inmobiliariaBD.Models.Contrato>;
+}
+
+
+
+<h2 class="mb-3">🧍 Detalle del Inquilino</h2>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        Información del Inquilino
+    </div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Nombre/s</dt>
+                    <dd class="col-sm-8">@Model.Persona.Nombre</dd>
+
+                    <dt class="col-sm-4">Apellido/s</dt>
+                    <dd class="col-sm-8">@Model.Persona.Apellido</dd>
+
+                    <dt class="col-sm-4">DNI</dt>
+                    <dd class="col-sm-8">@Model.Dni</dd>
+
+                    <dt class="col-sm-4">Teléfono</dt>
+                    <dd class="col-sm-8">@Model.Persona.Telefono</dd>
+                </dl>
+            </div>
+
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Correo</dt>
+                    <dd class="col-sm-8">@Model.Persona?.Correo</dd>
+
+                    <dt class="col-sm-4">Dirección</dt>
+                    <dd class="col-sm-8">@Model.Persona?.Direccion</dd>
+
+                    <dt class="col-sm-4">Localidad</dt>
+                    <dd class="col-sm-8">@Model.Persona?.Localidad</dd>
+
+                    <dt class="col-sm-4">Estado</dt>
+                    <dd class="col-sm-8">@((Model.Estado) ? "Activo" : "Inactivo")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<h4 class="mb-3">📄 Contratos asociados</h4>
+
+@if (contratos != null && contratos.Any())
+{
+    <table class="tabla-index table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>N°</th>
+                <th>Inmueble</th>
+                <th>Monto</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contrato in contratos)
+            {
+                <tr>
+                    <td>@contrato.Id</td>
+                    <td>@($"{contrato.Inmueble?.Direccion} ({contrato.Inmueble?.Localidad})")</td>
+                    <td>$ @contrato.Monto</td>
+                    <td>@contrato.Desde.ToString("dd/MM/yyyy")</td>
+                    <td>@contrato.Hasta.ToString("dd/MM/yyyy")</td>
+                    <td>@contrato.Estado</td>
+                    <td>
+                        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@contrato.Id"
+                            class="btn btn-info btn-sm">🔍 Ver</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">Este inquilino no tiene contratos registrados.</div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">⬅️ Volver al listado</a>
