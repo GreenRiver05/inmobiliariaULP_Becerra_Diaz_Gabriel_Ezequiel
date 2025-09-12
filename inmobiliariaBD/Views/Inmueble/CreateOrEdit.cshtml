@@ -139,7 +139,7 @@
                     }
                     else
                     {
-                        <span class="badge bg-danger px-3 py-2">No Disponible</span>
+                        <span class="badge bg-secondary px-3 py-2">No Disponible</span>
                     }
                 </div>
             </div>
@@ -163,14 +163,14 @@
                     <input type="hidden" name="id" value="@Model.Id" />
                     <input type="hidden" name="nuevoEstado" value="@estado" />
                     <button type="submit"
-                        class="btn btn-sm @(estado == "Disponible" ? "btn-success" : estado == "Alquilado" ? "btn-warning" : "btn-danger")">
+                        class="btn btn-sm @(estado == "Disponible" ? "btn-success" : estado == "Alquilado" ? "btn-warning" : "btn-secondary")">
                         Cambiar a @estado
                     </button>
                 </form>
             }
         }
     }
-    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver al Listado</a>
+    <a asp-action="Index" class="btn btn-outline-primary btn-sm">Volver al Listado</a>
 </div>
 
 

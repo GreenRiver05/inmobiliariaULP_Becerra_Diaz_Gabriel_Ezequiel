@@ -128,7 +128,8 @@ namespace inmobiliariaBD.Models
                                     Direccion = reader.IsDBNull(nameof(i.Persona.Direccion)) ? null : reader.GetString(nameof(i.Persona.Direccion)),
                                     Localidad = reader.IsDBNull(nameof(i.Persona.Localidad)) ? null : reader.GetString(nameof(i.Persona.Localidad)),
                                     Correo = reader.IsDBNull(nameof(i.Persona.Correo)) ? null : reader.GetString(nameof(i.Persona.Correo)),
-                                    Telefono = reader.GetInt64(nameof(i.Persona.Telefono))
+                                    Telefono = reader.GetInt64(nameof(i.Persona.Telefono)),
+                                    Dni = reader.GetInt32(nameof(i.Dni))
                                 }
                             };
                             res.Add(i);

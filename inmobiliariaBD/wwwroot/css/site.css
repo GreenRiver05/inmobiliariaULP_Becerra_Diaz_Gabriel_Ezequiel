@@ -40,14 +40,14 @@ body {
 
 
 /*------------------Estilos para la tabla de inmuebles INDEX-----------*/
-.tabla-inmuebles {
+.tabla-index {
     table-layout: auto;
     width: 100%;
     font-size: 0.9rem;
 }
 
-.tabla-inmuebles th,
-.tabla-inmuebles td {
+.tabla-index th,
+.tabla-index td {
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;   

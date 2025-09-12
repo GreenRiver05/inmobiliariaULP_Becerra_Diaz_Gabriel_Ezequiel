@@ -1,0 +1,121 @@
+@model IEnumerable<inmobiliariaBD.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Listado de Contratos";
+}
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-info">@TempData["Mensaje"]</div>
+}
+
+<h2>Listado de Contratos</h2>
+<a asp-action="CreateOrEdit" class="btn btn-success mb-3">➕ Crear nuevo Contrato</a>
+
+<table class="tabla-index table table-striped table-bordered ">
+    <thead class="table-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Inquilino)</th>
+            <th>@Html.DisplayNameFor(model => model.Inmueble)</th>
+            <th>@Html.DisplayNameFor(model => model.Monto)</th>
+            <th>@Html.DisplayNameFor(model => model.Desde)</th>
+            <th>@Html.DisplayNameFor(model => model.Hasta)</th>
+            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.Inquilino.Persona.ToStringSimple()</td>
+                <td>@c.Inmueble.Direccion</td>
+                <td>$@c.Monto</td>
+                <td>@c.Desde.ToShortDateString()</td>
+                <td>@c.Hasta.ToShortDateString()</td>
+                <td>@c.Estado</td>
+                <td>
+                    <a asp-action="Detalles" asp-route-id="@c.Id" class="btn btn-info btn-sm">🔍</a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@c.Id" class="btn btn-warning btn-sm">✏️</a>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#confirmContratoModal" data-contrato-id="@c.Id"
+                        data-inquilino="@c.Inquilino.Persona.ToStringSimple()" data-direccion="@c.Inmueble.Direccion"
+                        data-monto="@c.Monto" data-desde="@c.Desde.ToShortDateString()"
+                        data-hasta="@c.Hasta.ToShortDateString()" data-estado="@c.Estado">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="validaciones-info mt-4 mb-0">
+    <h5>🔍 Validaciones y/o implementaciones:</h5>
+    <ul>
+        <li>implementar eliminacion ✅</li>
+        <li>Paginacion ❌</li>
+        <li>buscar ❌</li>
+        <li>filtrar por estado ❌</li>
+        <li>implementar eliminar ❌</li>
+        <li>implementar detalles ❌</li>
+        <li>validacion antes de eliminar si aun esta vigente ❌</li>
+        <li>validadcion antes de eliminar si tiene o no pagos o multas ❌</li>
+        <li>ABM ✅</li>
+    </ul>
+</div>
+
+<div class="modal fade" id="confirmContratoModal" tabindex="-1" aria-labelledby="modalLabelContrato" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="modal-contrato-form" method="post" action="/Contrato/Baja">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabelContrato">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro que querés eliminar el siguiente contrato?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Contrato N°:</strong> <span id="modal-contrato-id"></span></li>
+                        <li><strong>Inquilino:</strong> <span id="modal-inquilino"></span></li>
+                        <li><strong>Dirección Inmueble:</strong> <span id="modal-direccion"></span></li>
+                        <li><strong>Monto:</strong> $<span id="modal-monto"></span></li>
+                        <li><strong>Desde:</strong> <span id="modal-desde"></span></li>
+                        <li><strong>Hasta:</strong> <span id="modal-hasta"></span></li>
+                        <li><strong>Estado:</strong> <span id="modal-estado"></span></li>
+                    </ul>
+                    <input type="hidden" name="id" id="form-contrato-id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmContratoModal = document.getElementById('confirmContratoModal');
+            if (!confirmContratoModal) return;
+
+            confirmContratoModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+
+                document.getElementById('modal-contrato-id').textContent = button.getAttribute('data-contrato-id');
+                document.getElementById('modal-inquilino').textContent = button.getAttribute('data-inquilino');
+                document.getElementById('modal-direccion').textContent = button.getAttribute('data-direccion');
+                document.getElementById('modal-monto').textContent = button.getAttribute('data-monto');
+                document.getElementById('modal-desde').textContent = button.getAttribute('data-desde');
+                document.getElementById('modal-hasta').textContent = button.getAttribute('data-hasta');
+                document.getElementById('modal-estado').textContent = button.getAttribute('data-estado');
+
+                document.getElementById('form-contrato-id').value = button.getAttribute('data-contrato-id');
+            });
+        });
+    </script>
+}

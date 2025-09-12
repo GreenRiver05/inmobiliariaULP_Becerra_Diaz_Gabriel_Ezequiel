@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 
 namespace inmobiliariaBD.Models
 {
-  public class RepositorioContrato : RepositorioBase, IRepositorioContrato
+    public class RepositorioContrato : RepositorioBase, IRepositorioContrato
     {
         public RepositorioContrato(IConfiguration configuration) : base(configuration)
         {
@@ -15,7 +15,7 @@ namespace inmobiliariaBD.Models
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"INSERT INTO Contrato (InquilinoId, InmuebleId, Monto, Desde, Hasta, Estado)
+                string sql = @"INSERT INTO Contrato (Inquilino_Id, Inmueble_Id, Monto, Desde, Hasta, Estado)
                              VALUES (@inquilinoId, @inmuebleId, @monto, @desde, @hasta, @estado);
                              SELECT LAST_INSERT_ID();";
                 using (var command = new MySqlCommand(sql, connection))
@@ -57,15 +57,15 @@ namespace inmobiliariaBD.Models
             }
             return res;
         }
-        
+
         public int Modificacion(Contrato p)
         {
             int res = -1;
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Contrato
-                             SET InquilinoId=@inquilinoId,
-                                 InmuebleId=@inmuebleId,
+                             SET Inquilino_Id=@inquilinoId,
+                                 Inmueble_Id=@inmuebleId,
                                  Monto=@monto,
                                  Desde=@desde,
                                  Hasta=@hasta,
@@ -89,10 +89,78 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
+        public int Baja(Contrato c)
+        {
+            int res = -1;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"DELETE FROM Contrato
+                             WHERE Id = @id";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@id", c.Id);
+                    connection.Open();
+                    res = command.ExecuteNonQuery();
+                    connection.Close();
 
+                }
+                return res;
+            }
+        }
+       
         public IList<Contrato> ObtenerTodos()
         {
-            throw new NotImplementedException();
+            IList<Contrato> res = new List<Contrato>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+            SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
+                   pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+            FROM contrato c
+            JOIN inquilino inq ON inq.id = c.inquilino_Id
+            JOIN persona pe ON pe.dni = inq.dni
+            JOIN inmueble i ON i.id = c.inmueble_Id";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Contrato c = new Contrato
+                        {
+                            Id = reader.GetInt32(nameof(c.Id)),
+                            InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
+                            InmuebleId = reader.GetInt32(nameof(c.InmuebleId)),
+                            Monto = reader.GetString(nameof(c.Monto)),
+                            Desde = reader.GetDateTime(nameof(c.Desde)),
+                            Hasta = reader.GetDateTime(nameof(c.Hasta)),
+                            Estado = reader.GetString(nameof(c.Estado)),
+                            Inquilino = new Inquilino
+                            {
+                                Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                Persona = new Persona
+                                {
+                                    Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
+                                    Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
+                                    Telefono = reader.GetInt64(nameof(c.Inquilino.Persona.Telefono)),
+                                    Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
+                                }
+                            },
+                            Inmueble = new Inmueble
+                            {
+                                Id = reader.GetInt32(nameof(c.InmuebleId)),
+                                Direccion = reader.GetString(nameof(c.Inmueble.Direccion))
+                            }
+                        };
+                        res.Add(c);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
         }
 
         public Contrato ObtenerPorId(int id)
@@ -100,7 +168,7 @@ namespace inmobiliariaBD.Models
             Contrato? c = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT Id, InquilinoId, InmuebleId, Monto, Desde, Hasta, Estado
+                string sql = @"SELECT Id, Inquilino_id AS InquilinoId, Inmueble_Id AS InmuebleId, Monto, Desde, Hasta, Estado
                              FROM Contrato
                              WHERE Id=@id";
                 using (var command = new MySqlCommand(sql, connection))
@@ -117,7 +185,7 @@ namespace inmobiliariaBD.Models
                                 Id = reader.GetInt32(nameof(c.Id)),
                                 InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
                                 InmuebleId = reader.GetInt32(nameof(c.InmuebleId)),
-                                Monto = reader.GetDecimal(nameof(c.Monto)),
+                                Monto = reader.GetString(nameof(c.Monto)),
                                 Desde = reader.GetDateTime(nameof(c.Desde)),
                                 Hasta = reader.GetDateTime(nameof(c.Hasta)),
                                 Estado = reader.GetString(nameof(c.Estado))
@@ -150,9 +218,6 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public int Baja(Contrato p)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

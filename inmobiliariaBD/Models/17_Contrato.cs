@@ -7,7 +7,7 @@ namespace inmobiliariaBD.Models
     public class Contrato
     {
         [Key]
-        [Display(Name = "Registro N°")]
+        [Display(Name = "N°")]
         public int Id { get; set; }
 
         [Required]
@@ -19,7 +19,8 @@ namespace inmobiliariaBD.Models
         public int InmuebleId { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        public decimal Monto { get; set; }
+        [RegularExpression(@"^\d{1,3}(\.\d{3})*(,\d{1,2})?$", ErrorMessage = "Respeste formato (ej: 1.234,56).")]
+        public string Monto { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         public DateTime Desde { get; set; }

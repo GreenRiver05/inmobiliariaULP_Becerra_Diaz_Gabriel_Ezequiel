@@ -106,11 +106,6 @@ namespace inmobiliariaBD.Controllers
         public IActionResult ModificarEstado(int id, string nuevoEstado)
         {
             var inmueble = repositorio.ObtenerPorId(id);
-            if (inmueble == null)
-            {
-                return NotFound();
-            }
-
             inmueble.Estado = nuevoEstado;
             repositorio.ModificarEstado(inmueble);
             TempData["Mensaje"] = $"El estado del inmueble se cambió a {nuevoEstado}.";

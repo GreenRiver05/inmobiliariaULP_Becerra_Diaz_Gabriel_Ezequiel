@@ -83,7 +83,7 @@
                     }
                     else
                     {
-                        <span class="badge bg-danger px-3 py-2">
+                        <span class="badge bg-secondary px-3 py-2">
                             <i class="bi bi-x-circle-fill me-1"></i> Inactivo
                         </span>
                     }
@@ -104,7 +104,7 @@
     {
         <form asp-action="ModificarEstado" asp-controller="Propietario" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn @(Model.Estado ? "btn-danger" : "btn-success")">
+            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-secondary" : "btn-success")">
                 @(Model.Estado ? "Dar de baja" : "Dar de alta")
             </button>
         </form>
@@ -114,7 +114,7 @@
         Buscar por DNI
     </button>
 } *@
-    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+    <a asp-action="Index" class="btn btn-outline-primary btn-sm">Volver al Listado</a>
 </div>
 
 
