@@ -209,12 +209,12 @@ namespace inmobiliariaBD.Models
                              FROM contrato c
                              JOIN inquilino inq ON inq.id = c.inquilino_Id
                              JOIN inmueble i ON i.id = c.inmueble_Id
-                             WHERE c.inquilino_Id = @inquilinoID";
+                             WHERE c.inquilino_Id = @inquilinoId";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
-                    command.Parameters.AddWithValue("@inquilinoID", inquilinoID);
+                    command.Parameters.AddWithValue("@inquilinoId", inquilinoID);
 
                     connection.Open();
                     var reader = command.ExecuteReader();
@@ -252,9 +252,57 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public IList<Contrato> BuscarPorInmueble(int inmuebleId)
+        public IList<Contrato> ObtenerPorInmueble(int inmuebleId)
         {
-            throw new NotImplementedException();
+            IList<Contrato> res = new List<Contrato>();
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+                             SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado, i.direccion, i.localidad,
+                             p.nombre, p.apellido, p.dni, inq.id
+                             FROM contrato c
+                             JOIN inquilino inq ON inq.id = c.inquilino_Id
+                             JOIN inmueble i ON i.id = c.inmueble_Id
+                             JOIN persona p ON p.dni = inq.dni
+                             WHERE c.inmueble_Id = @inmuebleId";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@inmuebleId", inmuebleId);
+
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Contrato c = new Contrato
+                        {
+                            Id = reader.GetInt32(nameof(c.Id)),
+                            InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
+                            InmuebleId = reader.GetInt32(nameof(c.InmuebleId)),
+                            Monto = reader.GetString(nameof(c.Monto)),
+                            Desde = reader.GetDateTime(nameof(c.Desde)),
+                            Hasta = reader.GetDateTime(nameof(c.Hasta)),
+                            Estado = reader.GetString(nameof(c.Estado)),
+                            Inquilino = new Inquilino
+                            {
+                                Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                Persona = new Persona
+                                {
+                                    Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
+                                    Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
+                                    Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
+                                }
+                            },
+                        };
+                        res.Add(c);
+                    }
+                    connection.Close();
+                }
+            }
+
+            return res;
         }
 
         public IList<Contrato> BuscarVigentes()

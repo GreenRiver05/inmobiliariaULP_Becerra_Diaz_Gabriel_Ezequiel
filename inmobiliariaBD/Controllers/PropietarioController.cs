@@ -16,12 +16,14 @@ namespace inmobiliariaBD.Controllers
         private readonly IConfiguration config;
         private readonly IRepositorioPropietario repositorio;
         private readonly IRepositorioPersona repositorioPersona;
+        private readonly IRepositorioInmueble repositorioInmueble;
 
-        public PropietarioController(IConfiguration config, IRepositorioPropietario repo, IRepositorioPersona repositorioPersona)
+        public PropietarioController(IConfiguration config, IRepositorioPropietario repo, IRepositorioPersona repositorioPersona, IRepositorioInmueble repositorioInmueble)
         {
             this.config = config;
             this.repositorio = repo;
             this.repositorioPersona = repositorioPersona;
+            this.repositorioInmueble = repositorioInmueble;
         }
 
 
@@ -163,6 +165,14 @@ namespace inmobiliariaBD.Controllers
             ViewBag.MostrarModal = false;
             return View("CreateOrEdit", p);
         }
-    }
 
+        public IActionResult Detalles(int id)
+        {
+            var propietario = repositorio.ObtenerPorId(id);
+            ViewBag.Inmuebles = repositorioInmueble.ObtenerPorPropietario(id);
+
+            return View(propietario);
+        }
+
+    }
 }

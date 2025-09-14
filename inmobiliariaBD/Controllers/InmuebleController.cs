@@ -10,13 +10,15 @@ namespace inmobiliariaBD.Controllers
         private readonly IConfiguration config;
         private readonly IRepositorioInmueble repositorio;
         private readonly IRepositorioPropietario repositorioPropietario;
+        private readonly IRepositorioContrato repositorioContrato;
 
 
-        public InmuebleController(IConfiguration config, IRepositorioInmueble repo, IRepositorioPropietario repoPropietario)
+        public InmuebleController(IConfiguration config, IRepositorioInmueble repo, IRepositorioPropietario repoPropietario, IRepositorioContrato repositorioContrato)
         {
             this.config = config;
             this.repositorio = repo;
             this.repositorioPropietario = repoPropietario;
+            this.repositorioContrato = repositorioContrato;
 
         }
 
@@ -113,9 +115,11 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("CreateOrEdit", new { id = inmueble.Id });
         }
 
-        public ActionResult Details(int id)
+        public ActionResult Detalles(int id)
         {
+
             var inmueble = repositorio.ObtenerPorId(id);
+            ViewBag.Contratos = repositorioContrato.ObtenerPorInmueble(id);
             return View(inmueble);
         }
 

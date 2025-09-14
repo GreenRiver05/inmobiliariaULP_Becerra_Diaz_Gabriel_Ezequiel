@@ -2,7 +2,7 @@ namespace inmobiliariaBD.Models
 {
     public interface IRepositorioInmueble : IRepositorio<Inmueble>
     {
-        IList<Inmueble> BuscarPorPropietario(int propietarioId);
+        IList<Inmueble> ObtenerPorPropietario(int propietarioId);
         IList<Inmueble> BuscarPorDireccion(string direccion);
         IList<Inmueble> BuscarPorLocalidad(string localidad);
         IList<Inmueble> BuscarPorTipo(int tipoId);
