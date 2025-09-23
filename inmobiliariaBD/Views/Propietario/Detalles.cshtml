@@ -4,15 +4,15 @@
     var inmuebles = ViewBag.Inmuebles as List<inmobiliariaBD.Models.Inmueble>;
 }
 
-<h2 class="mb-3">🏠 Detalle del Propietario</h2>
+<h2 class="text-light mb-4">🏠 Detalle del Propietario</h2>
 
-<div class="card mb-4">
+<div class="card bg-dark text-white border-secondary mb-4">
     <div class="card-header bg-primary text-white">
-        Información del Propietario
+        <i class="fa-solid fa-id-card"></i> Información del Propietario
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">Nombre/s</dt>
                     <dd class="col-sm-8">@Model.Persona.Nombre</dd>
@@ -28,7 +28,7 @@
                 </dl>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">Correo</dt>
                     <dd class="col-sm-8">@Model.Persona.Correo</dd>
@@ -40,64 +40,73 @@
                     <dd class="col-sm-8">@Model.Persona.Localidad</dd>
 
                     <dt class="col-sm-4">Estado</dt>
-                    <dd class="col-sm-8">@((Model.Estado) ? "Activo" : "Inactivo")</dd>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger")">
+                            @(Model.Estado ? "Activo" : "Inactivo")
+                        </span>
+                    </dd>
                 </dl>
             </div>
         </div>
     </div>
 </div>
-
-<h4 class="mb-3">📦 Inmuebles asociados</h4>
+<h4 class="text-light mb-3">📦 Inmuebles asociados</h4>
 
 @if (inmuebles != null && inmuebles.Any())
 {
-    <table class="tabla-index table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Dirección</th>
-                <th>Localidad</th>
-                <th>Uso</th>
-                <th>Ambientes</th>
-                <th>Precio</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var inmueble in inmuebles)
-            {
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-secondary text-light">
                 <tr>
-                    <td>@inmueble.Direccion</td>
-                    <td>@inmueble.Localidad</td>
-                    <td>@inmueble.Uso</td>
-                    <td>@inmueble.Ambientes</td>
-                    <td>$ @inmueble.Precio</td>
-                    <td>
-                        @if (inmueble.Estado == "Disponible")
-                        {
-                            <span class="badge bg-success">Disponible</span>
-                        }
-                        else if (inmueble.Estado == "Alquilado")
-                        {
-                            <span class="badge bg-warning text-dark">Alquilado</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">No Disponible</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@inmueble.Id"
-                            class="btn btn-info btn-sm">🔍 Ver</a>
-                    </td>
+                    <th>Dirección</th>
+                    <th>Localidad</th>
+                    <th>Uso</th>
+                    <th>Ambientes</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var inmueble in inmuebles)
+                {
+                    <tr>
+                        <td>@inmueble.Direccion</td>
+                        <td>@inmueble.Localidad</td>
+                        <td>@inmueble.Uso</td>
+                        <td>@inmueble.Ambientes</td>
+                        <td>$ @inmueble.Precio</td>
+                        <td>
+                            @switch (inmueble.Estado)
+                            {
+                                case "Disponible":
+                                    <span class="badge bg-success">Disponible</span>
+                                    break;
+                                case "Alquilado":
+                                    <span class="badge bg-warning text-dark">Alquilado</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">No Disponible</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@inmueble.Id"
+                               class="btn btn-sm btn-outline-info" title="Ver inmueble">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <div class="alert alert-warning">Este propietario no tiene inmuebles registrados.</div>
+    <div class="alert alert-warning text-dark">Este propietario no tiene inmuebles registrados.</div>
 }
 
-<a asp-action="Index" class="btn btn-secondary mt-3">⬅️ Volver al listado</a>
+<a asp-action="Index" class="btn btn-outline-secondary mt-4">
+    <i class="fa-solid fa-arrow-left"></i> Volver al listado
+</a>

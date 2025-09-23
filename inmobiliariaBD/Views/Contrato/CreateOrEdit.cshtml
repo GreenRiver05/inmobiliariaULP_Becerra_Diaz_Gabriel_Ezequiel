@@ -4,133 +4,121 @@
     ViewData["Title"] = Model.Id == 0 ? "Nuevo Contrato" : "Editar Contrato";
 }
 
+
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert alert-info">@TempData["Mensaje"]</div>
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3" style="background-color: #1e2a38;">
+        <i class="fa-solid fa-circle-info me-2 text-info"></i>
+        <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
+    </div>
 }
 
-<h2>@(Model.Id == 0 ? "Nuevo Contrato" : "Editar Contrato")</h2>
 
-<form asp-action="CreateOrEdit" method="post">
+<h2 class="text-light mb-4">
+    @(Model.Id == 0 ? "🆕 Nuevo Contrato" : "✏️ Editar Contrato")
+</h2>
+
+<form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
     <input type="hidden" asp-for="Id" />
-    @* Campo oculto: el estado siempre se inicializa como "Vigente" al crear el contrato.*@
     <input type="hidden" asp-for="Estado" value="Vigente" />
 
-
-    <div class="row">
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="InquilinoId">Inquilino</label>
-            <select asp-for="InquilinoId" asp-items="ViewBag.Inquilinos" class="form-select">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="InquilinoId" class="form-label">Inquilino</label>
+            <select asp-for="InquilinoId" asp-items="ViewBag.Inquilinos" class="form-select bg-dark text-white border-light">
                 <option value="">-- Seleccionar Inquilino --</option>
             </select>
-            <span asp-validation-for="InquilinoId" class="text-danger"></span>
+            <span asp-validation-for="InquilinoId" class="text-danger small"></span>
         </div>
 
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="InmuebleId">Inmueble</label>
-            <select asp-for="InmuebleId" asp-items="ViewBag.Inmuebles" class="form-select">
+        <div class="col-md-6">
+            <label asp-for="InmuebleId" class="form-label">Inmueble</label>
+            <select asp-for="InmuebleId" asp-items="ViewBag.Inmuebles" class="form-select bg-dark text-white border-light">
                 <option value="">-- Seleccionar Inmueble --</option>
             </select>
-            <span asp-validation-for="InmuebleId" class="text-danger"></span>
+            <span asp-validation-for="InmuebleId" class="text-danger small"></span>
         </div>
 
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Monto"></label>
+        <div class="col-md-4">
+            <label asp-for="Monto" class="form-label"></label>
             <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input asp-for="Monto" class="form-control no-spinner" />
+                <span class="input-group-text bg-dark text-white border-light">$</span>
+                <input asp-for="Monto" class="form-control bg-dark text-white border-light no-spinner" />
             </div>
-            <span asp-validation-for="Monto" class="text-danger"></span>
+            <span asp-validation-for="Monto" class="text-danger small"></span>
         </div>
 
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Desde">Desde</label>
-            <input asp-for="Desde" type="date" class="form-control" />
-            <span asp-validation-for="Desde" class="text-danger"></span>
+        <div class="col-md-4">
+            <label asp-for="Desde" class="form-label">Desde</label>
+            <input asp-for="Desde" type="date" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Desde" class="text-danger small"></span>
         </div>
 
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Hasta">Hasta</label>
-            <input asp-for="Hasta" type="date" class="form-control" />
-            <span asp-validation-for="Hasta" class="text-danger"></span>
+        <div class="col-md-4">
+            <label asp-for="Hasta" class="form-label">Hasta</label>
+            <input asp-for="Hasta" type="date" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Hasta" class="text-danger small"></span>
         </div>
 
-
-@if (Model.Id != 0)
-{
-    <div class="form-group col-md-4">
-        <div class="d-flex align-items-center gap-2 mt-4">
-            <label class="mb-0">Estado:</label>
-            @if (Model.Estado == "Vigente")
-            {
-                <span class="badge bg-success px-3 py-2">Vigente</span>
-            }
-            else if (Model.Estado == "Finalizado")
-            {
-                <span class="badge bg-secondary px-3 py-2">Finalizado</span>
-            }
-            else if (Model.Estado == "Rescindido")
-            {
-                <span class="badge bg-danger px-3 py-2">Rescindido</span>
-            }
-            
-        </div>
-    </div>
-}
-
+        @if (Model.Id != 0)
+        {
+            <div class="col-md-4 d-flex align-items-center mt-4">
+                <label class="me-2">Estado:</label>
+                <span class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                    @Model.Estado
+                </span>
+            </div>
+        }
     </div>
 
-    <div class="d-flex gap-3 justify-content-center my-4">
-        <button type="submit" class="btn btn-primary">Guardar</button>
+    <div class="d-flex justify-content-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-4">💾 Guardar</button>
     </div>
 </form>
 
-<div class="d-flex gap-3 justify-content-center my-4">
-@if (Model.Id != 0)
-{
-    @foreach (var estado in new[] { "Vigente", "Finalizado", "Rescindido" })
-{
-    if (estado != Model.Estado)
+<div class="d-flex justify-content-center gap-3 mt-4">
+    @if (Model.Id != 0)
     {
-        string textoBoton = estado switch
+        @foreach (var estado in new[] { "Vigente", "Finalizado", "Rescindido" })
         {
-            "Vigente" => "Reactivar",
-            "Finalizado" => "Finalizar",
-            "Rescindido" => "Rescindir",
-        };
+            if (estado != Model.Estado)
+            {
+                string textoBoton = estado switch
+                {
+                    "Vigente" => "Reactivar",
+                    "Finalizado" => "Finalizar",
+                    "Rescindido" => "Rescindir",
+                };
 
-        <form asp-action="ModificarEstado" asp-controller="Contrato" method="post" class="d-inline">
-            <input type="hidden" name="id" value="@Model.Id" />
-            <input type="hidden" name="nuevoEstado" value="@estado" />
-            <button type="submit"
-                    class="btn btn-sm @(estado == "Vigente" ? "btn-success" : estado == "Finalizado" ? "btn-secondary" : "btn-danger")">
-                @textoBoton
-            </button>
-        </form>
+                <form asp-action="ModificarEstado" asp-controller="Contrato" method="post" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="nuevoEstado" value="@estado" />
+                    <button type="submit"
+                            class="btn btn-sm @(estado == "Vigente" ? "btn-outline-success" : estado == "Finalizado" ? "btn-outline-secondary" : "btn-outline-danger")">
+                        @textoBoton
+                    </button>
+                </form>
+            }
+        }
     }
-}
-
-}
-   <a asp-action="Index" class="btn btn-secondary btn-sm">⬅️ Volver al listado</a>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Volver al listado
+    </a>
 </div>
 
-<div class="validaciones-info mt-4 mb-0">
+<div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
-    <ul>
-        <li>Validar que el inmueble no tenga contrato vigente ❌</li>
-        <li>Controlar que la fecha Hasta sea posterior a Desde ✅</li>
-        <li>Evitar monto cero o negativo ✅</li>
-        <li>Mostrar nombre completo del inquilino en el select ✅</li>
-        <li>Llenar los select de inquilino y inmueble dinamicamente y trayendo pocos datos ❌</li>
-        <li>Evitar spinner en campos numéricos ✅</li>
-        <li>que el campo desde siempre este con el dia actual desde el inicio ❌ </li>
-        
+    <ul class="small">
+        <li>❌ Validar que el inmueble no tenga contrato vigente</li>
+        <li>✅ Controlar que la fecha Hasta sea posterior a Desde</li>
+        <li>✅ Evitar monto cero o negativo</li>
+        <li>✅ Mostrar nombre completo del inquilino en el select</li>
+        <li>❌ Llenar los select de inquilino y inmueble dinámicamente y trayendo pocos datos</li>
+        <li>✅ Evitar spinner en campos numéricos</li>
+        <li>❌ Que el campo Desde siempre esté con el día actual desde el inicio</li>
     </ul>
 </div>
 
-
-@* Incluye los scripts para validar campos en el navegador: Required, Email, Range, etc. 
-   Sirve para mostrar errores sin tener que enviar el formulario. *@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

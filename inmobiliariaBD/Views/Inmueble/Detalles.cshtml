@@ -4,16 +4,15 @@
     var contratos = ViewBag.Contratos as List<inmobiliariaBD.Models.Contrato>;
 }
 
-<h2 class="mb-3">🏠 Detalle del Inmueble</h2>
+<h2 class="text-light mb-4">🏠 Detalle del Inmueble</h2>
 
-<div class="card mb-4">
+<div class="card bg-dark text-white border-secondary mb-4">
     <div class="card-header bg-primary text-white">
-        Información del Inmueble
+        <i class="fa-solid fa-building"></i> Información del Inmueble
     </div>
     <div class="card-body">
         <div class="row">
-           
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">Dirección</dt>
                     <dd class="col-sm-8">@Model.Direccion</dd>
@@ -23,14 +22,13 @@
 
                     <dt class="col-sm-4">Propietario</dt>
                     <dd class="col-sm-8">@($"{Model.Propietario.Persona.Nombre} {Model.Propietario.Persona.Apellido}")</dd>
-                    
+
                     <dt class="col-sm-4">Tipo</dt>
                     <dd class="col-sm-8">@Model.TipoInmueble.Tipo</dd>
                 </dl>
             </div>
 
-           
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">Uso</dt>
                     <dd class="col-sm-8">@Model.Uso</dd>
@@ -43,20 +41,10 @@
 
                     <dt class="col-sm-4">Estado</dt>
                     <dd class="col-sm-8">
-                        @if (Model.Estado == "Disponible")
-                        {
-                            <span class="badge bg-success px-3 py-2">Disponible</span>
-                        }
-                        else if (Model.Estado == "Alquilado")
-                        {
-                            <span class="badge bg-warning text-dark px-3 py-2">Alquilado</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary px-3 py-2">No Disponible</span>
-                        }
+                        <span class="badge @(Model.Estado == "Disponible" ? "bg-success" : Model.Estado == "Alquilado" ? "bg-warning text-dark" : "bg-secondary") px-3 py-2">
+                            @Model.Estado
+                        </span>
                     </dd>
-
                 </dl>
             </div>
         </div>
@@ -71,57 +59,54 @@
     </div>
 </div>
 
-<h4 class="mb-3">📄 Contratos asociados</h4>
+<h4 class="text-light mb-3">📄 Contratos asociados</h4>
 
 @if (contratos != null && contratos.Any())
 {
-    <table class="tabla-index table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>N°</th>
-                <th>Inquilino</th>
-                <th>Monto</th>
-                <th>Desde</th>
-                <th>Hasta</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var contrato in contratos)
-            {
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-secondary text-light">
                 <tr>
-                    <td>@contrato.Id</td>
-                    <td>@($"{contrato.Inquilino.Persona.Nombre} {contrato.Inquilino.Persona.Apellido}")</td>
-                    <td>$ @contrato.Monto</td>
-                    <td>@contrato.Desde.ToString("dd/MM/yyyy")</td>
-                    <td>@contrato.Hasta.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        @if (contrato.Estado == "Vigente")
-                        {
-                            <span class="badge bg-success px-3 py-2">Vigente</span>
-                        }
-                        else if (contrato.Estado == "Finalizado")
-                        {
-                            <span class="badge bg-secondary px-3 py-2">Finalizado</span>
-                        }
-                        else if (contrato.Estado == "Rescindido")
-                        {
-                            <span class="badge bg-danger px-3 py-2">Rescindido</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@contrato.Id"
-                           class="btn btn-info btn-sm">🔍 Ver</a>
-                    </td>
+                    <th>N°</th>
+                    <th>Inquilino</th>
+                    <th>Monto</th>
+                    <th>Desde</th>
+                    <th>Hasta</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var contrato in contratos)
+                {
+                    <tr>
+                        <td>@contrato.Id</td>
+                        <td>@($"{contrato.Inquilino.Persona.Nombre} {contrato.Inquilino.Persona.Apellido}")</td>
+                        <td>$ @contrato.Monto</td>
+                        <td>@contrato.Desde.ToString("dd/MM/yyyy")</td>
+                        <td>@contrato.Hasta.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="badge @(contrato.Estado == "Vigente" ? "bg-success" : contrato.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                                @contrato.Estado
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@contrato.Id"
+                               class="btn btn-sm btn-outline-info" title="Ver contrato">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <div class="alert alert-warning">Este inmueble no tiene contratos registrados.</div>
+    <div class="alert alert-warning text-dark">Este inmueble no tiene contratos registrados.</div>
 }
 
-<a asp-action="Index" class="btn btn-secondary mt-3">⬅️ Volver al listado</a>
+<a asp-action="Index" class="btn btn-outline-secondary mt-4">
+    <i class="fa-solid fa-arrow-left"></i> Volver al listado
+</a>

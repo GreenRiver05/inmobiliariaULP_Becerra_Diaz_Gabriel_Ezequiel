@@ -17,8 +17,48 @@ html {
   min-height: 100%;
 }
 
+header {
+    background: linear-gradient(to right, #263238, #37474f);
+    color: white;
+}
+
 body {
   margin-bottom: 60px;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.navbar, .footer {
+    background-color: #1f1f1f;
+    color: #ccc;
+}
+
+.nav-link {
+    color: #e0e0e0 !important;
+}
+
+.nav-link:hover {
+    color: #00bcd4 !important;
+    transform: scale(1.05);
+}
+.nav-link, .btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.container, .card, .form-control {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+.btn-primary {
+    background-color: #00bcd4;
+    border-color: #00acc1;
+    color: #000;
+}
+
+a {
+    color: #80d8ff;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -37,6 +77,21 @@ body {
   border-top: 2px solid #ccc;
   padding: 10px
 }
+
+
+
+/*------------------Estilos para los modales-----------*/
+.modal-content {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+.modal-header.bg-danger {
+    background-color: #c62828 !important;
+}
+
+
+
 
 
 /*------------------Estilos para la tabla de inmuebles INDEX-----------*/

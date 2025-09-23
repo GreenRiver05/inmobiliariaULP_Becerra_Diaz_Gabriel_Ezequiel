@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using inmobiliariaBD.Models;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Configuration;
+
 
 namespace inmobiliariaBD.Controllers
 {
@@ -29,10 +22,14 @@ namespace inmobiliariaBD.Controllers
 
 
 
-        public ActionResult Index()
+         public ActionResult Index(int pagina = 1)
         {
-            var lista = repositorio.ObtenerTodos();
-            return View(lista);
+            int cantidadPorPagina = 5;
+            var inquilinos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
+            int total = repositorio.ObtenerCantidad();
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            return View(inquilinos);
         }
 
         [HttpGet]

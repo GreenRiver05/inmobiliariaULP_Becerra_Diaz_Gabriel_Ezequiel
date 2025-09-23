@@ -12,6 +12,7 @@ namespace inmobiliariaBD.Controllers
         private readonly IRepositorioInquilino repoInquilino;
         private readonly IRepositorioInmueble repoInmueble;
 
+
         public ContratoController(IConfiguration config, IRepositorioContrato repo, IRepositorioInquilino repoInq, IRepositorioInmueble repoInm)
         {
             this.config = config;
@@ -20,10 +21,14 @@ namespace inmobiliariaBD.Controllers
             this.repoInmueble = repoInm;
         }
 
-        public IActionResult Index()
+         public ActionResult Index(int pagina = 1)
         {
-            var lista = repositorio.ObtenerTodos();
-            return View(lista);
+            int cantidadPorPagina = 5;
+            var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
+            int total = repositorio.ObtenerCantidad();
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            return View(contratos);
         }
 
         [HttpGet]
@@ -101,6 +106,21 @@ namespace inmobiliariaBD.Controllers
             repositorio.ModificarEstado(contrato);
             TempData["Mensaje"] = $"El estado del contrato se cambio a {nuevoEstado}.";
             return RedirectToAction("CreateOrEdit", new { id = contrato.Id });
+        }
+
+        public IActionResult Detalles(
+                            int id,
+                            [FromServices] IRepositorioPago repositorioPago,
+                            [FromServices] IRepositorioMulta repositorioMulta)
+        {
+
+            var contrato = repositorio.ObtenerPorId(id);
+            ViewBag.Pagos = repositorioPago.ObtenerPagosPorContrato(id);
+            ViewBag.Multas = repositorioMulta.ObtenerMultasPorContrato(id);
+             
+
+            return View(contrato);
+
         }
 
         private void CargarViewBags()

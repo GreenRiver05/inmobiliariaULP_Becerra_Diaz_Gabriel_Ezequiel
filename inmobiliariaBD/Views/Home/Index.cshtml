@@ -5,7 +5,79 @@
 
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@if (User.IsInRole("Administrador")) {
+  <div class="alert alert-info mt-3">
+    <i class="fa-solid fa-user-shield"></i> Acceso completo: puede gestionar usuarios y eliminar entidades.
+  </div>
+}
+<div class="container text-center mt-3" style="max-width: 800px;">
+    <h1 class="text-light mb-3">Sistema de Gestión Inmobiliaria</h1>
+    <p class="text-muted small mb-4">Administra propietarios, inmuebles, inquilinos, contratos y pagos.</p>
+
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        <!-- Tarjeta 1 -->
+        <div class="col">
+            <a asp-controller="Propietario" asp-action="Index" class="text-decoration-none">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <i class="fa-solid fa-user-tie fa-lg mb-2"></i>
+                        <h6 class="card-title">Propietarios</h6>
+                        <p class="card-text small">Gestioná los dueños de los inmuebles.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="col">
+            <a asp-controller="Inmueble" asp-action="Index" class="text-decoration-none">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <i class="fa-solid fa-building fa-lg mb-2"></i>
+                        <h6 class="card-title">Inmuebles</h6>
+                        <p class="card-text small">Administrá propiedades disponibles y suspendidas.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Tarjeta 3 -->
+        <div class="col">
+            <a asp-controller="Inquilino" asp-action="Index" class="text-decoration-none">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <i class="fa-solid fa-user fa-lg mb-2"></i>
+                        <h6 class="card-title">Inquilinos</h6>
+                        <p class="card-text small">Registrá y gestioná los clientes que alquilan.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Tarjeta 4 -->
+        <div class="col">
+            <a asp-controller="Contrato" asp-action="Index" class="text-decoration-none">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <i class="fa-solid fa-file-contract fa-lg mb-2"></i>
+                        <h6 class="card-title">Contratos</h6>
+                        <p class="card-text small">Creá, renová o finalizá contratos de alquiler.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Tarjeta 5 -->
+        <div class="col">
+            <a asp-controller="Pago" asp-action="Index" class="text-decoration-none">
+                <div class="card bg-dark text-white shadow-sm h-100">
+                    <div class="card-body p-3">
+                        <i class="fa-solid fa-money-bill-wave fa-lg mb-2"></i>
+                        <h6 class="card-title">Pagos</h6>
+                        <p class="card-text small">Registrá pagos mensuales y multas.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>

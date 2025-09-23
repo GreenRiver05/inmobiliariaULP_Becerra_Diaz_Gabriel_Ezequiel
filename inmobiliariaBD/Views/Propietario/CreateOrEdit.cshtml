@@ -4,16 +4,21 @@
     ViewData["Title"] = Model.Id == null ? "Nuevo Propietario" : "Editar Propietario";
 }
 
+
+
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert alert-info">@TempData["Mensaje"]</div>
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3" style="background-color: #1e2a38;">
+        <i class="fa-solid fa-circle-info me-2 text-info"></i>
+        <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
+    </div>
 }
 
 
-
-<h2>@(Model.Id == null ? "Nuevo Propietario" : "Editar Propietario")</h2>
-
-<form asp-action="CreateOrEdit" method="post">
+<h2 class="text-light mb-4">
+    @(Model.Id == null ? "🆕 Nuevo Propietario" : "✏️ Editar Propietario")
+</h2>
+<form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
     <input type="hidden" asp-for="Id" />
     @* @if (Model.Id != null)
     {
@@ -33,78 +38,72 @@
     } *@
 
 
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Persona.Nombre" class="form-label"></label>
+            <input asp-for="Persona.Nombre" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Persona.Nombre" class="text-danger small"></span>
+        </div>
 
-    <div class="row">
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="Persona.Nombre"></label>
-            <input asp-for="Persona.Nombre" class="form-control" />
-            <span asp-validation-for="Persona.Nombre" class="text-danger"></span>
+        <div class="col-md-4">
+            <label asp-for="Dni" class="form-label"></label>
+            <input asp-for="Dni" class="form-control bg-dark text-white border-light no-spinner" />
+            <span asp-validation-for="Dni" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Dni"></label>
-            <input asp-for="Dni" class="form-control no-spinner" />
-            <span asp-validation-for="Dni" class="text-danger"></span>
+
+        <div class="col-md-6">
+            <label asp-for="Persona.Apellido" class="form-label"></label>
+            <input asp-for="Persona.Apellido" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Persona.Apellido" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="Persona.Apellido"></label>
-            <input asp-for="Persona.Apellido" class="form-control" />
-            <span asp-validation-for="Persona.Apellido" class="text-danger"></span>
+
+        <div class="col-md-4">
+            <label asp-for="Persona.Telefono" class="form-label"></label>
+            <input asp-for="Persona.Telefono" class="form-control bg-dark text-white border-light no-spinner" />
+            <span asp-validation-for="Persona.Telefono" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Persona.Telefono"></label>
-            <input asp-for="Persona.Telefono" class="form-control no-spinner" />
-            <span asp-validation-for="Persona.Telefono" class="text-danger"></span>
+
+        <div class="col-md-6">
+            <label asp-for="Persona.Direccion" class="form-label"></label>
+            <input asp-for="Persona.Direccion" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Persona.Direccion" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="Persona.Direccion"></label>
-            <input asp-for="Persona.Direccion" class="form-control" />
-            <span asp-validation-for="Persona.Direccion" class="text-danger"></span>
+
+        <div class="col-md-4">
+            <label asp-for="Persona.Correo" class="form-label"></label>
+            <input asp-for="Persona.Correo" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Persona.Correo" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-4 mb-3">
-            <label asp-for="Persona.Correo"></label>
-            <input asp-for="Persona.Correo" class="form-control" />
-            <span asp-validation-for="Persona.Correo" class="text-danger"></span>
+
+        <div class="col-md-6">
+            <label asp-for="Persona.Localidad" class="form-label"></label>
+            <input asp-for="Persona.Localidad" class="form-control bg-dark text-white border-light" />
+            <span asp-validation-for="Persona.Localidad" class="text-danger small"></span>
         </div>
-        <div class="form-group col-md-6 mb-3">
-            <label asp-for="Persona.Localidad"></label>
-            <input asp-for="Persona.Localidad" class="form-control" />
-            <span asp-validation-for="Persona.Localidad" class="text-danger"></span>
-        </div>
+
         @if (Model.Id != null)
         {
-            <div class="form-group col-md-4">
-                <div class="d-flex align-items-center gap-2 mt-4">
-                    <label class="mb-0">Estado:</label>
-                    @if (Model.Estado)
-                    {
-                        <span class="badge bg-success px-3 py-2">
-                            <i class="bi bi-check-circle-fill me-1"></i> Activo
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary px-3 py-2">
-                            <i class="bi bi-x-circle-fill me-1"></i> Inactivo
-                        </span>
-                    }
-                </div>
+            <div class="col-md-4 d-flex align-items-center mt-4">
+                <label class="me-2">Estado:</label>
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary") px-3 py-2">
+                    <i class="fa-solid @(Model.Estado ? "fa-check-circle" : "fa-ban") me-1"></i>
+                    @(Model.Estado ? "Activo" : "Inactivo")
+                </span>
             </div>
         }
     </div>
 
-    <div class="d-flex gap-3 justify-content-center my-4">
-        <button type="submit" class="btn btn-primary">Guardar</button>
+    <div class="d-flex justify-content-center mt-4">
+        <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
     </div>
-
-
 </form>
 
-<div class="d-flex gap-3 justify-content-center my-4">
+<div class="d-flex justify-content-center gap-3 mt-4">
     @if (Model.Id != null)
     {
         <form asp-action="ModificarEstado" asp-controller="Propietario" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-secondary" : "btn-success")">
+            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-outline-secondary" : "btn-outline-success")">
                 @(Model.Estado ? "Dar de baja" : "Dar de alta")
             </button>
         </form>
@@ -114,21 +113,21 @@
         Buscar por DNI
     </button>
 } *@
-    <a asp-action="Index" class="btn btn-secondary btn-sm">⬅️ Volver al listado</a>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">⬅️ Volver al listado</a>
 </div>
 
 
-<div class="validaciones-info mt-4 mb-0">
+<div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
-    <ul>
-        <li>Verificar formato de correo electrónico ❌</li>
-        <li>Controlar longitud del teléfono ❌</li>
-        <li>Verificar que no modifica si cambio el dni - Vista editar ❌</li>
-        <li>Implementar el modal para buscar por dni ❌</li>
-        <li>Sacar spinners de los campos numericos ✅</li>
-        
+    <ul class="small">
+        <li>❌ Verificar formato de correo electrónico</li>
+        <li>❌ Controlar longitud del teléfono</li>
+        <li>❌ Verificar que no modifica si cambio el DNI en edición</li>
+        <li>❌ Implementar modal para buscar por DNI</li>
+        <li>✅ Sacar spinners de los campos numéricos</li>
     </ul>
 </div>
+
 
 
 @* @section Scripts {

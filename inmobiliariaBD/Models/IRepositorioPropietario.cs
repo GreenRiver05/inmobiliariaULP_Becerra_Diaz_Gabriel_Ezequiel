@@ -5,7 +5,7 @@ namespace inmobiliariaBD.Models
         Propietario ObtenerPorDni(int dni);
         IList<Propietario> BuscarPorNombre(string nombre);
 
-    
-        
+     
+
     }
 }

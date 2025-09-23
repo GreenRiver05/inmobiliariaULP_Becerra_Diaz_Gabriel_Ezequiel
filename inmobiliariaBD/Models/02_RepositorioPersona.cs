@@ -1,11 +1,6 @@
-using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace inmobiliariaBD.Models
 {
@@ -176,6 +171,16 @@ namespace inmobiliariaBD.Models
         }
 
         public int Modificacion(Persona p)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Persona> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ObtenerCantidad()
         {
             throw new NotImplementedException();
         }

@@ -277,10 +277,98 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
+        public IList<Inmueble> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        {
+         var lista = new List<Inmueble>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT i.Id, i.propietario_id AS PropietarioId , i.tipo_id AS TipoId, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado AS estadoInmueble, i.precio,
+                               p.dni, p.estado AS estadoPropietario, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
+                               t.tipo, t.descripcion
+                               FROM Inmueble i
+                               INNER JOIN Propietario p ON i.propietario_id = p.id 
+                               INNER JOIN Persona pe ON p.dni = pe.dni
+                               INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
+                                LIMIT @cantidad OFFSET @offset";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
+                    command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Inmueble i = new Inmueble
+                        {
+                            Id = reader.GetInt32(nameof(i.Id)),
+                            PropietarioId = reader.GetInt32(nameof(i.PropietarioId)),
+                            TipoId = reader.GetInt32(nameof(i.TipoId)),
+                            Direccion = reader.GetString(nameof(i.Direccion)),
+                            Localidad = reader.GetString(nameof(i.Localidad)),
+                            Longitud = reader.GetString(nameof(i.Longitud)),
+                            Latitud = reader.GetString(nameof(i.Latitud)),
+                            Uso = reader.GetString(nameof(i.Uso)),
+                            Ambientes = reader.GetInt32(nameof(i.Ambientes)),
+                            Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
+                            Estado = reader.GetString("estadoInmueble"),
+                            Precio = reader.GetString(nameof(i.Precio)),
+
+                            Propietario = new Propietario
+                            {
+                                Id = reader.GetInt32(nameof(i.PropietarioId)),
+                                Dni = reader.GetInt32(nameof(i.Propietario.Dni)),
+                                Estado = reader.GetBoolean("estadoPropietario"),
+                                Persona = new Persona
+                                {
+                                    Nombre = reader.GetString(nameof(i.Propietario.Persona.Nombre)),
+                                    Apellido = reader.GetString(nameof(i.Propietario.Persona.Apellido)),
+                                    Dni = reader.GetInt32(nameof(i.Propietario.Dni)),
+                                    Direccion = reader.IsDBNull(nameof(i.Propietario.Persona.Direccion)) ? null : reader.GetString(nameof(i.Propietario.Persona.Direccion)),
+                                    Localidad = reader.IsDBNull(nameof(i.Propietario.Persona.Localidad)) ? null : reader.GetString(nameof(i.Propietario.Persona.Localidad)),
+                                    Correo = reader.IsDBNull(nameof(i.Propietario.Persona.Correo)) ? null : reader.GetString(nameof(i.Propietario.Persona.Correo)),
+                                    Telefono = reader.GetInt64(nameof(i.Propietario.Persona.Telefono))
+                                }
+                            },
+
+                            TipoInmueble = new TipoInmueble
+                            {
+                                Id = reader.GetInt32(nameof(i.TipoInmueble.Id)),
+                                Tipo = reader.GetString(nameof(i.TipoInmueble.Tipo)),
+                                Descripcion = reader.IsDBNull(nameof(i.TipoInmueble.Descripcion)) ? null : reader.GetString(nameof(i.TipoInmueble.Descripcion))
+                            }
+                        };
+                        lista.Add(i);
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public int ObtenerCantidad()
+        {
+             int res = 0;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM Inmueble";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        res = reader.GetInt32(0);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
 
         public IList<Inmueble> ObtenerPorPropietario(int propietarioId)
         {
-             IList<Inmueble> res = new List<Inmueble>();
+            IList<Inmueble> res = new List<Inmueble>();
             using (var connection = new MySqlConnection(connectionString))
             {
 
@@ -295,7 +383,7 @@ namespace inmobiliariaBD.Models
                                INNER JOIN Persona pe ON p.dni = pe.dni
                                INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
                                WHERE i.propietario_id= @id";
-                               
+
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;

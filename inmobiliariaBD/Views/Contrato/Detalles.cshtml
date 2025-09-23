@@ -1,0 +1,140 @@
+@model inmobiliariaBD.Models.Contrato
+@{
+    ViewData["Title"] = "Detalle de Contrato";
+    var pagos = ViewBag.Pagos as List<inmobiliariaBD.Models.Pago>;
+    var multas = ViewBag.Multas as List<inmobiliariaBD.Models.Multa>;
+}
+
+<h2 class="text-light mb-4">📄 Detalle del Contrato</h2>
+
+<div class="card bg-dark text-white border-secondary mb-4">
+    <div class="card-header bg-primary text-white">
+        <i class="fa-solid fa-file-contract"></i> Información del Contrato
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <dl class="row">
+                    <dt class="col-sm-4">N°</dt>
+                    <dd class="col-sm-8">@Model.Id</dd>
+
+                    <dt class="col-sm-4">Monto</dt>
+                    <dd class="col-sm-8">$ @Model.Monto</dd>
+
+                    <dt class="col-sm-4">Desde</dt>
+                    <dd class="col-sm-8">@Model.Desde.ToString("dd/MM/yyyy")</dd>
+
+                    <dt class="col-sm-4">Hasta</dt>
+                    <dd class="col-sm-8">@Model.Hasta.ToString("dd/MM/yyyy")</dd>
+                </dl>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <dl class="row">
+                    <dt class="col-sm-4">Inquilino</dt>
+                    <dd class="col-sm-8">
+                        @($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")
+                        <br />
+                        <a asp-controller="Inquilino" asp-action="Detalles" asp-route-id="@Model.InquilinoId"
+                           class="btn btn-sm btn-outline-info mt-1">
+                            <i class="fa-solid fa-user"></i> Ver Inquilino
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Inmueble</dt>
+                    <dd class="col-sm-8">
+                        @($"{Model.Inmueble.Direccion} ({Model.Inmueble.Localidad})")
+                        <br />
+                        <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@Model.InmuebleId"
+                           class="btn btn-sm btn-outline-info mt-1">
+                            <i class="fa-solid fa-building"></i> Ver Inmueble
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Estado</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                            @Model.Estado
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="text-light mb-3">💰 Pagos realizados</h4>
+
+@if (pagos != null && pagos.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-secondary text-light">
+                <tr>
+                    <th>ID</th>
+                    <th>N° Pago</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pago in pagos)
+                {
+                    <tr>
+                        <td>@pago.Id</td>
+                        <td>@pago.NumeroPago</td>
+                        <td>$ @pago.Monto</td>
+                        <td>@pago.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@pago.Detalle</td>
+                        <td>@pago.Tipo</td>
+                        <td>
+                            <span class="badge @(pago.Estado == "Pago" ? "bg-success" : pago.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-secondary")">
+                                @(pago.Estado == "Pago" ? "Pagado" : pago.Estado == "Pendiente" ? "Pendiente" : "Anulado")
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-dark">Este contrato no tiene pagos registrados.</div>
+}
+
+<h4 class="text-light mb-3">⚠️ Multas registradas</h4>
+
+@if (multas != null && multas.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-secondary text-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha Aviso</th>
+                    <th>Fecha Terminación</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var multa in multas)
+                {
+                    <tr>
+                        <td>@multa.Id</td>
+                        <td>@multa.FechaAviso.ToString("dd/MM/yyyy")</td>
+                        <td>@multa.FechaTerminacion.ToString("dd/MM/yyyy")</td>
+                        <td>$ @multa.Monto</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-dark">Este contrato no tiene multas registradas.</div>
+}

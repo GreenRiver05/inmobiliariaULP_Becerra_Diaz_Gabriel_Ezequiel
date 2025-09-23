@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Listado de Inquilinos";
+     var paginaActual = ViewBag.PaginaActual as int? ?? 1;
+    var totalPaginas = ViewBag.TotalPaginas as int? ?? 1;
 }
 @if (TempData["Mensaje"] != null)
 {
@@ -10,62 +12,97 @@
     </div>
 }
 
+<h2 class="text-light mb-4">👥 Listado de Inquilinos</h2>
 
-<h2 class="mb-3">Listado de Inquilinos</h2>
+<a asp-action="CreateOrEdit" class="btn btn-outline-success mb-4">
+    <i class="fa-solid fa-user-plus"></i> Crear nuevo Inquilino
+</a>
 
-<a asp-action="CreateOrEdit" class="btn btn-success mb-3">➕ Crear nuevo Inquilino</a>
-
-<table class="tabla-index table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Id)</th>
-            <th>@Html.DisplayNameFor(model => model.Persona.Nombre)</th>
-            <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
-            <th>@Html.DisplayNameFor(model => model.Dni)</th>
-            <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
-            <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var i in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-dark table-bordered table-hover tabla-index">
+        <thead class="bg-secondary text-light">
             <tr>
-                <td>@i.Id</td>
-                <td>@i.Persona.Nombre</td>
-                <td>@i.Persona.Apellido</td>
-                <td>@i.Dni</td>
-                <td>@i.Persona.Telefono</td>
-                <td>@i.Persona.Correo</td>
-                <td>
-                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-info btn-sm">🔍</a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-warning btn-sm">✏️</a>
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#confirmModal" data-id="@i.Id" data-nombre="@i.Persona.Nombre"
-                        data-apellido="@i.Persona.Apellido" data-dni="@i.Dni" data-telefono="@i.Persona.Telefono"
-                        data-correo="@i.Persona.Correo">
-                        🗑️
-                    </button>
-                </td>    
+                <th>@Html.DisplayNameFor(model => model.Id)</th>
+                <th>@Html.DisplayNameFor(model => model.Persona.Nombre)</th>
+                <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
+                <th>@Html.DisplayNameFor(model => model.Dni)</th>
+                <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
+                <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
+                <th class="text-center">Acciones</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td>@i.Id</td>
+                    <td>@i.Persona.Nombre</td>
+                    <td>@i.Persona.Apellido</td>
+                    <td>@i.Dni</td>
+                    <td>@i.Persona.Telefono</td>
+                    <td>@i.Persona.Correo</td>
+                    <td class="text-center">
+                        <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-sm btn-outline-warning me-1" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#confirmModal" data-id="@i.Id" data-nombre="@i.Persona.Nombre"
+                            data-apellido="@i.Persona.Apellido" data-dni="@i.Dni" data-telefono="@i.Persona.Telefono"
+                            data-correo="@i.Persona.Correo" title="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Paginación">
+    <ul class="pagination justify-content-center my-4">
+
+        <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
+            <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-start"
+               asp-action="Index" asp-route-pagina="@(paginaActual - 1)">
+                <i class="fa-solid fa-chevron-left me-1"></i> Anterior
+            </a>
+        </li>
+
+        @for (int i = 1; i <= totalPaginas; i++)
+        {
+            <li class="page-item @(i == paginaActual ? "active" : "")">
+                <a class="page-link @(i == paginaActual ? "bg-info text-dark fw-bold border-info" : "bg-dark text-white border-secondary")"
+                   asp-action="Index" asp-route-pagina="@i">
+                    @i
+                </a>
+            </li>
         }
-    </tbody>
-</table>
+
+        <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
+            <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-end"
+               asp-action="Index" asp-route-pagina="@(paginaActual + 1)">
+                Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
 
 
-<div class="validaciones-info mt-4 mb-0">
+
+<div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
-    <ul>
-
-        <li>implementar eliminacion ✅</li>
-        <li>implementar detalles ✅</li>
-        <li>paginacion ❌</li>
-        <li>Ordenar lista ❌</li>
-        <li>Validaciones antes de eliminar (si tiene o no contrato) ❌</li>
-        <li>colocar estado o filtrar por estado ❌</li>
-        <li>buscar Inquilino ❌</li>
-        <li>ABM ✅</li>
-
+    <ul class="small">
+        <li>✅ Implementar eliminación</li>
+        <li>✅ Implementar detalles</li>
+        <li>❌ Paginación</li>
+        <li>❌ Ordenar lista</li>
+        <li>❌ Validaciones antes de eliminar (si tiene o no contrato)</li>
+        <li>❌ Colocar estado o filtrar por estado</li>
+        <li>❌ Buscar Inquilino</li>
+        <li>✅ ABM</li>
     </ul>
 </div>
 

@@ -1,4 +1,3 @@
-
 using System.Data;
 using MySql.Data.MySqlClient;
 
@@ -114,13 +113,12 @@ namespace inmobiliariaBD.Models
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"
-            SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
-                   pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
-            FROM contrato c
-            JOIN inquilino inq ON inq.id = c.inquilino_Id
-            JOIN persona pe ON pe.dni = inq.dni
-            JOIN inmueble i ON i.id = c.inmueble_Id";
+                string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
+                            pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+                            FROM contrato c
+                            JOIN inquilino inq ON inq.id = c.inquilino_Id
+                            JOIN persona pe ON pe.dni = inq.dni
+                            JOIN inmueble i ON i.id = c.inmueble_Id";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -168,9 +166,13 @@ namespace inmobiliariaBD.Models
             Contrato? c = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT Id, Inquilino_id AS InquilinoId, Inmueble_Id AS InmuebleId, Monto, Desde, Hasta, Estado
-                             FROM Contrato
-                             WHERE Id=@id";
+                string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
+                             pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+                             FROM contrato c
+                             JOIN inquilino inq ON inq.id = c.inquilino_Id
+                             JOIN persona pe ON pe.dni = inq.dni
+                             JOIN inmueble i ON i.id = c.inmueble_Id
+                             WHERE c.id=@id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.CommandType = CommandType.Text;
@@ -188,7 +190,23 @@ namespace inmobiliariaBD.Models
                                 Monto = reader.GetString(nameof(c.Monto)),
                                 Desde = reader.GetDateTime(nameof(c.Desde)),
                                 Hasta = reader.GetDateTime(nameof(c.Hasta)),
-                                Estado = reader.GetString(nameof(c.Estado))
+                                Estado = reader.GetString(nameof(c.Estado)),
+                                Inquilino = new Inquilino
+                                  {
+                                      Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                      Persona = new Persona
+                                      {
+                                          Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
+                                          Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
+                                          Telefono = reader.GetInt64(nameof(c.Inquilino.Persona.Telefono)),
+                                          Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
+                                      }
+                                  },
+                                Inmueble = new Inmueble
+                                {
+                                    Id = reader.GetInt32(nameof(c.InmuebleId)),
+                                    Direccion = reader.GetString(nameof(c.Inmueble.Direccion))
+                                }
                             };
                         }
                     }
@@ -310,6 +328,79 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
+        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        {
+            var lista = new List<Contrato>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
+                            pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+                            FROM contrato c
+                            JOIN inquilino inq ON inq.id = c.inquilino_Id
+                            JOIN persona pe ON pe.dni = inq.dni
+                            JOIN inmueble i ON i.id = c.inmueble_Id
+                             LIMIT @cantidad OFFSET @offset";
 
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
+                    command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                       Contrato c = new Contrato
+                        {
+                            Id = reader.GetInt32(nameof(c.Id)),
+                            InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
+                            InmuebleId = reader.GetInt32(nameof(c.InmuebleId)),
+                            Monto = reader.GetString(nameof(c.Monto)),
+                            Desde = reader.GetDateTime(nameof(c.Desde)),
+                            Hasta = reader.GetDateTime(nameof(c.Hasta)),
+                            Estado = reader.GetString(nameof(c.Estado)),
+                            Inquilino = new Inquilino
+                            {
+                                Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                Persona = new Persona
+                                {
+                                    Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
+                                    Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
+                                    Telefono = reader.GetInt64(nameof(c.Inquilino.Persona.Telefono)),
+                                    Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
+                                }
+                            },
+                            Inmueble = new Inmueble
+                            {
+                                Id = reader.GetInt32(nameof(c.InmuebleId)),
+                                Direccion = reader.GetString(nameof(c.Inmueble.Direccion))
+                            }
+                        };
+                        lista.Add(c);
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public int ObtenerCantidad()
+        {
+            int res = 0;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM Contrato";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        res = reader.GetInt32(0);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
     }
 }

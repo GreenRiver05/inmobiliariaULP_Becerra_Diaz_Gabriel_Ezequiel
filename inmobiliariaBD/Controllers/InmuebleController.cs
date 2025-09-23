@@ -1,4 +1,3 @@
-using System.Globalization;
 using inmobiliariaBD.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,10 +21,14 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int pagina = 1)
         {
-            var lista = repositorio.ObtenerTodos();
-            return View(lista);
+            int cantidadPorPagina = 5;
+            var inmuebles = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
+            int total = repositorio.ObtenerCantidad();
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            return View(inmuebles);
         }
 
         [HttpGet]

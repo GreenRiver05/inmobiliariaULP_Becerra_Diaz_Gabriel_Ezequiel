@@ -1,11 +1,6 @@
-using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace inmobiliariaBD.Models
 {
@@ -230,7 +225,67 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
+        public IList<Inquilino> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        {
+            var lista = new List<Inquilino>();
+             Inquilino i = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT i.id, i.dni, i.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
+                             FROM inquilino i
+                             JOIN persona pe ON pe.dni = i.dni
+                             LIMIT @cantidad OFFSET @offset";
 
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
+                    command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        i = new Inquilino
+                        {
+                            Id = reader.GetInt32(nameof(i.Id)),
+                            Dni = reader.GetInt32(nameof(i.Dni)),
+                            Estado = reader.GetBoolean(nameof(i.Estado)),
+                            Persona = new Persona
+                            {
+                                Nombre = reader.GetString(nameof(i.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(i.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(i.Persona.Direccion)) ? null : reader.GetString(nameof(i.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(i.Persona.Localidad)) ? null : reader.GetString(nameof(i.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(i.Persona.Correo)) ? null : reader.GetString(nameof(i.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(i.Persona.Telefono))
+                            }
+                        };
+                        lista.Add(i);
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public int ObtenerCantidad()
+        {
+              int res = 0;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = "SELECT COUNT(*) FROM Inquilino";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        res = reader.GetInt32(0);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
     }
 
 }
