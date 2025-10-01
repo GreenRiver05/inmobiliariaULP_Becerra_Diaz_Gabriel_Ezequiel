@@ -1,0 +1,32 @@
+@model inmobiliariaBD.Models.TipoInmueble
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nuevo Tipo" : "Editar Tipo";
+}
+
+<h2 class="text-light mb-4">
+    @(Model.Id == 0 ? "🆕 Nuevo Tipo de Inmueble" : "✏️ Editar Tipo de Inmueble")
+</h2>
+
+<form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Tipo" class="form-label"></label>
+        <input asp-for="Tipo" class="form-control bg-dark text-white border-light" />
+        <span asp-validation-for="Tipo" class="text-danger small"></span>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-4">💾 Guardar</button>
+    </div>
+</form>
+
+<div class="d-flex justify-content-center mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> Volver al listado
+    </a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

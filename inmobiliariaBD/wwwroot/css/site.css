@@ -28,6 +28,12 @@ body {
   color: #e0e0e0;
 }
 
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+    background-color: #434957; /* fondo oscuro en hover */
+    color: #00bfff; /* texto azul claro en hover */
+}
+
 .navbar, .footer {
     background-color: #1f1f1f;
     color: #ccc;
