@@ -62,7 +62,7 @@ namespace inmobiliariaBD.Controllers
         }
 
      
-        [HttpPost, ActionName("Delete")]
+        
         public IActionResult Baja(int id)
         {
             var tipoInmueble = repositorio.ObtenerPorId(id);

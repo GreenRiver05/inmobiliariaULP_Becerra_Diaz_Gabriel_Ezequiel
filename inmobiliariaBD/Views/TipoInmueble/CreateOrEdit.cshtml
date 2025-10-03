@@ -7,17 +7,23 @@
     @(Model.Id == 0 ? "🆕 Nuevo Tipo de Inmueble" : "✏️ Editar Tipo de Inmueble")
 </h2>
 
-<form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
+<form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary" style="max-width: 600px; margin: auto;">
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label asp-for="Tipo" class="form-label"></label>
-        <input asp-for="Tipo" class="form-control bg-dark text-white border-light" />
+        <label asp-for="Tipo" class="form-label">Nombre del tipo</label>
+        <input asp-for="Tipo" class="form-control bg-dark text-white border-light" maxlength="50" />
         <span asp-validation-for="Tipo" class="text-danger small"></span>
     </div>
 
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label">Descripción</label>
+        <textarea asp-for="Descripcion" class="form-control bg-dark text-white border-light" rows="3" maxlength="200"></textarea>
+        <span asp-validation-for="Descripcion" class="text-danger small"></span>
+    </div>
+
     <div class="d-flex justify-content-center mt-4">
-        <button type="submit" class="btn btn-primary btn-lg px-4">💾 Guardar</button>
+        <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
     </div>
 </form>
 

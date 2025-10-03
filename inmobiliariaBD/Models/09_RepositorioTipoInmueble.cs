@@ -57,7 +57,7 @@ namespace inmobiliariaBD.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"UPDATE Tipo_Inmueble
-                     SET Tipo = @tipo
+                     SET Tipo = @tipo,
                      descripcion = @descripcion
                      WHERE Id = @id";
                 using (var command = new MySqlCommand(sql, connection))
@@ -136,8 +136,34 @@ namespace inmobiliariaBD.Models
 
         public TipoInmueble ObtenerPorId(int id)
         {
-            throw new NotImplementedException();
+            TipoInmueble? t = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT Id, Tipo, Descripcion FROM Tipo_Inmueble WHERE Id = @id";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@id", id);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            t = new TipoInmueble
+                            {
+                                Id = reader.GetInt32(nameof(t.Id)),
+                                Tipo = reader.GetString(nameof(t.Tipo)),
+                                Descripcion = reader.IsDBNull(nameof(t.Descripcion)) ? null : reader.GetString(nameof(t.Descripcion))
+                            };
+                        }
+                    }
+                    connection.Close();
+                }
+            }
+            return t;
         }
+
 
         public IList<TipoInmueble> ObtenerTodos()
         {
