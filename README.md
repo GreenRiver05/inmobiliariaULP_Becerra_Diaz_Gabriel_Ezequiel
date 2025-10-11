@@ -8,6 +8,8 @@
 | Empleado      | Suspendido@mail.com    |   asdfgh   |🔴 Suspendido |
 
 
+______________________________________________________________________________________________________________
+
 Durante el comienzo inicial del proyecto, use prefijos numéricos en los archivos de Models (ej. 00_Irepositorio.cs, 02_RepositorioPropietario.cs) para facilitar la lectura y evitar confundirme entre las clases con nombres similares (IRepositorio, RepositorioPropietario, etc.).
 
 
