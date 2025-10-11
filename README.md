@@ -1,11 +1,12 @@
 
  🔐 Usuarios de prueba : Se incluyen los siguientes usuarios para pruebas de autenticación y navegación en el entorno de desarrollo:
 
-|     Rol       |        Usuario       |   Contraseña   |
-|---------------|----------------------|----------------|
-| Administrador | Gabriel@mail.com     |     123456     |🟢
-| Empleado      | Ulp@mail.com         |     qwerty     |🟢
-| Empleado      | Suspendido@mail.com  |     asdfgh     |🔴
+|       Rol     |        Usuario         | Contraseña | Estado |
+|---------------|------------------------|------------|--------|
+| Administrador | Gabriel@mail.com       |   123456   | <span style="color:green">🟢 Activo</span> |
+| Empleado      | Ulp@mail.com           |   qwerty   | <span style="color:green">🟢 Activo</span> |
+| Empleado      | Suspendido@mail.com    |   asdfgh   | <span style="color:red">🔴 Suspendido</span> |
+
 
 Durante el comienzo inicial del proyecto, use prefijos numéricos en los archivos de Models (ej. 00_Irepositorio.cs, 02_RepositorioPropietario.cs) para facilitar la lectura y evitar confundirme entre las clases con nombres similares (IRepositorio, RepositorioPropietario, etc.).
 
