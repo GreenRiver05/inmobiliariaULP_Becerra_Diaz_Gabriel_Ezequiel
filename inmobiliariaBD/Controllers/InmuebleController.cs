@@ -1,9 +1,11 @@
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace inmobiliariaBD.Controllers
 {
+    [Authorize]
     public class InmuebleController : Controller
     {
         private readonly IConfiguration config;
@@ -21,13 +23,15 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-        public ActionResult Index(int pagina = 1)
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
         {
             int cantidadPorPagina = 5;
-            var inmuebles = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
-            int total = repositorio.ObtenerCantidad();
+            var inmuebles = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
+            int total = repositorio.ObtenerCantidad(busqueda, estado);
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
             return View(inmuebles);
         }
 
@@ -108,12 +112,12 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
 }
         [HttpPost]
-        public IActionResult ModificarEstado(int id, string nuevoEstado)
+        public IActionResult ModificarEstado(int id, bool nuevoEstado)
         {
             var inmueble = repositorio.ObtenerPorId(id);
             inmueble.Estado = nuevoEstado;
             repositorio.ModificarEstado(inmueble);
-            TempData["Mensaje"] = $"El estado del inmueble se cambió a {nuevoEstado}.";
+            TempData["Mensaje"] = $"Se modificó el estado del inmueble correctamente.";
 
             return RedirectToAction("CreateOrEdit", new { id = inmueble.Id });
         }

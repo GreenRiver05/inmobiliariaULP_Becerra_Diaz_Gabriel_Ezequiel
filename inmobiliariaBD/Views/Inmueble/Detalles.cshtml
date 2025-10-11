@@ -21,7 +21,8 @@
                     <dd class="col-sm-8">@Model.Localidad</dd>
 
                     <dt class="col-sm-4">Propietario</dt>
-                    <dd class="col-sm-8">@($"{Model.Propietario.Persona.Nombre} {Model.Propietario.Persona.Apellido}")</dd>
+                    <dd class="col-sm-8">@($"{Model.Propietario.Persona.Nombre} {Model.Propietario.Persona.Apellido}")
+                    </dd>
 
                     <dt class="col-sm-4">Tipo</dt>
                     <dd class="col-sm-8">@Model.TipoInmueble.Tipo</dd>
@@ -41,12 +42,13 @@
 
                     <dt class="col-sm-4">Estado</dt>
                     <dd class="col-sm-8">
-                        <span class="badge @(Model.Estado == "Disponible" ? "bg-success" : Model.Estado == "Alquilado" ? "bg-warning text-dark" : "bg-secondary") px-3 py-2">
-                            @Model.Estado
+                        <span class="badge @(Model.Estado ? "bg-success" : "bg-danger") px-3 py-2">
+                            @(Model.Estado ? "Disponible" : "No disponible")
                         </span>
                     </dd>
                 </dl>
             </div>
+
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.Observacion))
@@ -86,13 +88,14 @@
                         <td>@contrato.Desde.ToString("dd/MM/yyyy")</td>
                         <td>@contrato.Hasta.ToString("dd/MM/yyyy")</td>
                         <td>
-                            <span class="badge @(contrato.Estado == "Vigente" ? "bg-success" : contrato.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                            <span
+                                class="badge @(contrato.Estado == "Vigente" ? "bg-success" : contrato.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
                                 @contrato.Estado
                             </span>
                         </td>
                         <td class="text-center">
                             <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@contrato.Id"
-                               class="btn btn-sm btn-outline-info" title="Ver contrato">
+                                class="btn btn-sm btn-outline-info" title="Ver contrato">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                         </td>

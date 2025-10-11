@@ -1,0 +1,48 @@
+@model IEnumerable<CheckList>
+@{
+    ViewData["Title"] = "Checklist de funcionalidades";
+    var total = Model.Count();
+    var completados = Model.Count(i => i.Completado);
+    var porcentaje = (int)((double)completados / total * 100);
+}
+
+<div class="mx-auto" style="max-width: 800px;">
+    <h2 class="text-light mb-4 text-center">📋 Checklist de funcionalidades</h2>
+
+    <div class="progress mb-4" style="height: 24px;">
+        <div class="progress-bar bg-success fw-bold" role="progressbar"
+             style="width: @porcentaje%" aria-valuenow="@porcentaje" aria-valuemin="0" aria-valuemax="100">
+            @porcentaje% completado
+        </div>
+    </div>
+
+    <table class="table table-dark table-bordered table-hover align-middle text-light tabla-checklist">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th style="width: 60%">Funcionalidad</th>
+                <th class="text-center" style="width: 10%">Estado</th>
+                <th class="text-center" style="width: 30%">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Titulo</td>
+                    <td class="text-center fs-4">
+                        @(item.Completado ? "✅" : "❌")
+                    </td>
+                    <td class="text-center">
+                        <form asp-action="Toggle" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit"
+                                    class="btn btn-sm @(item.Completado ? "btn-outline-danger" : "btn-outline-success")">
+                                @(item.Completado ? "Marcar como pendiente" : "Marcar como completado")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

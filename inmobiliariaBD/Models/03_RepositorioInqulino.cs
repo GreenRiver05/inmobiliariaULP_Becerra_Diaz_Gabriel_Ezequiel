@@ -225,38 +225,53 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public IList<Inquilino> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        public IList<Inquilino> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
         {
             var lista = new List<Inquilino>();
-             Inquilino i = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.id, i.dni, i.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("i.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT i.id, i.dni, i.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
                              FROM inquilino i
                              JOIN persona pe ON pe.dni = i.dni
+                             {where}
+                             ORDER BY pe.apellido
                              LIMIT @cantidad OFFSET @offset";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
                     command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado.Value);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                        i = new Inquilino
+                        var i = new Inquilino
                         {
-                            Id = reader.GetInt32(nameof(i.Id)),
-                            Dni = reader.GetInt32(nameof(i.Dni)),
-                            Estado = reader.GetBoolean(nameof(i.Estado)),
+                            Id = reader.GetInt32(nameof(Inquilino.Id)),
+                            Dni = reader.GetInt32(nameof(Inquilino.Dni)),
+                            Estado = reader.GetBoolean(nameof(Inquilino.Estado)),
                             Persona = new Persona
                             {
-                                Nombre = reader.GetString(nameof(i.Persona.Nombre)),
-                                Apellido = reader.GetString(nameof(i.Persona.Apellido)),
-                                Direccion = reader.IsDBNull(nameof(i.Persona.Direccion)) ? null : reader.GetString(nameof(i.Persona.Direccion)),
-                                Localidad = reader.IsDBNull(nameof(i.Persona.Localidad)) ? null : reader.GetString(nameof(i.Persona.Localidad)),
-                                Correo = reader.IsDBNull(nameof(i.Persona.Correo)) ? null : reader.GetString(nameof(i.Persona.Correo)),
-                                Telefono = reader.GetInt64(nameof(i.Persona.Telefono))
+                                Nombre = reader.GetString(nameof(Inquilino.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(Inquilino.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(Inquilino.Persona.Direccion)) ? null : reader.GetString(nameof(Inquilino.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(Inquilino.Persona.Localidad)) ? null : reader.GetString(nameof(Inquilino.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(Inquilino.Persona.Correo)) ? null : reader.GetString(nameof(Inquilino.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(Inquilino.Persona.Telefono))
                             }
                         };
                         lista.Add(i);
@@ -266,26 +281,44 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-        public int ObtenerCantidad()
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
         {
-              int res = 0;
+            int res = 0;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT COUNT(*) FROM Inquilino";
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("i.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT COUNT(*) 
+                             FROM inquilino i
+                             JOIN persona pe ON pe.dni = i.dni
+                             {where}";
+
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.CommandType = CommandType.Text;
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado.Value);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         res = reader.GetInt32(0);
                     }
-                    connection.Close();
                 }
             }
             return res;
         }
+
+
     }
 
 }

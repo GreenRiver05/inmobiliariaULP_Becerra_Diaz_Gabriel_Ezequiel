@@ -25,9 +25,9 @@ namespace inmobiliariaBD.Models
 
         IList<T> ObtenerTodos();
         T ObtenerPorId(int id);
+        IList<T> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda, bool? estado);
 
-        IList<T> ObtenerPaginados(int pagina, int cantidadPorPagina);
-        int ObtenerCantidad();
+        int ObtenerCantidad( string? busqueda, bool? estado);
     }
 }
 

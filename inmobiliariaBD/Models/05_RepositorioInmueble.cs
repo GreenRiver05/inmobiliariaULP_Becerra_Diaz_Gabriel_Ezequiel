@@ -129,7 +129,7 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString("estadoInmueble"),
+                            Estado = reader.GetBoolean("estadoInmueble"),
                             Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
@@ -197,7 +197,7 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString("estadoInmueble"),
+                            Estado = reader.GetBoolean("estadoInmueble"),
                             Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
@@ -277,24 +277,40 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public IList<Inmueble> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        public IList<Inmueble> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
         {
-         var lista = new List<Inmueble>();
+            var lista = new List<Inmueble>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.Id, i.propietario_id AS PropietarioId , i.tipo_id AS TipoId, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado AS estadoInmueble, i.precio,
-                               p.dni, p.estado AS estadoPropietario, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
-                               t.tipo, t.descripcion
-                               FROM Inmueble i
-                               INNER JOIN Propietario p ON i.propietario_id = p.id 
-                               INNER JOIN Persona pe ON p.dni = pe.dni
-                               INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
-                                LIMIT @cantidad OFFSET @offset";
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(i.direccion LIKE @busqueda OR i.localidad LIKE @busqueda OR i.uso LIKE @busqueda OR t.tipo LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("i.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT i.Id, i.propietario_id AS PropietarioId , i.tipo_id AS TipoId, i.direccion, i.localidad, i.longitud, i.latitud, i.uso, i.ambientes, i.observacion, i.estado AS estadoInmueble, i.precio,
+                                p.dni, p.estado AS estadoPropietario, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono,
+                                t.tipo, t.descripcion
+                             FROM Inmueble i
+                             INNER JOIN Propietario p ON i.propietario_id = p.id 
+                             INNER JOIN Persona pe ON p.dni = pe.dni
+                             INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
+                             {where}
+                             ORDER BY i.direccion
+                             LIMIT @cantidad OFFSET @offset";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
                     command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     while (reader.Read())
@@ -311,7 +327,7 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString("estadoInmueble"),
+                            Estado = reader.GetBoolean("estadoInmueble"),
                             Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
@@ -345,26 +361,44 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-        public int ObtenerCantidad()
+
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
         {
-             int res = 0;
+            int res = 0;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT COUNT(*) FROM Inmueble";
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(i.direccion LIKE @busqueda OR i.localidad LIKE @busqueda OR i.uso LIKE @busqueda OR t.tipo LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("i.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT COUNT(*) 
+                             FROM Inmueble i
+                             INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
+                             {where}";
+
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.CommandType = CommandType.Text;
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         res = reader.GetInt32(0);
                     }
-                    connection.Close();
                 }
             }
             return res;
         }
+
 
         public IList<Inmueble> ObtenerPorPropietario(int propietarioId)
         {
@@ -404,7 +438,7 @@ namespace inmobiliariaBD.Models
                             Uso = reader.GetString(nameof(i.Uso)),
                             Ambientes = reader.GetInt32(nameof(i.Ambientes)),
                             Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
-                            Estado = reader.GetString("estadoInmueble"),
+                            Estado = reader.GetBoolean("estadoInmueble"),
                             Precio = reader.GetString(nameof(i.Precio)),
 
                             Propietario = new Propietario
@@ -463,6 +497,6 @@ namespace inmobiliariaBD.Models
         {
             throw new NotImplementedException();
         }
-
+      
     }
 }

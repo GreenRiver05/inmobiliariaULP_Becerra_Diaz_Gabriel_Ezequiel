@@ -76,29 +76,27 @@
                         <td>@inmueble.Uso</td>
                         <td>@inmueble.Ambientes</td>
                         <td>$ @inmueble.Precio</td>
-                        <td>
-                            @switch (inmueble.Estado)
+                        <td class="text-center">
+                            @if (inmueble.Estado)
                             {
-                                case "Disponible":
-                                    <span class="badge bg-success">Disponible</span>
-                                    break;
-                                case "Alquilado":
-                                    <span class="badge bg-warning text-dark">Alquilado</span>
-                                    break;
-                                default:
-                                    <span class="badge bg-secondary">No Disponible</span>
-                                    break;
+                                <span>🟢 Disponible</span>
                             }
+                            else
+                            {
+                                <span>🔴 No disponible</span>
+                            }
+
                         </td>
                         <td class="text-center">
                             <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@inmueble.Id"
-                               class="btn btn-sm btn-outline-info" title="Ver inmueble">
+                                class="btn btn-sm btn-outline-info" title="Ver inmueble">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                         </td>
                     </tr>
                 }
             </tbody>
+
         </table>
     </div>
 }

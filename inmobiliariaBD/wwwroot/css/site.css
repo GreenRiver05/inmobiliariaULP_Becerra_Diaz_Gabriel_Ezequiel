@@ -110,7 +110,67 @@ a {
 .tabla-index th,
 .tabla-index td {
     text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;   
     padding: 0.5rem;
+    height: 50px;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ajustes por tipo de columna */
+.tabla-index th:nth-child(1), /* ID */
+.tabla-index td:nth-child(1) {
+    width: 50px;
+}
+
+.tabla-index th:nth-child(2), /* Nombre */
+.tabla-index td:nth-child(2),
+.tabla-index th:nth-child(3), /* Apellido */
+.tabla-index td:nth-child(3) {
+    width: 200px;
+}
+
+.tabla-index th:nth-child(4), /* DNI */
+.tabla-index td:nth-child(4) {
+    width: 80px;
+}
+
+.tabla-index th:nth-child(5), /* Teléfono */
+.tabla-index td:nth-child(5) {
+    width: 100px;
+}
+
+.tabla-index th:nth-child(6), /* Correo */
+.tabla-index td:nth-child(6) {
+    width: 200px;
+}
+
+.tabla-index th:nth-child(7), /* Estado */
+.tabla-index td:nth-child(7) {
+    width: 60px;
+}
+
+.tabla-index th:nth-child(8), /* Acciones */
+.tabla-index td:nth-child(8) {
+    width: 140px;
+}
+
+
+
+/*------------------Estilos para el checklist INDEX-----------*/
+.tabla-checklist td, .tabla-checklist th {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.tabla-checklist td {
+    font-size: 0.95rem;
+}
+
+.tabla-checklist th {
+    font-weight: 600;
 }

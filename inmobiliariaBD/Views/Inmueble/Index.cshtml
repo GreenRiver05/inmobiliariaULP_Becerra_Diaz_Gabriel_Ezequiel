@@ -4,6 +4,8 @@
     ViewData["Title"] = "Listado de Inmuebles";
     var paginaActual = ViewBag.PaginaActual as int? ?? 1;
     var totalPaginas = ViewBag.TotalPaginas as int? ?? 1;
+    var busqueda = ViewBag.Busqueda as string ?? "";
+    var estado = ViewBag.Estado as bool?;
 }
 
 @if (TempData["Mensaje"] != null)
@@ -17,65 +19,99 @@
     <i class="fa-solid fa-plus"></i> Crear nuevo Inmueble
 </a>
 
-<div class="table-responsive">
-    <table class="table table-dark table-bordered table-hover tabla-index">
-        <thead class="bg-secondary text-light">
+<form method="get" asp-action="Index" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <input type="text" name="busqueda" value="@busqueda" class="form-control"
+            placeholder="🔍 Buscar por dirección o localidad" />
+    </div>
+
+    <div class="col-md-7 d-flex gap-2">
+        <input type="hidden" name="pagina" value="1" />
+
+        <button type="submit" name="estado" value=""
+            class="btn @(estado == null ? "btn-secondary" : "btn-outline-secondary")">
+            Todos
+        </button>
+        <button type="submit" name="estado" value="true"
+            class="btn @(estado is true ? "btn-success" : "btn-outline-success")">
+            Disponibles
+        </button>
+        <button type="submit" name="estado" value="false"
+            class="btn @(estado is false? "btn-danger" : "btn-outline-danger")">
+            No disponibles
+        </button>
+    </div>
+</form>
+
+
+<table class="table table-dark table-bordered table-hover tabla-index">
+    <thead class="bg-secondary text-light">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Localidad)</th>
+            <th>@Html.DisplayNameFor(model => model.Direccion)</th>
+            <th>@Html.DisplayNameFor(model => model.Precio)</th>
+            <th>@Html.DisplayNameFor(model => model.TipoInmueble.Tipo)</th>
+            <th>@Html.DisplayNameFor(model => model.Propietario)</th>
+            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int contador = 0;
+        }
+
+        @foreach (var i in Model)
+        {
+            contador++;
             <tr>
-                <th>@Html.DisplayNameFor(model => model.Id)</th>
-                <th>@Html.DisplayNameFor(model => model.Direccion)</th>
-                <th>@Html.DisplayNameFor(model => model.Localidad)</th>
-                <th>@Html.DisplayNameFor(model => model.Estado)</th>
-                <th>@Html.DisplayNameFor(model => model.Precio)</th>
-                <th>@Html.DisplayNameFor(model => model.Propietario)</th>
-                <th>@Html.DisplayNameFor(model => model.TipoInmueble.Tipo)</th>
-                <th class="text-center">Acciones</th>
+                <td>@i.Id</td>
+                <td>@i.Localidad</td>
+                <td>@i.Direccion</td>
+                <td>$@i.Precio</td>
+                <td>@i.TipoInmueble.Tipo</td>
+                <td>@i.Propietario.Persona.ToStringSimple()</td>
+                <td class="text-center">
+                    @(i.Estado ? "🟢" : "🔴")
+                </td>
+                |
+
+                <td class="text-center">
+                    <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-sm btn-outline-info me-1"
+                        title="Ver detalles">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-sm btn-outline-warning me-1"
+                        title="Editar">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#confirmModal" data-inmueble-id="@i.Id" data-direccion="@i.Direccion"
+                        data-localidad="@i.Localidad" data-precio="@i.Precio"
+                        data-propietario="@i.Propietario.Persona.ToStringSimple()" data-tipo="@i.TipoInmueble.Tipo"
+                        title="Eliminar">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var i in Model)
-            {
-                <tr>
-                    <td>@i.Id</td>
-                    <td>@i.Direccion</td>
-                    <td>@i.Localidad</td>
-                    <td>
-                        <span
-                            class="badge @(i.Estado == "Disponible" ? "bg-success" : i.Estado == "Alquilado" ? "bg-warning text-dark" : "bg-secondary")">
-                            @i.Estado
-                        </span>
-                    </td>
-                    <td>$@i.Precio</td>
-                    <td>@i.Propietario.Persona.ToStringSimple()</td>
-                    <td>@i.TipoInmueble.Tipo</td>
-                    <td class="text-center">
-                        <a asp-action="Detalles" asp-route-id="@i.Id" class="btn btn-sm btn-outline-info me-1"
-                            title="Ver detalles">
-                            <i class="fa-solid fa-eye"></i>
-                        </a>
-                        <a asp-action="CreateOrEdit" asp-route-id="@i.Id" class="btn btn-sm btn-outline-warning me-1"
-                            title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
-                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#confirmModal" data-inmueble-id="@i.Id" data-direccion="@i.Direccion"
-                            data-localidad="@i.Localidad" data-precio="@i.Precio"
-                            data-propietario="@i.Propietario.Persona.ToStringSimple()" data-tipo="@i.TipoInmueble.Tipo"
-                            title="Eliminar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        }
+
+        @for (int j = contador; j < 5; j++)
+        {
+            <tr>
+                <td colspan="8" class="text-muted text-center py-3"></td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <nav aria-label="Paginación">
     <ul class="pagination justify-content-center my-4">
-
         <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
             <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-start"
-                asp-action="Index" asp-route-pagina="@(paginaActual - 1)">
+                asp-action="Index" asp-route-pagina="@(paginaActual - 1)" asp-route-busqueda="@busqueda"
+                asp-route-estado="@estado">
                 <i class="fa-solid fa-chevron-left me-1"></i> Anterior
             </a>
         </li>
@@ -84,7 +120,7 @@
         {
             <li class="page-item @(i == paginaActual ? "active" : "")">
                 <a class="page-link @(i == paginaActual ? "bg-info text-dark fw-bold border-info" : "bg-dark text-white border-secondary")"
-                    asp-action="Index" asp-route-pagina="@i">
+                    asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda" asp-route-estado="@estado">
                     @i
                 </a>
             </li>
@@ -92,7 +128,8 @@
 
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
             <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-end"
-                asp-action="Index" asp-route-pagina="@(paginaActual + 1)">
+                asp-action="Index" asp-route-pagina="@(paginaActual + 1)" asp-route-busqueda="@busqueda"
+                asp-route-estado="@estado">
                 Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
             </a>
         </li>
@@ -100,16 +137,17 @@
 </nav>
 
 
+
 <div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
     <ul class="small">
         <li>✅ Implementar eliminación</li>
         <li>✅ Implementar detalles</li>
-        <li>❌ Paginación</li>
-        <li>❌ Ordenar lista</li>
+        <li>✅ Paginación</li>
+        
         <li>❌ Validaciones antes de eliminar (si tiene o no contrato)</li>
-        <li>❌ Colocar estado o filtrar por estado</li>
-        <li>❌ Buscar inmueble</li>
+        <li>✅ Colocar estado o filtrar por estado</li>
+        <li>✅ Buscar inmueble</li>
         <li>✅ ABM</li>
     </ul>
 </div>

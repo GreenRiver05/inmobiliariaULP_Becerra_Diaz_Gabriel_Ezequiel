@@ -8,7 +8,8 @@
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3" style="background-color: #1e2a38;">
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3"
+        style="background-color: #1e2a38;">
         <i class="fa-solid fa-circle-info me-2 text-info"></i>
         <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
     </div>
@@ -75,7 +76,7 @@
                 <select asp-for="Estado" class="form-select bg-dark text-white border-light">
                     <option value="">-- Seleccione Estado --</option>
                     <option value="Disponible">Disponible</option>
-                    <option value="Alquilado">Alquilado</option>
+
                     <option value="No Disponible">No Disponible</option>
                 </select>
                 <span asp-validation-for="Estado" class="text-danger small"></span>
@@ -88,7 +89,8 @@
 
         <div class="col-md-4">
             <label asp-for="TipoId" class="form-label"></label>
-            <select asp-for="TipoId" asp-items="ViewBag.TiposInmueble" class="form-select bg-dark text-white border-light">
+            <select asp-for="TipoId" asp-items="ViewBag.TiposInmueble"
+                class="form-select bg-dark text-white border-light">
                 <option value="">-- Seleccione tipo --</option>
             </select>
             <span asp-validation-for="TipoId" class="text-danger small"></span>
@@ -96,7 +98,8 @@
 
         <div class="col-md-4">
             <label asp-for="PropietarioId" class="form-label"></label>
-            <select asp-for="PropietarioId" asp-items="ViewBag.Propietarios" class="form-select bg-dark text-white border-light">
+            <select asp-for="PropietarioId" asp-items="ViewBag.Propietarios"
+                class="form-select bg-dark text-white border-light">
                 <option value="">-- Seleccione Propietario --</option>
             </select>
             <span asp-validation-for="PropietarioId" class="text-danger small"></span>
@@ -123,8 +126,8 @@
         {
             <div class="col-md-4 d-flex align-items-center mt-4">
                 <label class="me-2">Estado:</label>
-                <span class="badge @(Model.Estado == "Disponible" ? "bg-success" : Model.Estado == "Alquilado" ? "bg-warning text-dark" : "bg-secondary") px-3 py-2">
-                    @Model.Estado
+                <span class="badge @(Model.Estado is true ? "bg-success" : "bg-danger") px-3 py-2">
+                    @(Model.Estado ? "Disponible" : "No disponible")
                 </span>
             </div>
         }
@@ -138,25 +141,18 @@
 <div class="d-flex justify-content-center gap-3 mt-4">
     @if (Model.Id != null)
     {
-        @foreach (var estado in new[] { "Disponible", "Alquilado", "No Disponible" })
-        {
-            if (estado != Model.Estado)
-            {
-                <form asp-action="ModificarEstado" asp-controller="Inmueble" method="post">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <input type="hidden" name="nuevoEstado" value="@estado" />
-                    <button type="submit"
-                        class="btn btn-sm @(estado == "Disponible" ? "btn-outline-success" : estado == "Alquilado" ? "btn-outline-warning" : "btn-outline-secondary")">
-                        Cambiar a @estado
-                    </button>
-                </form>
-            }
-        }
+        var nuevoEstado = Model.Estado;
+        <form asp-action="ModificarEstado" asp-controller="Inmueble" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="nuevoEstado" value="@(nuevoEstado ? "false" : "true")" />
+            <button type="submit" class="btn btn-sm @(nuevoEstado ? "btn-outline-danger" : "btn-outline-success")">
+                @(nuevoEstado ? "Dar de baja temporal" : " Reactivar inmueble")
+            </button>
+        </form>
     }
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado
-    </a>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">⬅️ Volver al listado </a>
 </div>
+
 
 <div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>

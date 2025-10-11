@@ -67,8 +67,7 @@
         {
             <div class="col-md-4 d-flex align-items-center mt-4">
                 <label class="me-2">Estado:</label>
-                <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary") px-3 py-2">
-                    <i class="fa-solid @(Model.Estado ? "fa-check-circle" : "fa-ban") me-1"></i>
+                <span class="badge @(Model.Estado ? "bg-success" : "bg-danger") px-3 py-2">
                     @(Model.Estado ? "Activo" : "Inactivo")
                 </span>
             </div>
@@ -85,7 +84,7 @@
     {
         <form asp-action="ModificarEstado" asp-controller="Inquilino" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-outline-secondary" : "btn-outline-success")">
+            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-outline-danger" : "btn-outline-success")">
                 @(Model.Estado ? "Dar de baja" : "Dar de alta")
             </button>
         </form>
@@ -100,7 +99,7 @@
     <ul class="small">
         <li>❌ Verificar formato de correo electrónico</li>
         <li>❌ Controlar longitud del teléfono</li>
-        <li>❌ Verificar que no modifica si cambio el DNI en edición</li>
+        <li>✅ Verificar que no modifica si cambio el DNI en edición</li>
         <li>❌ Implementar modal para buscar por DNI</li>
         <li>✅ Sacar spinners de los campos numéricos</li>
     </ul>

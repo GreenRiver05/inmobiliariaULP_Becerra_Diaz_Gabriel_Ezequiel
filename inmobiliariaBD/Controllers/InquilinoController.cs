@@ -1,9 +1,11 @@
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace inmobiliariaBD.Controllers
 {
+    [Authorize]
     public class InquilinoController : Controller
     {
         private readonly IConfiguration config;
@@ -22,13 +24,15 @@ namespace inmobiliariaBD.Controllers
 
 
 
-         public ActionResult Index(int pagina = 1)
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
         {
             int cantidadPorPagina = 5;
-            var inquilinos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
-            int total = repositorio.ObtenerCantidad();
+            var inquilinos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
+            int total = repositorio.ObtenerCantidad(busqueda, estado);
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
             return View(inquilinos);
         }
 
@@ -167,7 +171,7 @@ namespace inmobiliariaBD.Controllers
         {
             var inquilino = repositorio.ObtenerPorId(id);
             ViewBag.Contratos = repositorioContrato.ObtenerPorInquilino(id);
-            
+
             return View(inquilino);
         }
 

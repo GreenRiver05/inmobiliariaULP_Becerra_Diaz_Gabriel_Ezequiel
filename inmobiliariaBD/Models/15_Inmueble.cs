@@ -36,8 +36,8 @@ namespace inmobiliariaBD.Models
         public string? Observacion { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        //Disponible, Alquilado, No Disponible
-        public string Estado { get; set; }
+        //Disponible, No Disponible
+        public bool Estado { get; set; }
 
         // Use string en Precio, Latitud y Longitud porque el tema del punto y la coma me estaba volviendo loco.
         // El binding automático no respetaba la coma como separador decimal, y me tiraba errores silenciosos.

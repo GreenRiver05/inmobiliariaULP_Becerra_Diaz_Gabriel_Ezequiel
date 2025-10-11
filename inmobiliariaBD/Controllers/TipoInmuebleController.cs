@@ -1,8 +1,10 @@
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inmobiliariaBD.Controllers
 {
+    [Authorize]
     public class TipoInmuebleController : Controller
     {
         private readonly IConfiguration config;
@@ -14,13 +16,15 @@ namespace inmobiliariaBD.Controllers
             this.repositorio = repo;
         }
 
-        public ActionResult Index(int pagina = 1)
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
         {
             int cantidadPorPagina = 5;
-            var tipos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
+            var tipos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
             int total = repositorio.ObtenerCantidad();
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
             return View(tipos);
         }
 
@@ -61,8 +65,8 @@ namespace inmobiliariaBD.Controllers
             return View(tipoInmueble);
         }
 
-     
-        
+
+
         public IActionResult Baja(int id)
         {
             var tipoInmueble = repositorio.ObtenerPorId(id);

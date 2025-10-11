@@ -29,7 +29,8 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public int ObtenerCantidad()
+
+        public int ObtenerCantidad(string? busqueda, bool? estado)
         {
             throw new NotImplementedException();
         }
@@ -70,7 +71,7 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public IList<Multa> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        public IList<Multa> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda, bool? estado)
         {
             throw new NotImplementedException();
         }

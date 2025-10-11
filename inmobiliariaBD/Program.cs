@@ -1,11 +1,36 @@
 using System.Globalization;
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 // Inicializa el constructor de la aplicación web, cargando configuración, servicios y argumentos.
 
 builder.Services.AddControllersWithViews();
 // Registra el servicio MVC con soporte para controladores y vistas (sin API ni Razor Pages).
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Usuario/Login"; // Ruta al formulario de login
+        options.LogoutPath = "/salir"; // Ruta para cerrar sesión
+        options.AccessDeniedPath = "/Home/Restringido"; // Vista si no tiene permisos
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    // Política para administradores solamente
+
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    // Política para usuarios comunes solamente
+
+    options.AddPolicy("AdminOUsuario", policy => policy.RequireRole("Admin", "User"));
+    // Política para usuarios comunes y administradores
+});
+
+builder.Services.AddSingleton<ChecklistService>();
+// Registra el servicio ChecklistService como singleton para inyección de dependencias.
 
 builder.Services.AddScoped<IRepositorioPropietario, RepositorioPropietario>();
 builder.Services.AddScoped<IRepositorioPersona, RepositorioPersona>();
@@ -15,6 +40,7 @@ builder.Services.AddScoped<IRepositorioContrato, RepositorioContrato>();
 builder.Services.AddScoped<IRepositorioPago, RepositorioPago>();
 builder.Services.AddScoped<IRepositorioMulta, RepositorioMulta>();
 builder.Services.AddScoped<RepositorioTipoInmueble, RepositorioTipoInmueble>();
+builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
 // Registra los repositorios personalizados para inyección de dependencias con ciclo de vida Scoped.
 
 
@@ -47,6 +73,9 @@ app.UseStaticFiles();
 app.UseRouting();
 // Habilita el sistema de enrutamiento para mapear URLs a controladores.
 
+
+app.UseAuthentication();
+// Habilita la autenticación para identificar usuarios.
 app.UseAuthorization();
 // Aplica políticas de autorización (aunque no hay autenticación configurada aún).
 

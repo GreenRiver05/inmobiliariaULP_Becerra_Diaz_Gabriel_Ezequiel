@@ -192,16 +192,16 @@ namespace inmobiliariaBD.Models
                                 Hasta = reader.GetDateTime(nameof(c.Hasta)),
                                 Estado = reader.GetString(nameof(c.Estado)),
                                 Inquilino = new Inquilino
-                                  {
-                                      Id = reader.GetInt32(nameof(c.InquilinoId)),
-                                      Persona = new Persona
-                                      {
-                                          Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
-                                          Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
-                                          Telefono = reader.GetInt64(nameof(c.Inquilino.Persona.Telefono)),
-                                          Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
-                                      }
-                                  },
+                                {
+                                    Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                    Persona = new Persona
+                                    {
+                                        Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
+                                        Apellido = reader.GetString(nameof(c.Inquilino.Persona.Apellido)),
+                                        Telefono = reader.GetInt64(nameof(c.Inquilino.Persona.Telefono)),
+                                        Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni))
+                                    }
+                                },
                                 Inmueble = new Inmueble
                                 {
                                     Id = reader.GetInt32(nameof(c.InmuebleId)),
@@ -328,28 +328,44 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina)
+        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
         {
             var lista = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
-                            pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
-                            FROM contrato c
-                            JOIN inquilino inq ON inq.id = c.inquilino_Id
-                            JOIN persona pe ON pe.dni = inq.dni
-                            JOIN inmueble i ON i.id = c.inmueble_Id
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR pe.dni LIKE @busqueda OR i.direccion LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("c.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
+                                pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+                             FROM contrato c
+                             JOIN inquilino inq ON inq.id = c.inquilino_Id
+                             JOIN persona pe ON pe.dni = inq.dni
+                             JOIN inmueble i ON i.id = c.inmueble_Id
+                             {where}
+                             ORDER BY c.desde DESC
                              LIMIT @cantidad OFFSET @offset";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
                     command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado.Value);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                       Contrato c = new Contrato
+                        Contrato c = new Contrato
                         {
                             Id = reader.GetInt32(nameof(c.Id)),
                             InquilinoId = reader.GetInt32(nameof(c.InquilinoId)),
@@ -382,25 +398,47 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-        public int ObtenerCantidad()
+
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
         {
             int res = 0;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = "SELECT COUNT(*) FROM Contrato";
+                var filtros = new List<string>();
+                if (!string.IsNullOrEmpty(busqueda))
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR pe.dni LIKE @busqueda OR i.direccion LIKE @busqueda)");
+                if (estado.HasValue)
+                    filtros.Add("c.estado = @estado");
+
+                string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
+
+                string sql = $@"
+                             SELECT COUNT(*) 
+                             FROM contrato c
+                             JOIN inquilino inq ON inq.id = c.inquilino_Id
+                             JOIN persona pe ON pe.dni = inq.dni
+                             JOIN inmueble i ON i.id = c.inmueble_Id
+            {where}";
+
                 using (var command = new MySqlCommand(sql, connection))
                 {
-                    command.CommandType = CommandType.Text;
+                    if (!string.IsNullOrEmpty(busqueda))
+                        command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (estado.HasValue)
+                        command.Parameters.AddWithValue("@estado", estado.Value);
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
                     {
                         res = reader.GetInt32(0);
                     }
-                    connection.Close();
                 }
             }
             return res;
         }
+
+
+       
     }
 }

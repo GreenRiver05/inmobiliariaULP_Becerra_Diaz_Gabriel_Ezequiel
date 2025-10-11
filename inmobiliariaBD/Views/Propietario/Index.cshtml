@@ -17,55 +17,108 @@
 <a asp-action="CreateOrEdit" class="btn btn-outline-success mb-4">
     <i class="fa-solid fa-user-plus"></i> Crear nuevo propietario
 </a>
-<div class="table-responsive">
-    <table class="table table-dark table-bordered table-hover tabla-index">
-        <thead class="bg-secondary text-light">
+
+<form method="get" asp-action="Index" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <input type="text" name="busqueda" value="@ViewBag.Busqueda" class="form-control"
+            placeholder="🔍 Buscar por nombre o apellido" />
+    </div>
+
+    <div class="col-md-7 d-flex gap-2">
+        <input type="hidden" name="pagina" value="1" />
+
+        <button type="submit" name="estado" value=""
+            class="btn @(ViewBag.Estado == null ? "btn-secondary" : "btn-outline-secondary")">
+            Todos
+        </button>
+        <button type="submit" name="estado" value="true"
+            class="btn @(ViewBag.Estado is true ? "btn-success" : "btn-outline-success")">
+            Activos
+        </button>
+        <button type="submit" name="estado" value="false"
+            class="btn @(ViewBag.Estado is false ? "btn-danger" : "btn-outline-danger")">
+            Inactivos
+        </button>
+    </div>
+</form>
+
+
+<table class="table table-dark table-bordered table-hover tabla-index">
+    <thead class="bg-secondary text-light">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Nombre)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
+            <th>@Html.DisplayNameFor(model => model.Dni)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
+            <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
+            <th>@Html.DisplayNameFor(model => model.Estado)</th>
+
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int contador = 0;
+        }
+
+        @foreach (var p in Model)
+        {
+            contador++;
             <tr>
-                <th>@Html.DisplayNameFor(model => model.Id)</th>
-                <th>@Html.DisplayNameFor(model => model.Persona.Nombre)</th>
-                <th>@Html.DisplayNameFor(model => model.Persona.Apellido)</th>
-                <th>@Html.DisplayNameFor(model => model.Dni)</th>
-                <th>@Html.DisplayNameFor(model => model.Persona.Telefono)</th>
-                <th>@Html.DisplayNameFor(model => model.Persona.Correo)</th>
-                <th class="text-center">Acciones</th>
+                <td>@p.Id</td>
+                <td>@p.Persona.Nombre</td>
+                <td>@p.Persona.Apellido</td>
+                <td>@p.Dni</td>
+                <td>@p.Persona.Telefono</td>
+                <td>@p.Persona.Correo</td>
+                <td class="text-center">
+                    @if (p.Estado)
+                    {
+                        <span class="text-success fw-bold"><i class="fa-solid fa-circle-check"></i></span>
+                    }
+                    else
+                    {
+                        <span class="text-danger fw-bold"><i class="fa-solid fa-circle-xmark"></i></span>
+                    }
+                </td>
+                <td class="text-center">
+                    <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-sm btn-outline-info me-1"
+                        title="Ver detalles">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a asp-action="CreateOrEdit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-warning me-1"
+                        title="Editar">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#confirmModal" data-id="@p.Id" data-nombre="@p.Persona.Nombre"
+                        data-apellido="@p.Persona.Apellido" data-dni="@p.Dni" data-telefono="@p.Persona.Telefono"
+                        data-correo="@p.Persona.Correo" title="Eliminar">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>@p.Id</td>
-                    <td>@p.Persona.Nombre</td>
-                    <td>@p.Persona.Apellido</td>
-                    <td>@p.Dni</td>
-                    <td>@p.Persona.Telefono</td>
-                    <td>@p.Persona.Correo</td>
-                    <td class="text-center">
-                        <a asp-action="Detalles" asp-route-id="@p.Id" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
-                            <i class="fa-solid fa-eye"></i>
-                        </a>
-                        <a asp-action="CreateOrEdit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-warning me-1" title="Editar">
-                            <i class="fa-solid fa-pen"></i>
-                        </a>
-                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#confirmModal" data-id="@p.Id" data-nombre="@p.Persona.Nombre"
-                            data-apellido="@p.Persona.Apellido" data-dni="@p.Dni" data-telefono="@p.Persona.Telefono"
-                            data-correo="@p.Persona.Correo" title="Eliminar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        }
+
+        @for (int i = contador; i < 5; i++)
+        {
+            <tr>
+                  <td colspan="8" class="text-muted text-center py-3"></td>         
+            </tr>
+        }
+    </tbody>
+
+
+</table>
+
 
 <nav aria-label="Paginación">
     <ul class="pagination justify-content-center my-4">
 
         <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
             <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-start"
-               asp-action="Index" asp-route-pagina="@(paginaActual - 1)">
+                asp-action="Index" asp-route-pagina="@(paginaActual - 1)">
                 <i class="fa-solid fa-chevron-left me-1"></i> Anterior
             </a>
         </li>
@@ -74,7 +127,7 @@
         {
             <li class="page-item @(i == paginaActual ? "active" : "")">
                 <a class="page-link @(i == paginaActual ? "bg-info text-dark fw-bold border-info" : "bg-dark text-white border-secondary")"
-                   asp-action="Index" asp-route-pagina="@i">
+                    asp-action="Index" asp-route-pagina="@i">
                     @i
                 </a>
             </li>
@@ -82,7 +135,7 @@
 
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
             <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-end"
-               asp-action="Index" asp-route-pagina="@(paginaActual + 1)">
+                asp-action="Index" asp-route-pagina="@(paginaActual + 1)">
                 Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
             </a>
         </li>
@@ -96,11 +149,10 @@
     <ul class="small">
         <li>✅ Implementar eliminación</li>
         <li>✅ Implementar detalles</li>
-        <li>❌ Paginación</li>
-        <li>❌ Ordenar lista</li>
+        <li>✅ Paginación</li>
         <li>❌ Validaciones antes de eliminar (si tiene o no propiedad)</li>
-        <li>❌ Colocar estado o filtrar por estado</li>
-        <li>❌ Buscar propietario</li>
+        <li>✅ Colocar estado o filtrar por estado</li>
+        <li>✅ Buscar propietario</li>
         <li>✅ ABM</li>
     </ul>
 </div>
@@ -119,7 +171,8 @@
                     <p>¿Estás seguro que querés eliminar al siguiente propietario?</p>
                     <ul class="list-unstyled">
                         <li><strong>N° Interno:</strong> <span id="modal-id"></span></li>
-                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span></li>
+                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span>
+                        </li>
                         <li><strong>DNI:</strong> <span id="modal-dni"></span></li>
                         <li><strong>Teléfono:</strong> <span id="modal-telefono"></span></li>
                         <li><strong>Correo:</strong> <span id="modal-correo"></span></li>
@@ -158,7 +211,7 @@
                 document.getElementById('modal-telefono').textContent = telefono;
                 document.getElementById('modal-correo').textContent = correo;
 
-               document.getElementById('form-id').value = id;
+                document.getElementById('form-id').value = id;
             });
         });
     </script>

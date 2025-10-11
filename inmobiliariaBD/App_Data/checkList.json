@@ -1,0 +1,102 @@
+[
+  {
+    "Id": 1,
+    "Titulo": "ABM de Propietarios.",
+    "Completado": true
+  },
+  {
+    "Id": 2,
+    "Titulo": "ABM de Inquilinos.",
+    "Completado": true
+  },
+  {
+    "Id": 3,
+    "Titulo": "ABM de Inmuebles y tipos de inmuebles",
+    "Completado": true
+  },
+  {
+    "Id": 4,
+    "Titulo": "ABM de Contratos.",
+    "Completado": true
+  },
+  {
+    "Id": 5,
+    "Titulo": "ABM de Pagos.",
+    "Completado": false
+  },
+  {
+    "Id": 6,
+    "Titulo": "ABM de Usuarios. Se debe distinguir entre los roles de administradores y empleados. Solo los administradores pueden gestionar otros usuarios (ABM).",
+    "Completado": false
+  },
+  {
+    "Id": 7,
+    "Titulo": "Edici\u00F3n de perfil para el usuario logueado. Permitir cambiar contrase\u00F1a, cambiar foto de perfil y quitar la foto de perfil.",
+    "Completado": false
+  },
+  {
+    "Id": 8,
+    "Titulo": "Uso de autenticaci\u00F3n para poder operar (login).",
+    "Completado": false
+  },
+  {
+    "Id": 9,
+    "Titulo": "Uso de pol\u00EDticas de autorizaci\u00F3n para limitar las bajas exclusivamente al rol \u0022Administrador\u0022.",
+    "Completado": false
+  },
+  {
+    "Id": 10,
+    "Titulo": "Listar los inmuebles que est\u00E9n disponibles (estado disponible, no por fechas).",
+    "Completado": true
+  },
+  {
+    "Id": 11,
+    "Titulo": "Listar todos los inmuebles que le correspondan a un propietario.",
+    "Completado": true
+  },
+  {
+    "Id": 12,
+    "Titulo": "Listar todos los contratos de alquiler que se encuentren vigentes (por fechas desde/hasta).",
+    "Completado": false
+  },
+  {
+    "Id": 13,
+    "Titulo": "Listar todos los contratos de un inmueble en particular.",
+    "Completado": true
+  },
+  {
+    "Id": 14,
+    "Titulo": "Listar los pagos realizados para un contrato en particular. Permitir cargar un nuevo pago a ese contrato desde la pantalla del listado.",
+    "Completado": false
+  },
+  {
+    "Id": 15,
+    "Titulo": "Dadas dos fechas posibles de un contrato (inicio y fin), listar todos los inmuebles que no est\u00E9n ocupados en alg\u00FAn contrato entre esas fechas.",
+    "Completado": false
+  },
+  {
+    "Id": 16,
+    "Titulo": "Controlar que no existe superposici\u00F3n de fechas de contratos al crear/editar contratos.",
+    "Completado": false
+  },
+  {
+    "Id": 17,
+    "Titulo": "Permitir renovar contratos (crea otro pre cargando datos del original).",
+    "Completado": false
+  },
+  {
+    "Id": 18,
+    "Titulo": "Permitir terminar tempranamente contratos indicando la multa y permitir cargar el pago de esa multa.",
+    "Completado": false
+  },
+  {
+    "Id": 19,
+    "Titulo": "Registrar qu\u00E9 usuario cre\u00F3 un contrato y, en caso que corresponda, quien lo termin\u00F3. Similar para pagos, qui\u00E9n lo cre\u00F3 y, en caso que corresponda, quien lo anul\u00F3. Esta informaci\u00F3n de auditor\u00EDa s\u00F3lo es visible para administradores y en una vista de detalles de la entidad correspondiente.",
+    "Completado": false
+  },
+  {
+    "Id": 20,
+    "Titulo": "Usabilidad para el usuario, como men\u00FA de navegaci\u00F3n, listados con datos representativos, nombres de campos apropiados, ortograf\u00EDa, accesos directos, notificaciones (resultado de operaciones y errores entre otras), validaciones de datos, etc.",
+    "Completado": false
+  }
+]

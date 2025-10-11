@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliariaBD.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;

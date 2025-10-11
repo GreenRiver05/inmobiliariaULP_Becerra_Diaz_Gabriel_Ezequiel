@@ -1,10 +1,12 @@
 using System.Globalization;
 using inmobiliariaBD.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace inmobiliariaBD.Controllers
 {
+    [Authorize]
     public class ContratoController : Controller
     {
         private readonly IConfiguration config;
@@ -21,13 +23,15 @@ namespace inmobiliariaBD.Controllers
             this.repoInmueble = repoInm;
         }
 
-         public ActionResult Index(int pagina = 1)
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
         {
             int cantidadPorPagina = 5;
-            var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina);
-            int total = repositorio.ObtenerCantidad();
+            var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
+            int total = repositorio.ObtenerCantidad(busqueda, estado);
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
             return View(contratos);
         }
 
@@ -117,7 +121,7 @@ namespace inmobiliariaBD.Controllers
             var contrato = repositorio.ObtenerPorId(id);
             ViewBag.Pagos = repositorioPago.ObtenerPagosPorContrato(id);
             ViewBag.Multas = repositorioMulta.ObtenerMultasPorContrato(id);
-             
+
 
             return View(contrato);
 
