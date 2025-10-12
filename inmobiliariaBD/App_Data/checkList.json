@@ -32,7 +32,7 @@
   {
     "Id": 7,
     "Titulo": "Edici\u00F3n de perfil para el usuario logueado. Permitir cambiar contrase\u00F1a, cambiar foto de perfil y quitar la foto de perfil.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 8,
