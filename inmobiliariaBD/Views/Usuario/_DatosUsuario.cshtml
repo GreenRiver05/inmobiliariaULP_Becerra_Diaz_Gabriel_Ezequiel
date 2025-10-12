@@ -1,0 +1,65 @@
+@model inmobiliariaBD.Models.Usuario
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Dni" class="form-label"></label>
+        <input asp-for="Dni" class="form-control bg-dark text-white border-light no-spinner" />
+        <span asp-validation-for="Dni" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Persona.Nombre" class="form-label"></label>
+        <input asp-for="Persona.Nombre" class="form-control bg-dark text-white border-light" />
+        <span asp-validation-for="Persona.Nombre" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Persona.Apellido" class="form-label"></label>
+        <input asp-for="Persona.Apellido" class="form-control bg-dark text-white border-light" />
+        <span asp-validation-for="Persona.Apellido" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Persona.Correo" class="form-label"></label>
+        <input asp-for="Persona.Correo" class="form-control bg-dark text-white border-light" />
+        <span asp-validation-for="Persona.Correo" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6 position-relative">
+        <label asp-for="Contraseña" class="form-label"></label>
+        <div class="input-group">
+            <input asp-for="Contraseña" class="form-control bg-dark text-white border-light" type="password"
+                id="claveInput" />
+            <button type="button" class="btn btn-outline-secondary" id="toggleClave">
+                <i class="fa-solid fa-eye" id="iconoClave"></i>
+            </button>
+        </div>
+        <span asp-validation-for="Contraseña" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Persona.Telefono" class="form-label"></label>
+        <input asp-for="Persona.Telefono" class="form-control bg-dark text-white border-light" />
+        <span asp-validation-for="Persona.Telefono" class="text-danger small"></span>
+    </div>
+
+    @if (User.IsInRole("Admin") && ViewBag.EsPerfil != true)
+    {
+        <div class="col-md-6">
+            <label asp-for="Rol" class="form-label">Rol</label>
+            <select asp-for="Rol" asp-items="@(new SelectList(Usuario.ObtenerRoles(), "Key", "Value"))"
+                class="form-select bg-dark text-white border-light"></select>
+            <span asp-validation-for="Rol" class="text-danger small"></span>
+        </div>
+    }
+
+    @if (Model.Id != 0 && ViewBag.EsPerfil != true)
+    {
+        <div class="col-md-4 d-flex align-items-center mt-4">
+            <label class="me-2">Estado:</label>
+            <span class="badge @(Model.Estado is true ? "bg-success" : "bg-danger") px-3 py-2">
+                @(Model.Estado is true ? "Activo" : "Inactivo")
+            </span>
+        </div>
+    }
+</div>

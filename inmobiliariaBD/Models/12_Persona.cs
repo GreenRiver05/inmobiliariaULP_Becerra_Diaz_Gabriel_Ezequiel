@@ -26,8 +26,10 @@ namespace inmobiliariaBD.Models
 
         public string? Localidad { get; set; }
 
+        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+        [EmailAddress(ErrorMessage = "El correo electrónico no es válido.")]
         [Display(Name = "Correo Electrónico")]
-        public string? Correo { get; set; }
+        public string Correo { get; set; }
 
         [Display(Name = "Teléfono")]
         [Required(ErrorMessage = "El teléfono es obligatorio.")]

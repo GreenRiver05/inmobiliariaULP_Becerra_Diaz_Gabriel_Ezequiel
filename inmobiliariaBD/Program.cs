@@ -13,7 +13,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Usuario/Login"; // Ruta al formulario de login
-        options.LogoutPath = "/salir"; // Ruta para cerrar sesión
+        options.LogoutPath = "/Usuario/Logout"; // Ruta para cerrar sesión
         options.AccessDeniedPath = "/Home/Restringido"; // Vista si no tiene permisos
     });
 
@@ -22,11 +22,11 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     // Política para administradores solamente
 
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-    // Política para usuarios comunes solamente
+    options.AddPolicy("EmpleadoOnly", policy => policy.RequireRole("Empleado"));
+    // Política para Empleados solamente
 
-    options.AddPolicy("AdminOUsuario", policy => policy.RequireRole("Admin", "User"));
-    // Política para usuarios comunes y administradores
+    options.AddPolicy("AdminOEmpleado", policy => policy.RequireRole("Admin", "Empleado"));
+    // Política para Empleados y administradores
 });
 
 builder.Services.AddSingleton<ChecklistService>();

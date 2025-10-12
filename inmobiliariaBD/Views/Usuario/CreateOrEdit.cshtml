@@ -1,90 +1,105 @@
 @model inmobiliariaBD.Models.Usuario
 
 @{
-    ViewData["Title"] = Model.Id == 0 ? "Nuevo Usuario" : "Editar Usuario";
+    ViewData["Title"] = Model.Id == 0 ? "Nuevo Usuario"  : (ViewBag.EsPerfil == true ? "Editar Perfil" : "Editar Usuario");
 }
 
 @if (TempData["Mensaje"] != null)
 {
     <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3"
-         style="background-color: #1e2a38;">
+        style="background-color: #1e2a38;">
         <i class="fa-solid fa-circle-info me-2 text-info"></i>
         <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
     </div>
 }
 
 <h2 class="text-light mb-4">
-    @(Model.Id == 0 ? "🆕 Nuevo Usuario" : "✏️ Editar Usuario")
+    @(Model.Id == 0
+        ? "🆕 Nuevo Usuario"
+        : (ViewBag.EsPerfil == true
+        ? "👤 Editar Perfil"
+        : "✏️ Editar Usuario"))
 </h2>
 
 <form asp-action="CreateOrEdit" method="post" enctype="multipart/form-data"
-      class="bg-dark text-white p-4 rounded border border-secondary">
+    class="bg-dark text-white p-4 rounded border border-secondary">
+    
     <input type="hidden" asp-for="Id" />
+    @Html.AntiForgeryToken()
 
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label asp-for="Persona.Nombre" class="form-label"></label>
-            <input asp-for="Persona.Nombre" class="form-control bg-dark text-white border-light" />
-            <span asp-validation-for="Persona.Nombre" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Persona.Apellido" class="form-label"></label>
-            <input asp-for="Persona.Apellido" class="form-control bg-dark text-white border-light" />
-            <span asp-validation-for="Persona.Apellido" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Persona.Correo" class="form-label"></label>
-            <input asp-for="Persona.Correo" class="form-control bg-dark text-white border-light" />
-            <span asp-validation-for="Persona.Correo" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Contraseña" class="form-label"></label>
-            <input asp-for="Contraseña" class="form-control bg-dark text-white border-light" type="password" />
-            <span asp-validation-for="Contraseña" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Rol" class="form-label">Rol</label>
-            <select asp-for="Rol" asp-items="@(new SelectList(Usuario.ObtenerRoles(), "Key", "Value"))"
-                    class="form-select bg-dark text-white border-light"></select>
-            <span asp-validation-for="Rol" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="AvatarFile" class="form-label">Avatar</label>
-            <input asp-for="AvatarFile" type="file" class="form-control bg-dark text-white border-light" />
-        </div>
-
-        @if (Model.Id != 0)
+  @if (ViewBag.EsPerfil is true)
+    {
+        <input type="hidden" name="esPerfil" value="true" />
+        <input typy="hidden" asp-for="Rol"/>
+    }
+    <div class="row">
+        @if (ViewBag.EsPerfil is true)
         {
-            <div class="col-md-4 d-flex align-items-center mt-4">
-                <label class="me-2">Estado:</label>
-                <span class="badge @(Model.Estado is true ? "bg-success" : "bg-danger") px-3 py-2">
-                    @(Model.Estado is true ? "Activo" : "Inactivo")
-                </span>
+            <!-- Dos columnas: avatar + datos -->
+            <div class="col-md-4 d-flex flex-column align-items-center">
+                @if (!string.IsNullOrEmpty(Model.Avatar))
+                {
+                    <label class="form-label">Avatar actual</label>
+                    <img src="~/@Model.Avatar" alt="Avatar" class="rounded-circle border border-light mb-2"
+                        style="width: 150px; height: 150px; object-fit: cover;" />
+                    <small class="text-muted text-center">Podés subir una nueva imagen para reemplazarla</small>
+                }
+
+                <label asp-for="AvatarFile" class="form-label mt-3">Cambiar avatar</label>
+                <input asp-for="AvatarFile" type="file" class="form-control bg-dark text-white border-light" />
+            </div>
+
+            <div class="col-md-8">
+                @Html.Partial("_DatosUsuario", Model)
+                <div class="row g-3 mt-3">
+                
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Direccion" class="form-label"></label>
+                        <input asp-for="Persona.Direccion" class="form-control bg-dark text-white border-light" />
+                        <span asp-validation-for="Persona.Direccion" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Localidad" class="form-label"></label>
+                        <input asp-for="Persona.Localidad" class="form-control bg-dark text-white border-light" />
+                        <span asp-validation-for="Persona.Localidad" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Una sola columna: datos ocupan todo el ancho -->
+            <div class="row">
+                <div class="col-12">
+                    @Html.Partial("_DatosUsuario", Model)
+                </div>
             </div>
         }
     </div>
+
 
     <div class="d-flex justify-content-center mt-4">
         <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
     </div>
 </form>
 
+
 <div class="d-flex justify-content-center gap-3 mt-4">
-    @if (Model.Id != 0)
+
+    @if (User.IsInRole("Admin") && ViewBag.EsPerfil != true && Model.Id != 0)
     {
         <form asp-action="ModificarEstado" asp-controller="Usuario" method="post">
             <input type="hidden" name="id" value="@Model.Id" />
-            <button type="submit" class="btn btn-sm @(Model.Estado is true ? "btn-outline-danger" : "btn-outline-success")">
-                @(Model.Estado is true ? "Dar de baja" : "Dar de alta")
+            <button type="submit" class="btn btn-sm @(Model.Estado ? "btn-outline-danger" : "btn-outline-success")">
+                @(Model.Estado ? "Dar de baja" : "Dar de alta")
             </button>
         </form>
-    }
+
     <a asp-action="Index" class="btn btn-outline-secondary btn-sm">⬅️ Volver al listado</a>
+    }
+
+
 </div>
 
 <div class="validaciones-info mt-5 text-light border-top pt-3">
@@ -99,5 +114,18 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("toggleClave").addEventListener("click", function () {
+            const input = document.getElementById("claveInput");
+            const icono = document.getElementById("iconoClave");
+            const esPassword = input.type === "password";
+            input.type = esPassword ? "text" : "password";
+            icono.classList.toggle("fa-eye");
+            icono.classList.toggle("fa-eye-slash");
+        });
+    </script>
 }

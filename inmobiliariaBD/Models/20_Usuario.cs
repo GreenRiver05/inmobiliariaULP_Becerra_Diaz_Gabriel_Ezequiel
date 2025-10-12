@@ -7,7 +7,7 @@ namespace inmobiliariaBD.Models
     public enum Roles
     {
         Admin = 1,
-        User = 2,
+        Empleado = 2,
     }
 
 
@@ -17,12 +17,13 @@ namespace inmobiliariaBD.Models
         [Display(Name = "N°")]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El DNI es obligatorio.")]
         [Display(Name = "DNI")]
         public int Dni { get; set; }
 
-        [Required, DataType(DataType.Password)]
-        public string Contraseña { get; set; }
+        [DataType(DataType.Password)]
+        public string? Contraseña { get; set; }
+
 
         [Required]
         public int Rol { get; set; }

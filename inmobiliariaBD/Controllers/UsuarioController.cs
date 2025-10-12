@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using inmobiliariaBD.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -10,32 +11,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace inmobiliariaBD.Controllers
 {
 
-    [Authorize]
+
     public class UsuarioController : Controller
     {
         private readonly IConfiguration config;
         private readonly IRepositorioUsuario repositorio;
         private readonly IRepositorioPersona repositorioPersona;
 
-        public UsuarioController(IConfiguration config, IRepositorioUsuario repo, IRepositorioPersona repositorioPersona)
+        private readonly IWebHostEnvironment environment;
+
+        public UsuarioController(IConfiguration config, IRepositorioUsuario repo, IRepositorioPersona repositorioPersona, IWebHostEnvironment env)
         {
             this.config = config;
             this.repositorio = repo;
             this.repositorioPersona = repositorioPersona;
+            this.environment = env;
         }
 
-        // GET: Usuario
-        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
-        {
-            int cantidadPorPagina = 5;
-            var usuarios = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
-            int total = repositorio.ObtenerCantidad(busqueda, estado);
-            ViewBag.PaginaActual = pagina;
-            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
-            ViewBag.Busqueda = busqueda;
-            ViewBag.Estado = estado;
-            return View(usuarios);
-        }
 
         [AllowAnonymous] // Permite acceder sin estar logueado
         public ActionResult Login(string returnUrl)
@@ -45,8 +37,8 @@ namespace inmobiliariaBD.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken] // Protege contra ataques CSRF
+        [AllowAnonymous] //permite que usuarios no autenticados accedan a esta acción.
+        [ValidateAntiForgeryToken] // verifica que el token antifalsificación esté presente y válido (protección contra CSRF).
         public async Task<IActionResult> Login(LoginView login)
         {
             try
@@ -72,7 +64,7 @@ namespace inmobiliariaBD.Controllers
                     if (e == null || e.Contraseña != hashed)
                     {
                         ModelState.AddModelError("", "El email o la clave no son correctos");
-                        TempData["returnUrl"] = returnUrl;
+                        TempData["returnUrl"] = returnUrl; //Guarda el returnUrl para mantener el flujo.
                         return View();
                     }
 
@@ -80,16 +72,18 @@ namespace inmobiliariaBD.Controllers
                     if (e.Estado is false)
                     {
                         ModelState.AddModelError("", "El usuario está inactivo. Contacte al administrador.");
-                        TempData["returnUrl"] = returnUrl;
+                        TempData["returnUrl"] = returnUrl; //Guarda el returnUrl para mantener el flujo.
                         return View();
                     }
 
                     // Crea los claims (datos que se guardan en la cookie de sesión)
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, e.Persona.Correo),
-                        new Claim("FullName", e.Persona.Nombre + " " + e.Persona.Apellido),
-                        new Claim(ClaimTypes.Role, e.RolNombre),
+                       new Claim(ClaimTypes.Name, $"{e.Persona.Nombre} {e.Persona.Apellido}"), // Nombre completo aparece en el menú
+                       new Claim(ClaimTypes.NameIdentifier, e.Id.ToString()), // ID del usuario
+                       new Claim(ClaimTypes.Email, e.Persona.Correo), // Email del usuario
+                       new Claim(ClaimTypes.Role, e.RolNombre),
+                       new Claim("Avatar", e.Avatar ?? string.Empty) // Avatar del usuario o cadena vacía si es null
                     };
 
 
@@ -114,6 +108,174 @@ namespace inmobiliariaBD.Controllers
                 return View(); // Vuelve a mostrar el formulario
             }
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            // Cierra la sesión actual y elimina la cookie de autenticación
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Redirige al Home o al Login después de cerrar sesión
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        // GET: Usuario
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
+        {
+            int cantidadPorPagina = 5;
+            var usuarios = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
+            int total = repositorio.ObtenerCantidad(busqueda, estado);
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
+            ViewBag.Busqueda = busqueda;
+            ViewBag.Estado = estado;
+            return View(usuarios);
+        }
+
+
+        // GET: /Usuario/CreateOrEdit
+        [HttpGet]
+       
+        public IActionResult CreateOrEdit(int? id, bool esPerfil = false)
+        {
+            Usuario u = id.HasValue ? repositorio.ObtenerPorId(id.Value) : new Usuario { Persona = new Persona() };
+            ViewBag.EsPerfil = esPerfil;
+            return View(u);
+        }
+
+        // POST: /Usuario/CreateOrEdit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateOrEdit(Usuario usuario, bool esPerfil = false)
+        {
+
+            if (usuario.Dni == 0)
+                ModelState.AddModelError("Dni", "El DNI es obligatorio.");
+
+            if (usuario.Id == 0 && string.IsNullOrEmpty(usuario.Contraseña))
+                ModelState.AddModelError("Contraseña", "La contraseña es obligatoria para un nuevo usuario.");
+
+            if (!ModelState.IsValid)
+                return View(usuario);
+
+            // Hashear la contraseña usando PBKDF2 con salt fijo 
+            if (!string.IsNullOrEmpty(usuario.Contraseña))
+            {
+                string salt = config["Salt"];
+                string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: usuario.Contraseña,
+                    salt: System.Text.Encoding.ASCII.GetBytes(salt),
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 1000,
+                    numBytesRequested: 256 / 8));
+
+                usuario.Contraseña = hashed;
+            }
+            else if (usuario.Id != 0)
+            {
+                // Si está editando y no ingresa clave, mantener la actual
+                var original = repositorio.ObtenerPorId(usuario.Id);
+                usuario.Contraseña = original.Contraseña;
+            }
+
+
+            // Procesar avatar si se subió
+            if (usuario.AvatarFile != null)
+            {
+                string ruta = Path.Combine(environment.WebRootPath, "uploads");
+
+                if (!Directory.Exists(ruta))
+                {
+                    Directory.CreateDirectory(ruta);
+                }
+
+
+                string nombreArchivo = $"avatar_{usuario.Id}_{Path.GetExtension(usuario.AvatarFile.FileName)}";
+                string rutaCompleta = Path.Combine(ruta, nombreArchivo);
+
+                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                {
+                    usuario.AvatarFile.CopyTo(stream);
+                }
+
+                usuario.Avatar = Path.Combine("uploads", nombreArchivo);
+            }
+            else if (usuario.Id != 0)
+            {
+                // Si está editando y no sube avatar, mantener el actual
+                var original = repositorio.ObtenerPorId(usuario.Id);
+                usuario.Avatar = original.Avatar;
+            }
+
+            usuario.Persona.Dni = usuario.Dni;
+
+
+
+            if (usuario.Id == 0)
+            {
+                var personaExistente = repositorioPersona.ObtenerPorDni(usuario.Dni);
+                if (personaExistente == null)
+                {
+                    repositorioPersona.Alta(usuario.Persona);
+                }
+                usuario.Estado = true;
+                repositorio.Alta(usuario);
+                TempData["Mensaje"] = "Usuario creado correctamente.";
+            }
+            else
+            {
+                var usuarioOriginal = repositorio.ObtenerPorId(usuario.Id);
+                int dniAnterior = usuarioOriginal.Dni;
+
+                repositorioPersona.Modificar(usuario.Persona, dniAnterior);
+                repositorio.Modificacion(usuario);
+                TempData["Mensaje"] = esPerfil
+                                        ? "Perfil actualizado correctamente."
+                                        : "Usuario actualizado correctamente.";
+            }
+            if (esPerfil)
+            {
+                ViewBag.EsPerfil = true;
+                return View(usuario); // Me quedo en la misma vista
+            }
+
+            return RedirectToAction("Index", "Usuario"); // vuelvo al listado
+        }
+
+
+        // POST: /Usuario/Baja
+        [HttpPost]
+        public IActionResult Baja(int id)
+        {
+            var usuario = repositorio.ObtenerPorId(id);
+            repositorio.Baja(usuario);
+            TempData["Mensaje"] = $"Se eliminó correctamente al usuario {usuario.Persona.Nombre} {usuario.Persona.Apellido}.";
+            return RedirectToAction("Index");
+        }
+
+        // POST: /Usuario/ModificarEstado
+        [HttpPost]
+        public IActionResult ModificarEstado(int id)
+        {
+            var usuario = repositorio.ObtenerPorId(id);
+            if (usuario == null) return NotFound();
+
+            usuario.Estado = usuario.Estado is true ? false : true;
+            repositorio.ModificarEstado(usuario);
+            TempData["Mensaje"] = $"El usuario fue {(usuario.Estado is true ? "activado" : "dado de baja")}.";
+            return RedirectToAction("CreateOrEdit", new { id = usuario.Id });
+        }
+
+        // GET: /Usuario/Detalles
+        public IActionResult Detalles(int id)
+        {
+            var usuario = repositorio.ObtenerPorId(id);
+            return View(usuario);
+        }
+
+
+
+
 
 
     }

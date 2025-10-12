@@ -9,12 +9,12 @@ namespace inmobiliariaBD.Models
         // Se valida que tenga formato de correo electrónico
         [Required(ErrorMessage = "El email es obligatorio")]
         [EmailAddress(ErrorMessage = "Debe ingresar un email válido")]
-        public string Usuario { get; set; } = "";
+        public string Usuario { get; set; }
 
         // Campo obligatorio que representa la contraseña
         // Se renderiza como campo tipo password en la vista
         [Required(ErrorMessage = "La clave es obligatoria")]
         [DataType(DataType.Password)]
-        public string Clave { get; set; } = "";
+        public string Clave { get; set; }
     }
 }
