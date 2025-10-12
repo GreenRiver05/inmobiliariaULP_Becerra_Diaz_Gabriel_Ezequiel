@@ -27,7 +27,7 @@
   {
     "Id": 6,
     "Titulo": "ABM de Usuarios. Se debe distinguir entre los roles de administradores y empleados. Solo los administradores pueden gestionar otros usuarios (ABM).",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 7,
@@ -37,7 +37,7 @@
   {
     "Id": 8,
     "Titulo": "Uso de autenticaci\u00F3n para poder operar (login).",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 9,
@@ -97,6 +97,6 @@
   {
     "Id": 20,
     "Titulo": "Usabilidad para el usuario, como men\u00FA de navegaci\u00F3n, listados con datos representativos, nombres de campos apropiados, ortograf\u00EDa, accesos directos, notificaciones (resultado de operaciones y errores entre otras), validaciones de datos, etc.",
-    "Completado": false
+    "Completado": true
   }
 ]

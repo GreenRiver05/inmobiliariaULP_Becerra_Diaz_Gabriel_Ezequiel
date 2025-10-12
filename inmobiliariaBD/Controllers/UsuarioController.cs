@@ -135,7 +135,7 @@ namespace inmobiliariaBD.Controllers
 
         // GET: /Usuario/CreateOrEdit
         [HttpGet]
-       
+
         public IActionResult CreateOrEdit(int? id, bool esPerfil = false)
         {
             Usuario u = id.HasValue ? repositorio.ObtenerPorId(id.Value) : new Usuario { Persona = new Persona() };
@@ -146,7 +146,8 @@ namespace inmobiliariaBD.Controllers
         // POST: /Usuario/CreateOrEdit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateOrEdit(Usuario usuario, bool esPerfil = false)
+        public async Task<IActionResult> CreateOrEdit(Usuario usuario, bool esPerfil = false, bool eliminarAvatar = false)
+
         {
 
             if (usuario.Dni == 0)
@@ -177,6 +178,21 @@ namespace inmobiliariaBD.Controllers
                 var original = repositorio.ObtenerPorId(usuario.Id);
                 usuario.Contraseña = original.Contraseña;
             }
+
+            if (eliminarAvatar && usuario.Id != 0)
+            {
+                var original = repositorio.ObtenerPorId(usuario.Id);
+                if (!string.IsNullOrEmpty(original.Avatar))
+                {
+                    string rutaCompleta = Path.Combine(environment.WebRootPath, original.Avatar);
+                    if (System.IO.File.Exists(rutaCompleta))
+                    {
+                        System.IO.File.Delete(rutaCompleta);
+                    }
+                }
+                usuario.Avatar = null;
+            }
+
 
 
             // Procesar avatar si se subió
