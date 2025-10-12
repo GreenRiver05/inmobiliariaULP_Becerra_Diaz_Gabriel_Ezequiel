@@ -56,13 +56,17 @@
                             title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#confirmContratoModal" data-contrato-id="@c.Id"
-                            data-inquilino="@c.Inquilino.Persona.ToStringSimple()" data-direccion="@c.Inmueble.Direccion"
-                            data-monto="@c.Monto" data-desde="@c.Desde.ToString("dd/MM/yyyy")"
-                            data-hasta="@c.Hasta.ToString("dd/MM/yyyy")" data-estado="@c.Estado" title="Eliminar">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        @if (User.IsInRole("Admin")) // AUTORIZACIoN DE ELIMINAR
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#confirmContratoModal" data-contrato-id="@c.Id"
+                                data-inquilino="@c.Inquilino.Persona.ToStringSimple()" data-direccion="@c.Inmueble.Direccion"
+                                data-monto="@c.Monto" data-desde="@c.Desde.ToString("dd/MM/yyyy")"
+                                data-hasta="@c.Hasta.ToString("dd/MM/yyyy")" data-estado="@c.Estado" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        }
+
                     </td>
                 </tr>
             }

@@ -37,7 +37,7 @@
             Disponibles
         </button>
         <button type="submit" name="estado" value="false"
-            class="btn @(estado is false? "btn-danger" : "btn-outline-danger")">
+            class="btn @(estado is false ? "btn-danger" : "btn-outline-danger")">
             No disponibles
         </button>
     </div>
@@ -86,13 +86,17 @@
                         title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                        data-bs-target="#confirmModal" data-inmueble-id="@i.Id" data-direccion="@i.Direccion"
-                        data-localidad="@i.Localidad" data-precio="@i.Precio"
-                        data-propietario="@i.Propietario.Persona.ToStringSimple()" data-tipo="@i.TipoInmueble.Tipo"
-                        title="Eliminar">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                    @if (User.IsInRole("Admin"))
+                    { // AUTORIZACIoN DE ELIMINAR
+
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#confirmModal" data-inmueble-id="@i.Id" data-direccion="@i.Direccion"
+                            data-localidad="@i.Localidad" data-precio="@i.Precio"
+                            data-propietario="@i.Propietario.Persona.ToStringSimple()" data-tipo="@i.TipoInmueble.Tipo"
+                            title="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    }
                 </td>
             </tr>
         }
@@ -144,7 +148,7 @@
         <li>✅ Implementar eliminación</li>
         <li>✅ Implementar detalles</li>
         <li>✅ Paginación</li>
-        
+
         <li>❌ Validaciones antes de eliminar (si tiene o no contrato)</li>
         <li>✅ Colocar estado o filtrar por estado</li>
         <li>✅ Buscar inmueble</li>

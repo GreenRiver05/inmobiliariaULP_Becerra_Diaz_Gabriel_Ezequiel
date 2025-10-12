@@ -101,7 +101,7 @@
 </form>
 
 <div class="d-flex justify-content-center gap-3 mt-4">
-    @if (Model.Id != null)
+    @if (Model.Id != null && User.IsInRole("Admin"))
     {
         <form asp-action="ModificarEstado" asp-controller="Propietario" method="post">
             <input type="hidden" name="id" value="@Model.Id" />

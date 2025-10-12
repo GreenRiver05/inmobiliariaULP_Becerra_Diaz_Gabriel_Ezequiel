@@ -34,7 +34,6 @@ namespace inmobiliariaBD.Controllers
             return View(propietarios);
         }
 
-
         [HttpGet]
         public IActionResult CreateOrEdit(int? id)
         {
@@ -125,6 +124,7 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Baja(int id)
         {
@@ -135,7 +135,8 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
 
         }
-
+        
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult ModificarEstado(int id)
         {

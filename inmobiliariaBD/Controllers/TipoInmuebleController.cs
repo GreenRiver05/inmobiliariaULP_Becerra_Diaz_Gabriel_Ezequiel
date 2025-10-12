@@ -67,6 +67,7 @@ namespace inmobiliariaBD.Controllers
 
 
 
+        [Authorize(Roles = "Administrador")]
         public IActionResult Baja(int id)
         {
             var tipoInmueble = repositorio.ObtenerPorId(id);

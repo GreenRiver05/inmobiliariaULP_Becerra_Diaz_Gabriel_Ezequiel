@@ -104,13 +104,16 @@ namespace inmobiliariaBD.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrador")]
         public IActionResult Baja(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
             repositorio.Baja(inmueble);
             TempData["Mensaje"] = $"Se Elimino Correctamente el inmueble";
             return RedirectToAction("Index");
-}
+        }
+        
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult ModificarEstado(int id, bool nuevoEstado)
         {

@@ -94,6 +94,8 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
 
+
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Baja(int id)
         {

@@ -135,7 +135,6 @@ namespace inmobiliariaBD.Controllers
 
         // GET: /Usuario/CreateOrEdit
         [HttpGet]
-
         public IActionResult CreateOrEdit(int? id, bool esPerfil = false)
         {
             Usuario u = id.HasValue ? repositorio.ObtenerPorId(id.Value) : new Usuario { Persona = new Persona() };
@@ -260,6 +259,7 @@ namespace inmobiliariaBD.Controllers
 
 
         // POST: /Usuario/Baja
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Baja(int id)
         {
@@ -270,6 +270,7 @@ namespace inmobiliariaBD.Controllers
         }
 
         // POST: /Usuario/ModificarEstado
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult ModificarEstado(int id)
         {

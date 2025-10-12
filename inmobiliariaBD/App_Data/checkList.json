@@ -42,7 +42,7 @@
   {
     "Id": 9,
     "Titulo": "Uso de pol\u00EDticas de autorizaci\u00F3n para limitar las bajas exclusivamente al rol \u0022Administrador\u0022.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 10,
