@@ -10,7 +10,7 @@
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-success text-center">Pago</div>
         <div class="card-body p-2">
-            <p><strong>ID:</strong> @Model.Pago.Id</p>
+            <p><strong>Registro N°:</strong> @Model.Pago.Id</p>
             <p><strong>N° Pago:</strong> @Model.Pago.NumeroPago</p>
             <p><strong>Monto:</strong> $@Model.Pago.Monto</p>
             <p><strong>Fecha:</strong> @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
@@ -25,18 +25,18 @@
         </div>
     </div>
 
-<div class="d-flex flex-column gap-3" style="min-width: 260px;">
-        
+    <div class="d-flex flex-column gap-3" style="min-width: 260px;">
+
         <div class="card bg-dark text-white border-secondary">
             <div class="card-header bg-info text-center">Contrato</div>
             <div class="card-body p-2">
-                <p><strong>ID:</strong> @Model.Contrato.Id</p>
+                <p><strong>Contrato N°:</strong> @Model.Contrato.Id</p>
                 <p><strong>Inicio:</strong> @Model.Contrato.Desde.ToString("dd/MM/yyyy")</p>
                 <p><strong>Fin:</strong> @Model.Contrato.Hasta.ToString("dd/MM/yyyy")</p>
             </div>
         </div>
 
-       
+
         <div class="card bg-dark text-white border-secondary">
             <div class="card-header bg-secondary text-center">Inmueble</div>
             <div class="card-body p-2">
@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-   
+
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-info text-center">Inquilino</div>
         <div class="card-body p-2">
@@ -59,7 +59,7 @@
         </div>
     </div>
 
-    
+
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-primary text-center">Propietario</div>
         <div class="card-body p-2">
@@ -73,12 +73,22 @@
         </div>
     </div>
 
-   
-    
+
+
 </div>
 
-<div class="text-center mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado
-    </a>
+<div class="d-flex justify-content-center mt-4">
+    @if (ViewBag.VolverAContrato != null && (bool)ViewBag.VolverAContrato)
+    {
+        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@Model.Contrato.Id"
+            class="btn btn-outline-secondary mt-4">
+            <i class="fa-solid fa-arrow-left"></i> Volver al contrato
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary mt-4">
+            <i class="fa-solid fa-arrow-left"></i> Volver al listado
+        </a>
+    }
 </div>

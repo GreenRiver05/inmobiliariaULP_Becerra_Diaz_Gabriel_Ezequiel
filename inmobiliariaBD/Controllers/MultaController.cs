@@ -28,28 +28,46 @@ namespace inmobiliariaBD.Controllers
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
             ViewBag.Busqueda = busqueda;
+            ViewBag.Desde = desde?.ToString("yyyy-MM-dd");
+            ViewBag.Hasta = hasta?.ToString("yyyy-MM-dd");
             return View(multas);
         }
 
         [HttpGet]
-        public IActionResult CreateOrEdit(int? id)
+        public IActionResult CreateOrEdit(int? id, int? contratoId)
         {
-            Multa multa = id.HasValue
-                ? repo.ObtenerPorId(id.Value)
-                : new Multa { Contrato = new Contrato { Inquilino = new Inquilino { Persona = new Persona() } } };
+            if (id == null)
+            {
+                var nueva = new Multa
+                {
+                    ContratoId = contratoId ?? 0,
+                    FechaAviso = DateTime.Today,
+                    FechaTerminacion = DateTime.Today.AddDays(1),
+                    Contrato = new Contrato { Inquilino = new Inquilino { Persona = new Persona() } }
+                };
 
+                ViewBag.ContratoFijo = contratoId.HasValue;
+                ViewBag.Contratos = repoContrato.ObtenerTodos()
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = $"Contrato #{c.Id} - {c.Inquilino.Persona.Nombre} {c.Inquilino.Persona.Apellido}"
+                    }).ToList();
+                return View(nueva);
+            }
+            var multa = repo.ObtenerPorId(id.Value);
+            ViewBag.ContratoFijo = contratoId.HasValue;
             ViewBag.Contratos = repoContrato.ObtenerTodos()
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
                     Text = $"Contrato #{c.Id} - {c.Inquilino.Persona.Apellido}, {c.Inquilino.Persona.Nombre}"
                 }).ToList();
-
             return View(multa);
         }
 
         [HttpPost]
-        public IActionResult CreateOrEdit(Multa multa)
+        public IActionResult CreateOrEdit(Multa multa, bool volverAContrato = false)
         {
             if (!decimal.TryParse(multa.Monto, NumberStyles.Any, new CultureInfo("es-AR"), out var montoDecimal) || montoDecimal <= 0)
             {
@@ -83,19 +101,26 @@ namespace inmobiliariaBD.Controllers
                 TempData["Mensaje"] = "Multa actualizada correctamente.";
             }
 
+            if (volverAContrato)
+            {
+                return RedirectToAction("Detalles", "Contrato", new { id = multa.ContratoId });
+            }
+
             return RedirectToAction("Index");
         }
 
         public IActionResult Detalles(int id,
                                         [FromServices] IRepositorioInquilino repoInquilino,
                                         [FromServices] IRepositorioPropietario repoPropietario,
-                                        [FromServices] IRepositorioInmueble repoInmueble)
+                                        [FromServices] IRepositorioInmueble repoInmueble,
+                                        bool volverAContrato = false)
         {
             var multa = repo.ObtenerPorId(id);
             var contrato = repoContrato.ObtenerPorId(multa.ContratoId);
             var inquilino = repoInquilino.ObtenerPorId(contrato.InquilinoId);
             var inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
             var propietario = repoPropietario.ObtenerPorId(inmueble.PropietarioId);
+            ViewBag.VolverAContrato = volverAContrato;
 
             var modelo = new MultaDetalleViewModel
             {
@@ -113,11 +138,15 @@ namespace inmobiliariaBD.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Baja(int id)
+        public IActionResult Baja(int id, bool volverAContrato = false)
         {
             var multa = repo.ObtenerPorId(id);
             repo.Baja(multa);
             TempData["Mensaje"] = "Multa eliminada correctamente.";
+            if (volverAContrato)
+            {
+                return RedirectToAction("Detalles", "Contrato", new { id = multa.ContratoId });
+            }
             return RedirectToAction("Index");
         }
     }

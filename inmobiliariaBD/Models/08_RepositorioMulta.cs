@@ -95,8 +95,11 @@ namespace inmobiliariaBD.Models
             {
                 var filtros = new List<string>();
                 if (!string.IsNullOrEmpty(busqueda))
-                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR i.direccion LIKE @busqueda)");
-
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR c.id LIKE @busqueda)");
+                if (desde.HasValue)
+                    filtros.Add("m.fechaAviso >= @desde");
+                if (hasta.HasValue)
+                    filtros.Add("m.fechaTerminacion <= @hasta");
                 string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
 
                 string sql = $@"
@@ -113,7 +116,10 @@ namespace inmobiliariaBD.Models
                     command.CommandType = CommandType.Text;
                     if (!string.IsNullOrEmpty(busqueda))
                         command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
-
+                    if (desde.HasValue)
+                        command.Parameters.AddWithValue("@desde", desde.Value);
+                    if (hasta.HasValue)
+                        command.Parameters.AddWithValue("@hasta", hasta.Value);
                     connection.Open();
                     res = Convert.ToInt32(command.ExecuteScalar());
                     connection.Close();
@@ -172,7 +178,11 @@ namespace inmobiliariaBD.Models
             {
                 var filtros = new List<string>();
                 if (!string.IsNullOrEmpty(busqueda))
-                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR i.direccion LIKE @busqueda)");
+                    filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR c.id LIKE @busqueda)");
+                if (desde.HasValue)
+                    filtros.Add("m.fechaAviso >= @desde");
+                if (hasta.HasValue)
+                    filtros.Add("m.fechaTerminacion <= @hasta");
 
                 string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
 
@@ -195,6 +205,10 @@ namespace inmobiliariaBD.Models
                     command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
                     if (!string.IsNullOrEmpty(busqueda))
                         command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
+                    if (desde.HasValue)
+                        command.Parameters.AddWithValue("@desde", desde.Value);
+                    if (hasta.HasValue)
+                        command.Parameters.AddWithValue("@hasta", hasta.Value);
 
                     connection.Open();
                     var reader = command.ExecuteReader();

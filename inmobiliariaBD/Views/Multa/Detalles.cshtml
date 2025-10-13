@@ -7,7 +7,7 @@
 <h2 class="text-light mb-4 text-center">⚠️ Detalle de la Multa</h2>
 
 <div class="d-flex flex-row flex-nowrap overflow-auto gap-3 mb-4">
-    <!-- Multa -->
+
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-danger text-center">Multa</div>
         <div class="card-body p-2">
@@ -16,11 +16,10 @@
             <p><strong>Monto:</strong> $@Model.Multa.Monto</p>
             <p><strong>Fecha de aviso:</strong> @Model.Multa.FechaAviso.ToString("dd/MM/yyyy")</p>
             <p><strong>Fecha de terminación:</strong> @Model.Multa.FechaTerminacion.ToString("dd/MM/yyyy")</p>
-           
+
         </div>
     </div>
 
-    <!-- Contrato + Inmueble -->
     <div class="d-flex flex-column gap-3" style="min-width: 260px;">
         <div class="card bg-dark text-white border-secondary">
             <div class="card-header bg-info text-center">Contrato</div>
@@ -40,7 +39,6 @@
         </div>
     </div>
 
-    <!-- Inquilino -->
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-info text-center">Inquilino</div>
         <div class="card-body p-2">
@@ -54,7 +52,6 @@
         </div>
     </div>
 
-    <!-- Propietario -->
     <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
         <div class="card-header bg-primary text-center">Propietario</div>
         <div class="card-body p-2">
@@ -69,8 +66,19 @@
     </div>
 </div>
 
-<div class="text-center mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado
-    </a>
+<div class="d-flex justify-content-center mt-4">
+
+    @if (ViewBag.VolverAContrato != null && (bool)ViewBag.VolverAContrato)
+    {
+        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@Model.Contrato.Id"
+           class="btn btn-outline-secondary me-2">
+            <i class="fa-solid fa-arrow-left"></i> Volver al contrato
+        </a>
+    }else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Volver al listado
+        </a>
+    }
+
 </div>

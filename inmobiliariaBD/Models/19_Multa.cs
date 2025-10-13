@@ -24,7 +24,7 @@ namespace inmobiliariaBD.Models
 
         //[ForeignKey("ContratoId")]
         [ForeignKey(nameof(ContratoId))]
-        public Contrato Contrato { get; set; }
+        public Contrato? Contrato { get; set; }
     }
 
 }

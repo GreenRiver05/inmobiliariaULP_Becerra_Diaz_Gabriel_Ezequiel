@@ -65,7 +65,7 @@ namespace inmobiliariaBD.Controllers
 
             var pago = repo.ObtenerPorId(id.Value);
 
-            ViewBag.ContratoFijo = false;
+            ViewBag.ContratoFijo = contratoId.HasValue;
 
             ViewBag.Contratos = repoContrato.ObtenerTodos()
                 .Select(c => new SelectListItem
@@ -119,7 +119,8 @@ namespace inmobiliariaBD.Controllers
         public IActionResult Detalles(int id,
                                         [FromServices] IRepositorioInquilino repoInquilino,
                                         [FromServices] IRepositorioPropietario repoPropietario,
-                                        [FromServices] IRepositorioInmueble repoInmueble)
+                                        [FromServices] IRepositorioInmueble repoInmueble,
+                                        bool volverAContrato = false)
         {
             var pago = repo.ObtenerPorId(id);
 
@@ -127,6 +128,7 @@ namespace inmobiliariaBD.Controllers
             var inquilino = repoInquilino.ObtenerPorId(contrato.InquilinoId);
             var inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
             var propietario = repoPropietario.ObtenerPorId(inmueble.PropietarioId);
+            ViewBag.VolverAContrato = volverAContrato;
 
             var modelo = new PagoDetalleViewModel
             {
@@ -148,7 +150,7 @@ namespace inmobiliariaBD.Controllers
             repo.ModificarEstado(pago);
             TempData["Mensaje"] = $"Se modificó el estado del inmueble correctamente.";
 
-            return RedirectToAction("CreateOrEdit", new { id = pago.Id });
+            return RedirectToAction("CreateOrEdit", new { id = pago.Id, contratoId = pago.ContratoId });
         }
 
 
@@ -157,11 +159,15 @@ namespace inmobiliariaBD.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Baja(int id)
+        public IActionResult Baja(int id, bool volverAContrato = false)
         {
             var pago = repo.ObtenerPorId(id);
             repo.Baja(pago);
             TempData["Mensaje"] = "Pago eliminado correctamente.";
+            if (volverAContrato)
+            {
+                return RedirectToAction("Detalles", "Contrato", new { id = pago.ContratoId });
+            }
             return RedirectToAction("Index");
         }
     }

@@ -2,15 +2,18 @@
 
 @{
     ViewData["Title"] = Model.Id == 0 ? "Nueva Multa" : "Editar Multa";
+    var contratoFijo = ViewBag.ContratoFijo as bool? ?? false;
 }
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3" style="background-color: #2a1e1e;">
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3"
+        style="background-color: #2a1e1e;">
         <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
         <span class="fw-semibold text-danger">Alerta:</span> @TempData["Mensaje"]
     </div>
 }
+
 
 <h2 class="text-light mb-4 text-center">
     @(Model.Id == 0 ? "⚠️ Nueva Multa" : "✏️ Editar Multa")
@@ -19,11 +22,24 @@
 <form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
     <input type="hidden" asp-for="Id" />
 
-    <!-- Fila 1: Contrato + Monto -->
     <div class="row g-3">
+
         <div class="col-md-6">
             <label asp-for="ContratoId" class="form-label">Contrato</label>
-            <select asp-for="ContratoId" asp-items="ViewBag.Contratos" class="form-select bg-dark text-white border-light"></select>
+            @if (contratoFijo)
+            {
+                <select asp-for="ContratoId" asp-items="ViewBag.Contratos"
+                    class="form-select bg-dark text-white border-light" disabled="disabled"></select>
+
+                <input type="hidden" asp-for="ContratoId" />
+                <input type="hidden" name="volverAContrato" value="true" />
+            }
+            else
+            {
+                <select asp-for="ContratoId" asp-items="ViewBag.Contratos"
+                    class="form-select bg-dark text-white border-light"></select>
+            }
+
             <span asp-validation-for="ContratoId" class="text-danger small"></span>
         </div>
 
@@ -34,7 +50,7 @@
         </div>
     </div>
 
-    <!-- Fila 2: Fechas -->
+
     <div class="row g-3 mt-2">
         <div class="col-md-6">
             <label asp-for="FechaAviso" class="form-label">Fecha de aviso</label>
@@ -49,20 +65,31 @@
         </div>
     </div>
 
-    <!-- Botón guardar -->
+
     <div class="d-flex justify-content-center mt-4">
         <button type="submit" class="btn btn-danger px-4">💾 Guardar</button>
     </div>
 </form>
 
-<!-- Botón volver -->
+
 <div class="d-flex justify-content-center mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado
-    </a>
+    @if (contratoFijo)
+    {
+        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@Model.ContratoId"
+            class="btn btn-outline-secondary me-2">
+            <i class="fa-solid fa-arrow-left"></i> Volver al contrato
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Volver al listado
+        </a>
+    }
+
 </div>
 
-<!-- Validaciones -->
+
 <div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
     <ul class="small">

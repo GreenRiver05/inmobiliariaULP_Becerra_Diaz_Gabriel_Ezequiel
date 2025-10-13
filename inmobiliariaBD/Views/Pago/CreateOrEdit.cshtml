@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = Model.Id == 0 ? "Nuevo Pago" : "Editar Pago";
+    var contratoFijo = ViewBag.ContratoFijo as bool? ?? false;
+
 }
 
 
@@ -22,9 +24,6 @@
     <input type="hidden" asp-for="Id" />
 
     <div class="row g-3">
-        @{
-            var contratoFijo = ViewBag.ContratoFijo as bool? ?? false;
-        }
 
         <div class="col-md-5">
             <label asp-for="ContratoId" class="form-label">Contrato</label>
@@ -33,8 +32,11 @@
             {
                 <select asp-for="ContratoId" asp-items="ViewBag.Contratos"
                     class="form-select bg-dark text-white border-light" disabled="disabled"></select>
+
                 <input type="hidden" asp-for="ContratoId" />
+                <input type="hidden" name="volverAContrato" value="true" />
             }
+
             else
             {
                 <select asp-for="ContratoId" asp-items="ViewBag.Contratos"
@@ -137,10 +139,21 @@
 }
 
 <div class="d-flex justify-content-center mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado
-    </a>
+    @if (contratoFijo)
+    {
+        <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@Model.ContratoId"
+            class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Volver al contrato
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Volver al listado
+        </a>
+    }
 </div>
+
 
 <div class="validaciones-info mt-5 text-light border-top pt-3">
     <h5>🔍 Validaciones y/o implementaciones:</h5>
