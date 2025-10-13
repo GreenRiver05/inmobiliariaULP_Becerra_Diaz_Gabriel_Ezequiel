@@ -326,7 +326,13 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
+        public IList<Contrato> ObtenerPaginados(int pagina,
+                                                int cantidadPorPagina,
+                                                string? busqueda = null,
+                                                bool? estado = null,
+                                                DateTime? desde = null,
+                                                DateTime? hasta = null,
+                                                string? estadoPago = null)
         {
             var lista = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
@@ -334,8 +340,12 @@ namespace inmobiliariaBD.Models
                 var filtros = new List<string>();
                 if (!string.IsNullOrEmpty(busqueda))
                     filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR pe.dni LIKE @busqueda OR i.direccion LIKE @busqueda)");
-                if (estado.HasValue)
+                if (!string.IsNullOrEmpty(estadoPago))
                     filtros.Add("c.estado = @estado");
+                if (desde.HasValue)
+                    filtros.Add("c.desde >= @desde");
+                if (hasta.HasValue)
+                    filtros.Add("c.hasta <= @hasta");
 
                 string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
 
@@ -352,12 +362,17 @@ namespace inmobiliariaBD.Models
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
+                    command.CommandType = CommandType.Text;
                     command.Parameters.AddWithValue("@cantidad", cantidadPorPagina);
                     command.Parameters.AddWithValue("@offset", (pagina - 1) * cantidadPorPagina);
                     if (!string.IsNullOrEmpty(busqueda))
                         command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
-                    if (estado.HasValue)
-                        command.Parameters.AddWithValue("@estado", estado.Value);
+                    if (!string.IsNullOrEmpty(estadoPago))
+                        command.Parameters.AddWithValue("@estado", estadoPago);
+                    if (desde.HasValue)
+                        command.Parameters.AddWithValue("@desde", desde.Value);
+                    if (hasta.HasValue)
+                        command.Parameters.AddWithValue("@hasta", hasta.Value);
 
                     connection.Open();
                     var reader = command.ExecuteReader();
@@ -396,7 +411,11 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-        public int ObtenerCantidad(string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
+        public int ObtenerCantidad(string? busqueda = null,
+                                    bool? estado = null,
+                                    DateTime? desde = null,
+                                    DateTime? hasta = null,
+                                    string? estadoPago = null)
         {
             int res = 0;
             using (var connection = new MySqlConnection(connectionString))
@@ -404,8 +423,12 @@ namespace inmobiliariaBD.Models
                 var filtros = new List<string>();
                 if (!string.IsNullOrEmpty(busqueda))
                     filtros.Add("(pe.nombre LIKE @busqueda OR pe.apellido LIKE @busqueda OR pe.dni LIKE @busqueda OR i.direccion LIKE @busqueda)");
-                if (estado.HasValue)
+                if (!string.IsNullOrEmpty(estadoPago))
                     filtros.Add("c.estado = @estado");
+                if (desde.HasValue)
+                    filtros.Add("c.desde >= @desde");
+                if (hasta.HasValue)
+                    filtros.Add("c.hasta <= @hasta");
 
                 string where = filtros.Count > 0 ? "WHERE " + string.Join(" AND ", filtros) : "";
 
@@ -419,11 +442,16 @@ namespace inmobiliariaBD.Models
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
+                    command.CommandType = CommandType.Text;
                     if (!string.IsNullOrEmpty(busqueda))
                         command.Parameters.AddWithValue("@busqueda", $"%{busqueda}%");
-                    if (estado.HasValue)
-                        command.Parameters.AddWithValue("@estado", estado.Value);
-
+                    if (!string.IsNullOrEmpty(estadoPago))
+                        command.Parameters.AddWithValue("@estado", estadoPago);
+                    if (desde.HasValue)
+                        command.Parameters.AddWithValue("@desde", desde.Value);
+                    if (hasta.HasValue)
+                        command.Parameters.AddWithValue("@hasta", hasta.Value);
+                        
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())

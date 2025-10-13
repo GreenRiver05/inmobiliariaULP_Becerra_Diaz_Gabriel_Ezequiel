@@ -28,10 +28,13 @@ namespace inmobiliariaBD.Controllers
             int cantidadPorPagina = 5;
             var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado, desde, hasta, estadoPago);
             int total = repositorio.ObtenerCantidad(busqueda, estado, desde, hasta, estadoPago);
+
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
             ViewBag.Busqueda = busqueda;
             ViewBag.Estado = estado;
+            ViewBag.Desde = desde?.ToString("yyyy-MM-dd");
+            ViewBag.Hasta = hasta?.ToString("yyyy-MM-dd");
             return View(contratos);
         }
 

@@ -4,6 +4,10 @@
     ViewData["Title"] = "Listado de Contratos";
     var paginaActual = ViewBag.PaginaActual as int? ?? 1;
     var totalPaginas = ViewBag.TotalPaginas as int? ?? 1;
+    var busqueda = ViewBag.Busqueda as string ?? "";
+    var estado = ViewBag.Estado as string ?? "";
+    var desde = ViewBag.Desde as string ?? "";
+    var hasta = ViewBag.Hasta as string ?? "";
 }
 
 @if (TempData["Mensaje"] != null)
@@ -17,17 +21,51 @@
     <i class="fa-solid fa-file-circle-plus"></i> Crear nuevo Contrato
 </a>
 
+<form method="get" asp-action="Index" class="row g-2 mb-4">
+    <input type="hidden" name="pagina" value="1" />
+
+    <!-- Filtros por estado -->
+    <div class="col-12 d-flex flex-wrap gap-2 mb-2">
+        <button type="submit" name="estadoPago" value=""
+            class="btn @(string.IsNullOrEmpty(estado) ? "btn-secondary" : "btn-outline-secondary")">Todos</button>
+
+        <button type="submit" name="estadoPago" value="Vigente"
+            class="btn @(estado == "Vigente" ? "btn-success" : "btn-outline-success")">Vigentes</button>
+
+        <button type="submit" name="estadoPago" value="Finalizado"
+            class="btn @(estado == "Finalizado" ? "btn-secondary" : "btn-outline-secondary")">Finalizados</button>
+
+        <button type="submit" name="estadoPago" value="Rescindido"
+            class="btn @(estado == "Rescindido" ? "btn-danger" : "btn-outline-danger")">Rescindidos</button>
+    </div>
+
+    <!-- Filtros por búsqueda y fechas -->
+    <div class="col-md-4">
+        <input type="text" name="busqueda" value="@busqueda" class="form-control"
+            placeholder="🔍 Buscar por inquilino o dirección" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="desde" value="@desde" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="hasta" value="@hasta" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-light w-100">Buscar</button>
+    </div>
+</form>
+
 <div class="table-responsive">
     <table class="table table-dark table-bordered table-hover tabla-index">
         <thead class="bg-secondary text-light">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.Id)</th>
-                <th>@Html.DisplayNameFor(model => model.Inquilino)</th>
-                <th>@Html.DisplayNameFor(model => model.Inmueble)</th>
-                <th>@Html.DisplayNameFor(model => model.Monto)</th>
-                <th>@Html.DisplayNameFor(model => model.Desde)</th>
-                <th>@Html.DisplayNameFor(model => model.Hasta)</th>
-                <th>@Html.DisplayNameFor(model => model.Estado)</th>
+                <th>ID</th>
+                <th>Inquilino</th>
+                <th>Inmueble</th>
+                <th>Monto</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Estado</th>
                 <th class="text-center">Acciones</th>
             </tr>
         </thead>
@@ -42,31 +80,31 @@
                     <td>@c.Desde.ToString("dd/MM/yyyy")</td>
                     <td>@c.Hasta.ToString("dd/MM/yyyy")</td>
                     <td>
-                        <span
-                            class="badge @(c.Estado == "Vigente" ? "bg-success" : c.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                        <span class="badge @(c.Estado == "Vigente" ? "bg-success" : c.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
                             @c.Estado
                         </span>
                     </td>
                     <td class="text-center">
-                        <a asp-action="Detalles" asp-route-id="@c.Id" class="btn btn-sm btn-outline-info me-1"
-                            title="Ver detalles">
+                        <a asp-action="Detalles" asp-route-id="@c.Id" class="btn btn-sm btn-outline-info me-1">
                             <i class="fa-solid fa-eye"></i>
                         </a>
-                        <a asp-action="CreateOrEdit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-warning me-1"
-                            title="Editar">
+                        <a asp-action="CreateOrEdit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-warning me-1">
                             <i class="fa-solid fa-pen"></i>
                         </a>
-                        @if (User.IsInRole("Admin")) // AUTORIZACIoN DE ELIMINAR
+                        @if (User.IsInRole("Admin"))
                         {
                             <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                data-bs-target="#confirmContratoModal" data-contrato-id="@c.Id"
-                                data-inquilino="@c.Inquilino.Persona.ToStringSimple()" data-direccion="@c.Inmueble.Direccion"
-                                data-monto="@c.Monto" data-desde="@c.Desde.ToString("dd/MM/yyyy")"
-                                data-hasta="@c.Hasta.ToString("dd/MM/yyyy")" data-estado="@c.Estado" title="Eliminar">
+                                data-bs-target="#confirmContratoModal"
+                                data-contrato-id="@c.Id"
+                                data-inquilino="@c.Inquilino.Persona.ToStringSimple()"
+                                data-direccion="@c.Inmueble.Direccion"
+                                data-monto="@c.Monto"
+                                data-desde="@c.Desde.ToString("dd/MM/yyyy")"
+                                data-hasta="@c.Hasta.ToString("dd/MM/yyyy")"
+                                data-estado="@c.Estado">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         }
-
                     </td>
                 </tr>
             }
@@ -74,12 +112,14 @@
     </table>
 </div>
 
+<!-- Paginación -->
 <nav aria-label="Paginación">
     <ul class="pagination justify-content-center my-4">
-
         <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
-            <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-start"
-                asp-action="Index" asp-route-pagina="@(paginaActual - 1)">
+            <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
+               asp-action="Index" asp-route-pagina="@(paginaActual - 1)"
+               asp-route-busqueda="@busqueda" asp-route-estado="@estado"
+               asp-route-desde="@desde" asp-route-hasta="@hasta">
                 <i class="fa-solid fa-chevron-left me-1"></i> Anterior
             </a>
         </li>
@@ -87,16 +127,18 @@
         @for (int i = 1; i <= totalPaginas; i++)
         {
             <li class="page-item @(i == paginaActual ? "active" : "")">
-                <a class="page-link @(i == paginaActual ? "bg-info text-dark fw-bold border-info" : "bg-dark text-white border-secondary")"
-                    asp-action="Index" asp-route-pagina="@i">
-                    @i
-                </a>
+                <a class="page-link @(i == paginaActual ? "bg-info text-dark border-info" : "bg-dark text-info border-info")"
+                   asp-action="Index" asp-route-pagina="@i"
+                   asp-route-busqueda="@busqueda" asp-route-estado="@estado"
+                   asp-route-desde="@desde" asp-route-hasta="@hasta">@i</a>
             </li>
         }
 
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
-            <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border border-dark opacity-50" : "bg-dark text-info border-info") rounded-end"
-                asp-action="Index" asp-route-pagina="@(paginaActual + 1)">
+            <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
+               asp-action="Index" asp-route-pagina="@(paginaActual + 1)"
+               asp-route-busqueda="@busqueda" asp-route-estado="@estado"
+               asp-route-desde="@desde" asp-route-hasta="@hasta">
                 Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
             </a>
         </li>
@@ -108,10 +150,10 @@
     <h5>🔍 Validaciones y/o implementaciones:</h5>
     <ul class="small">
         <li>✅ Implementar eliminación</li>
-        <li>❌ Paginación</li>
+        <li>✅ Paginación</li>
         <li>❌ Buscar</li>
         <li>❌ Filtrar por estado</li>
-        <li>❌ Implementar eliminar</li>
+        <li>✅ Implementar eliminar</li>
         <li>✅ Implementar detalles</li>
         <li>❌ Validación antes de eliminar si aún está vigente</li>
         <li>❌ Validación antes de eliminar si tiene pagos o multas</li>

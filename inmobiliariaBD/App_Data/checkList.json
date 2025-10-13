@@ -57,7 +57,7 @@
   {
     "Id": 12,
     "Titulo": "Listar todos los contratos de alquiler que se encuentren vigentes (por fechas desde/hasta).",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 13,
