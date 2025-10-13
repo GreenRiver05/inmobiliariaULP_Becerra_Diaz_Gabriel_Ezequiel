@@ -1,0 +1,13 @@
+
+namespace inmobiliariaBD.Models
+{
+
+    public class PagoDetalleViewModel
+    {
+        public Pago Pago { get; set; }
+        public Contrato Contrato { get; set; }
+        public Inquilino Inquilino { get; set; }
+        public Propietario Propietario { get; set; }
+        public Inmueble Inmueble { get; set; }
+    }
+}

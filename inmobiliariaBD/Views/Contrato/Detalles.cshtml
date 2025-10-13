@@ -36,7 +36,7 @@
                         @($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")
                         <br />
                         <a asp-controller="Inquilino" asp-action="Detalles" asp-route-id="@Model.InquilinoId"
-                           class="btn btn-sm btn-outline-info mt-1">
+                            class="btn btn-sm btn-outline-info mt-1">
                             <i class="fa-solid fa-user"></i> Ver Inquilino
                         </a>
                     </dd>
@@ -46,14 +46,15 @@
                         @($"{Model.Inmueble.Direccion} ({Model.Inmueble.Localidad})")
                         <br />
                         <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@Model.InmuebleId"
-                           class="btn btn-sm btn-outline-info mt-1">
+                            class="btn btn-sm btn-outline-info mt-1">
                             <i class="fa-solid fa-building"></i> Ver Inmueble
                         </a>
                     </dd>
 
                     <dt class="col-sm-4">Estado</dt>
                     <dd class="col-sm-8">
-                        <span class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                        <span
+                            class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
                             @Model.Estado
                         </span>
                     </dd>
@@ -63,7 +64,17 @@
     </div>
 </div>
 
-<h4 class="text-light mb-3">💰 Pagos realizados</h4>
+<h4 class="text-light mb-3">
+    💰 Pagos realizados
+    <a asp-controller="Pago" asp-action="CreateOrEdit" asp-route-contratoId="@Model.Id" asp-route-volverAContrato="true"
+        class="btn btn-sm btn-outline-success ms-3">
+        <i class="fa-solid fa-plus"></i> Registrar nuevo pago
+    </a>
+
+</h4>
+
+
+
 
 @if (pagos != null && pagos.Any())
 {
@@ -91,7 +102,8 @@
                         <td>@pago.Detalle</td>
                         <td>@pago.Tipo</td>
                         <td>
-                            <span class="badge @(pago.Estado == "Pago" ? "bg-success" : pago.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-secondary")">
+                            <span
+                                class="badge @(pago.Estado == "Pago" ? "bg-success" : pago.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-secondary")">
                                 @(pago.Estado == "Pago" ? "Pagado" : pago.Estado == "Pendiente" ? "Pendiente" : "Anulado")
                             </span>
                         </td>
@@ -138,3 +150,7 @@ else
 {
     <div class="alert alert-info text-dark">Este contrato no tiene multas registradas.</div>
 }
+
+<a asp-action="Index" class="btn btn-outline-secondary mt-4">
+    <i class="fa-solid fa-arrow-left"></i> Volver al listado
+</a>

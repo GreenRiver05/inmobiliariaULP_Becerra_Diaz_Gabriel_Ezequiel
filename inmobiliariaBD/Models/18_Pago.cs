@@ -17,7 +17,7 @@ namespace inmobiliariaBD.Models
         [Display(Name = "Número de Pago")]
         public int NumeroPago { get; set; }
 
-        [Required]
+        [Required( ErrorMessage = "El monto es obligatorio")]
         public string Monto { get; set; }
 
         [Required]
@@ -37,7 +37,7 @@ namespace inmobiliariaBD.Models
         //[ForeignKey("ContratoId")]
         [ForeignKey(nameof(ContratoId))]
 
-        public Contrato Contrato { get; set; }
+        public Contrato? Contrato { get; set; }
     }
 
 }

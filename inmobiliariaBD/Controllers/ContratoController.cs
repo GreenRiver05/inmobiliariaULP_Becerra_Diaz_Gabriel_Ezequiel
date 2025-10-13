@@ -23,11 +23,11 @@ namespace inmobiliariaBD.Controllers
             this.repoInmueble = repoInm;
         }
 
-        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
+        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             int cantidadPorPagina = 5;
-            var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
-            int total = repositorio.ObtenerCantidad(busqueda, estado);
+            var contratos = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado, desde, hasta, estadoPago);
+            int total = repositorio.ObtenerCantidad(busqueda, estado, desde, hasta, estadoPago);
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
             ViewBag.Busqueda = busqueda;

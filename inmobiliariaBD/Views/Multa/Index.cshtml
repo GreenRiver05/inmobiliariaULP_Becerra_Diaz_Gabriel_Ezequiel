@@ -1,0 +1,193 @@
+@model IEnumerable<inmobiliariaBD.Models.Multa>
+
+@{
+    ViewData["Title"] = "Listado de Multas";
+    var paginaActual = ViewBag.PaginaActual as int? ?? 1;
+    var totalPaginas = ViewBag.TotalPaginas as int? ?? 1;
+    var busqueda = ViewBag.Busqueda as string ?? "";
+    var desde = ViewBag.Desde as string ?? "";
+    var hasta = ViewBag.Hasta as string ?? "";
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-danger">@TempData["Mensaje"]</div>
+}
+
+<h2 class="text-light mb-4">⚠️ Listado de Multas</h2>
+
+<a asp-action="CreateOrEdit" class="btn btn-outline-danger mb-4">
+    <i class="fa-solid fa-file-circle-exclamation"></i> Registrar nueva multa
+</a>
+
+<form method="get" asp-action="Index" class="row g-2 mb-4">
+    <input type="hidden" name="pagina" value="1" />
+
+    <!-- Fila búsqueda y fechas -->
+    <div class="col-md-4">
+        <input type="text" name="busqueda" value="@busqueda" class="form-control"
+            placeholder="🔍 Buscar por contrato o inquilino" />
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="desde" value="@desde" class="form-control" />
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="hasta" value="@hasta" class="form-control" />
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-light w-100">Buscar</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-dark table-bordered table-hover tabla-index">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th>Registro N°</th>
+                <th>Contrato N°</th>
+                <th>Inquilino</th>
+                <th>Monto</th>
+                <th>Aviso</th>
+                <th>Terminación</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td>@m.Id</td>
+                    <td>@m.ContratoId</td>
+                    <td>@m.Contrato.Inquilino.Persona.Nombre @m.Contrato.Inquilino.Persona.Apellido</td>
+                    <td>$@m.Monto</td>
+                    <td>@m.FechaAviso.ToString("dd/MM/yyyy")</td>
+                    <td>@m.FechaTerminacion.ToString("dd/MM/yyyy")</td>
+                    <td class="text-center">
+                        <a asp-action="Detalles" asp-route-id="@m.Id" class="btn btn-sm btn-outline-info me-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <a asp-action="CreateOrEdit" asp-route-id="@m.Id" class="btn btn-sm btn-outline-warning me-1">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#confirmModal" data-id="@m.Id" data-contrato="@m.ContratoId"
+                                data-inquilino="@m.Contrato.Inquilino.Persona.Nombre @m.Contrato.Inquilino.Persona.Apellido"
+                                data-monto="@m.Monto" data-aviso="@m.FechaAviso.ToString("dd/MM/yyyy")"
+                                data-terminacion="@m.FechaTerminacion.ToString("dd/MM/yyyy")"
+                                title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Paginación">
+    <ul class="pagination justify-content-center my-4">
+        <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
+            <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
+               asp-action="Index" asp-route-pagina="@(paginaActual - 1)" asp-route-busqueda="@busqueda"
+               asp-route-desde="@desde" asp-route-hasta="@hasta">
+                <i class="fa-solid fa-chevron-left me-1"></i> Anterior
+            </a>
+        </li>
+
+        @for (int i = 1; i <= totalPaginas; i++)
+        {
+            <li class="page-item @(i == paginaActual ? "active" : "")">
+                <a class="page-link @(i == paginaActual ? "bg-info text-dark border-info" : "bg-dark text-info border-info")"
+                   asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda"
+                   asp-route-desde="@desde" asp-route-hasta="@hasta">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
+            <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
+               asp-action="Index" asp-route-pagina="@(paginaActual + 1)" asp-route-busqueda="@busqueda"
+               asp-route-desde="@desde" asp-route-hasta="@hasta">
+                Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="validaciones-info mt-4 border-top pt-3 text-light">
+    <h5>📄 Validaciones y/o implementaciones:</h5>
+    <ul class="small">
+        <li>✅ ABM completo (alta, edición, baja)</li>
+        <li>✅ Paginación y filtros por fecha</li>
+        <li>✅ Búsqueda por contrato e inquilino</li>
+        <li>✅ Eliminación con confirmación</li>
+        <li>✅ Detalles individuales por multa</li>
+        <li>❌ Validación de contrato activo antes de registrar</li>
+    </ul>
+</div>
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <form id="modal-form" method="post" action="/Multa/Baja">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro que querés eliminar la siguiente multa?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Registro N°:</strong> <span id="modal-id"></span></li>
+                        <li><strong>Contrato N°:</strong> <span id="modal-contrato"></span></li>
+                        <li><strong>Inquilino:</strong> <span id="modal-inquilino"></span></li>
+                        <li><strong>Monto:</strong> $<span id="modal-monto"></span></li>
+                        <li><strong>Fecha de aviso:</strong> <span id="modal-aviso"></span></li>
+                        <li><strong>Fecha de terminación:</strong> <span id="modal-terminacion"></span></li>
+                    </ul>
+                    <input type="hidden" name="id" id="form-id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-outline-danger">Confirmar eliminación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmModal = document.getElementById('confirmModal');
+            if (!confirmModal) return;
+
+            confirmModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+
+                const id = button.getAttribute('data-id');
+                const contrato = button.getAttribute('data-contrato');
+                const inquilino = button.getAttribute('data-inquilino');
+                const monto = button.getAttribute('data-monto');
+                const aviso = button.getAttribute('data-aviso');
+                const terminacion = button.getAttribute('data-terminacion');
+
+                document.getElementById('modal-id').textContent = id;
+                document.getElementById('modal-contrato').textContent = contrato;
+                document.getElementById('modal-inquilino').textContent = inquilino;
+                document.getElementById('modal-monto').textContent = monto;
+                document.getElementById('modal-aviso').textContent = aviso;
+                document.getElementById('modal-terminacion').textContent = terminacion;
+
+                document.getElementById('form-id').value = id;
+            });
+        });
+    </script>
+}

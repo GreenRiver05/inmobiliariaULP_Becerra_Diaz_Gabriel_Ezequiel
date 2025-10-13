@@ -15,7 +15,7 @@ namespace inmobiliariaBD.Controllers
     public class UsuarioController : Controller
     {
         private readonly IConfiguration config;
-        private readonly IRepositorioUsuario repositorio;
+        private readonly IRepositorioUsuario repo;
         private readonly IRepositorioPersona repositorioPersona;
 
         private readonly IWebHostEnvironment environment;
@@ -23,7 +23,7 @@ namespace inmobiliariaBD.Controllers
         public UsuarioController(IConfiguration config, IRepositorioUsuario repo, IRepositorioPersona repositorioPersona, IWebHostEnvironment env)
         {
             this.config = config;
-            this.repositorio = repo;
+            this.repo = repo;
             this.repositorioPersona = repositorioPersona;
             this.environment = env;
         }
@@ -58,7 +58,7 @@ namespace inmobiliariaBD.Controllers
 
 
 
-                    var e = repositorio.ObtenerPorEmail(login.Usuario);
+                    var e = repo.ObtenerPorEmail(login.Usuario);
 
                     // Verifico si el usuario existe y si la clave coincide
                     if (e == null || e.Contraseña != hashed)
@@ -120,11 +120,14 @@ namespace inmobiliariaBD.Controllers
 
 
         // GET: Usuario
-        public ActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null)
+        public IActionResult Index(int pagina = 1, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             int cantidadPorPagina = 5;
-            var usuarios = repositorio.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado);
-            int total = repositorio.ObtenerCantidad(busqueda, estado);
+
+            // Aunque estado no lo uso en Pago, lo dejo para cumplir con la firma común
+            var usuarios = repo.ObtenerPaginados(pagina, cantidadPorPagina, busqueda, estado, desde, hasta, estadoPago);
+            int total = repo.ObtenerCantidad(busqueda, estado, desde, hasta, estadoPago);
+
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
             ViewBag.Busqueda = busqueda;
@@ -137,7 +140,7 @@ namespace inmobiliariaBD.Controllers
         [HttpGet]
         public IActionResult CreateOrEdit(int? id, bool esPerfil = false)
         {
-            Usuario u = id.HasValue ? repositorio.ObtenerPorId(id.Value) : new Usuario { Persona = new Persona() };
+            Usuario u = id.HasValue ? repo.ObtenerPorId(id.Value) : new Usuario { Persona = new Persona() };
             ViewBag.EsPerfil = esPerfil;
             return View(u);
         }
@@ -174,13 +177,13 @@ namespace inmobiliariaBD.Controllers
             else if (usuario.Id != 0)
             {
                 // Si está editando y no ingresa clave, mantener la actual
-                var original = repositorio.ObtenerPorId(usuario.Id);
+                var original = repo.ObtenerPorId(usuario.Id);
                 usuario.Contraseña = original.Contraseña;
             }
 
             if (eliminarAvatar && usuario.Id != 0)
             {
-                var original = repositorio.ObtenerPorId(usuario.Id);
+                var original = repo.ObtenerPorId(usuario.Id);
                 if (!string.IsNullOrEmpty(original.Avatar))
                 {
                     string rutaCompleta = Path.Combine(environment.WebRootPath, original.Avatar);
@@ -218,7 +221,7 @@ namespace inmobiliariaBD.Controllers
             else if (usuario.Id != 0)
             {
                 // Si está editando y no sube avatar, mantener el actual
-                var original = repositorio.ObtenerPorId(usuario.Id);
+                var original = repo.ObtenerPorId(usuario.Id);
                 usuario.Avatar = original.Avatar;
             }
 
@@ -234,16 +237,16 @@ namespace inmobiliariaBD.Controllers
                     repositorioPersona.Alta(usuario.Persona);
                 }
                 usuario.Estado = true;
-                repositorio.Alta(usuario);
+                repo.Alta(usuario);
                 TempData["Mensaje"] = "Usuario creado correctamente.";
             }
             else
             {
-                var usuarioOriginal = repositorio.ObtenerPorId(usuario.Id);
+                var usuarioOriginal = repo.ObtenerPorId(usuario.Id);
                 int dniAnterior = usuarioOriginal.Dni;
 
                 repositorioPersona.Modificar(usuario.Persona, dniAnterior);
-                repositorio.Modificacion(usuario);
+                repo.Modificacion(usuario);
                 TempData["Mensaje"] = esPerfil
                                         ? "Perfil actualizado correctamente."
                                         : "Usuario actualizado correctamente.";
@@ -263,8 +266,8 @@ namespace inmobiliariaBD.Controllers
         [HttpPost]
         public IActionResult Baja(int id)
         {
-            var usuario = repositorio.ObtenerPorId(id);
-            repositorio.Baja(usuario);
+            var usuario = repo.ObtenerPorId(id);
+            repo.Baja(usuario);
             TempData["Mensaje"] = $"Se eliminó correctamente al usuario {usuario.Persona.Nombre} {usuario.Persona.Apellido}.";
             return RedirectToAction("Index");
         }
@@ -274,11 +277,11 @@ namespace inmobiliariaBD.Controllers
         [HttpPost]
         public IActionResult ModificarEstado(int id)
         {
-            var usuario = repositorio.ObtenerPorId(id);
+            var usuario = repo.ObtenerPorId(id);
             if (usuario == null) return NotFound();
 
             usuario.Estado = usuario.Estado is true ? false : true;
-            repositorio.ModificarEstado(usuario);
+            repo.ModificarEstado(usuario);
             TempData["Mensaje"] = $"El usuario fue {(usuario.Estado is true ? "activado" : "dado de baja")}.";
             return RedirectToAction("CreateOrEdit", new { id = usuario.Id });
         }
@@ -286,7 +289,7 @@ namespace inmobiliariaBD.Controllers
         // GET: /Usuario/Detalles
         public IActionResult Detalles(int id)
         {
-            var usuario = repositorio.ObtenerPorId(id);
+            var usuario = repo.ObtenerPorId(id);
             return View(usuario);
         }
 

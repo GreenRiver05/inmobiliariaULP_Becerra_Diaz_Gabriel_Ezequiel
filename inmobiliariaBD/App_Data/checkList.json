@@ -22,7 +22,7 @@
   {
     "Id": 5,
     "Titulo": "ABM de Pagos.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 6,
@@ -67,7 +67,7 @@
   {
     "Id": 14,
     "Titulo": "Listar los pagos realizados para un contrato en particular. Permitir cargar un nuevo pago a ese contrato desde la pantalla del listado.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 15,

@@ -1,0 +1,84 @@
+@model inmobiliariaBD.Models.PagoDetalleViewModel
+@{
+    ViewData["Title"] = "Detalle de Pago";
+}
+
+<h2 class="text-light mb-4 text-center">💰 Detalle del Pago</h2>
+
+<div class="d-flex flex-row flex-nowrap overflow-auto gap-3 mb-4">
+    <!-- Pago -->
+    <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
+        <div class="card-header bg-success text-center">Pago</div>
+        <div class="card-body p-2">
+            <p><strong>ID:</strong> @Model.Pago.Id</p>
+            <p><strong>N° Pago:</strong> @Model.Pago.NumeroPago</p>
+            <p><strong>Monto:</strong> $@Model.Pago.Monto</p>
+            <p><strong>Fecha:</strong> @Model.Pago.Fecha.ToString("dd/MM/yyyy")</p>
+            <p><strong>Detalle:</strong> @Model.Pago.Detalle</p>
+            <p><strong>Tipo:</strong> @Model.Pago.Tipo</p>
+            <p><strong>Estado:</strong>
+                <span
+                    class="badge @(Model.Pago.Estado == "Pago" ? "bg-success" : Model.Pago.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-danger")">
+                    @Model.Pago.Estado
+                </span>
+            </p>
+        </div>
+    </div>
+
+<div class="d-flex flex-column gap-3" style="min-width: 260px;">
+        
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header bg-info text-center">Contrato</div>
+            <div class="card-body p-2">
+                <p><strong>ID:</strong> @Model.Contrato.Id</p>
+                <p><strong>Inicio:</strong> @Model.Contrato.Desde.ToString("dd/MM/yyyy")</p>
+                <p><strong>Fin:</strong> @Model.Contrato.Hasta.ToString("dd/MM/yyyy")</p>
+            </div>
+        </div>
+
+       
+        <div class="card bg-dark text-white border-secondary">
+            <div class="card-header bg-secondary text-center">Inmueble</div>
+            <div class="card-body p-2">
+                <p><strong>Dirección:</strong> @Model.Inmueble.Direccion</p>
+                <p><strong>Localidad:</strong> @Model.Inmueble.Localidad</p>
+            </div>
+        </div>
+    </div>
+   
+    <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
+        <div class="card-header bg-info text-center">Inquilino</div>
+        <div class="card-body p-2">
+            <p><strong>Nombre:</strong> @Model.Inquilino.Persona.Nombre</p>
+            <p><strong>Apellido:</strong> @Model.Inquilino.Persona.Apellido</p>
+            <p><strong>DNI:</strong> @Model.Inquilino.Dni</p>
+            <p><strong>Dirección:</strong> @Model.Inquilino.Persona.Direccion</p>
+            <p><strong>Localidad:</strong> @Model.Inquilino.Persona.Localidad</p>
+            <p><strong>Teléfono:</strong> @Model.Inquilino.Persona.Telefono</p>
+            <p><strong>Correo:</strong> @Model.Inquilino.Persona.Correo</p>
+        </div>
+    </div>
+
+    
+    <div class="card bg-dark text-white border-secondary" style="min-width: 260px;">
+        <div class="card-header bg-primary text-center">Propietario</div>
+        <div class="card-body p-2">
+            <p><strong>Nombre:</strong> @Model.Propietario.Persona.Nombre</p>
+            <p><strong>Apellido:</strong> @Model.Propietario.Persona.Apellido</p>
+            <p><strong>DNI:</strong> @Model.Propietario.Dni</p>
+            <p><strong>Dirección:</strong> @Model.Propietario.Persona.Direccion</p>
+            <p><strong>Localidad:</strong> @Model.Propietario.Persona.Localidad</p>
+            <p><strong>Teléfono:</strong> @Model.Propietario.Persona.Telefono</p>
+            <p><strong>Correo:</strong> @Model.Propietario.Persona.Correo</p>
+        </div>
+    </div>
+
+   
+    
+</div>
+
+<div class="text-center mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Volver al listado
+    </a>
+</div>

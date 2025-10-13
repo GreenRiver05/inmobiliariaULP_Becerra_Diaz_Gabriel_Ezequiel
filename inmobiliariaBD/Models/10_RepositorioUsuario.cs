@@ -202,7 +202,7 @@ namespace inmobiliariaBD.Models
         {
             throw new NotImplementedException();
         }
-        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             int res = 0;
             using (var connection = new MySqlConnection(connectionString))
@@ -241,7 +241,7 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-        public IList<Usuario> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
+        public IList<Usuario> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             var lista = new List<Usuario>();
             using (var connection = new MySqlConnection(connectionString))

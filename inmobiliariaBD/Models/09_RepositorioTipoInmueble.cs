@@ -76,7 +76,7 @@ namespace inmobiliariaBD.Models
         }
 
 
-        public IList<TipoInmueble> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
+        public IList<TipoInmueble> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             var lista = new List<TipoInmueble>();
             using (var connection = new MySqlConnection(connectionString))
@@ -124,7 +124,7 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             int res = 0;
             using (var connection = new MySqlConnection(connectionString))

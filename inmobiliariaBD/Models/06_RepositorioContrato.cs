@@ -263,8 +263,6 @@ namespace inmobiliariaBD.Models
             return res;
         }
 
-
-
         public IList<Contrato> BuscarPorEstado(string estado)
         {
             throw new NotImplementedException();
@@ -328,7 +326,7 @@ namespace inmobiliariaBD.Models
             throw new NotImplementedException();
         }
 
-        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null)
+        public IList<Contrato> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             var lista = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
@@ -398,8 +396,7 @@ namespace inmobiliariaBD.Models
             return lista;
         }
 
-
-        public int ObtenerCantidad(string? busqueda = null, bool? estado = null)
+        public int ObtenerCantidad(string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             int res = 0;
             using (var connection = new MySqlConnection(connectionString))

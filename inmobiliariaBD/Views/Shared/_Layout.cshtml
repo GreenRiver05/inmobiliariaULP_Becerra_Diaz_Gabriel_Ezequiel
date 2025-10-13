@@ -83,12 +83,12 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item text-light" asp-controller="Pago" asp-action="Index">
-                                            <i class="fa-solid fa-money-bill-wave me-2"></i> Pagos
+                                            <i class="fa-solid fa-money-bill-wave me-2"></i> Listado de Pagos
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item text-light" asp-controller="Multa" asp-action="Index">
-                                            <i class="fa-solid fa-triangle-exclamation me-2"></i> Multas
+                                            <i class="fa-solid fa-triangle-exclamation me-2"></i> Listado de Multas
                                         </a>
                                     </li>
                                 </ul>
@@ -121,8 +121,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary"
                                     aria-labelledby="perfilDropdown">
                                     <li>
-                                        <a class="dropdown-item text-light"
-                                            asp-controller="Usuario"
+                                        <a class="dropdown-item text-light" asp-controller="Usuario"
                                             asp-action="CreateOrEdit"
                                             asp-route-id="@User.FindFirst(ClaimTypes.NameIdentifier)?.Value"
                                             asp-route-esPerfil="true">
@@ -144,15 +143,15 @@
         </nav>
     </header>
 
-    <div class="container" style="margin-top: 80px;>
-        <main role=" main" class="pb-3">
+    <div class="container pt-2" style="margin-top: 80px;">
+        <main role="main" class="mb-5">
 
-        @RenderBody() <!-- Inserta el contenido de la vista en el layout -->
+            @RenderBody() <!-- Inserta el contenido de la vista en el layout -->
 
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted"">
         <div class="container">
             &copy; Laboratorio II 2025 - inmobiliaria Becerra Diaz Gabriel Ezequiel -
             <a href="https://github.com/GreenRiver05/inmobiliariaULP_Becerra_Diaz_Gabriel_Ezequiel.git" target="_blank">
