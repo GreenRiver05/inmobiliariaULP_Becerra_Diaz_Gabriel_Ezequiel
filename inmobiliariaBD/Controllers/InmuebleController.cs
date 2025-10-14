@@ -112,8 +112,8 @@ namespace inmobiliariaBD.Controllers
             TempData["Mensaje"] = $"Se Elimino Correctamente el inmueble";
             return RedirectToAction("Index");
         }
-        
-        [Authorize(Roles = "Admin")]
+
+
         [HttpPost]
         public IActionResult ModificarEstado(int id, bool nuevoEstado)
         {
@@ -131,6 +131,20 @@ namespace inmobiliariaBD.Controllers
             var inmueble = repositorio.ObtenerPorId(id);
             ViewBag.Contratos = repositorioContrato.ObtenerPorInmueble(id);
             return View(inmueble);
+        }
+
+        [Route("Inmueble/Buscar/{q}")]
+        public ActionResult Buscar(string q)
+        {
+            try
+            {
+                var res = repositorio.Buscar(q);
+                return Json(new { datos = res });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
         }
 
 

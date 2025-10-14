@@ -167,7 +167,7 @@ namespace inmobiliariaBD.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
-                             pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion
+                             pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion, i.localidad
                              FROM contrato c
                              JOIN inquilino inq ON inq.id = c.inquilino_Id
                              JOIN persona pe ON pe.dni = inq.dni
@@ -194,6 +194,7 @@ namespace inmobiliariaBD.Models
                                 Inquilino = new Inquilino
                                 {
                                     Id = reader.GetInt32(nameof(c.InquilinoId)),
+                                    Dni = reader.GetInt32(nameof(c.Inquilino.Persona.Dni)),
                                     Persona = new Persona
                                     {
                                         Nombre = reader.GetString(nameof(c.Inquilino.Persona.Nombre)),
@@ -205,7 +206,9 @@ namespace inmobiliariaBD.Models
                                 Inmueble = new Inmueble
                                 {
                                     Id = reader.GetInt32(nameof(c.InmuebleId)),
-                                    Direccion = reader.GetString(nameof(c.Inmueble.Direccion))
+                                    Direccion = reader.GetString(nameof(c.Inmueble.Direccion)),
+                                    Localidad = reader.GetString(nameof(c.Inmueble.Localidad))
+
                                 }
                             };
                         }

@@ -7,7 +7,8 @@
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3" style="background-color: #1e2a38;">
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3"
+        style="background-color: #1e2a38;">
         <i class="fa-solid fa-circle-info me-2 text-info"></i>
         <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
     </div>
@@ -24,20 +25,40 @@
 
     <div class="row g-3">
         <div class="col-md-6">
-            <label asp-for="InquilinoId" class="form-label">Inquilino</label>
-            <select asp-for="InquilinoId" asp-items="ViewBag.Inquilinos" class="form-select bg-dark text-white border-light">
-                <option value="">-- Seleccionar Inquilino --</option>
+            <label class="form-label text-light">Inquilino</label>
+            <select id="InquilinoId" name="InquilinoId" class="form-select w-100">
+                @if (Model?.InquilinoId > 0)
+                {
+                    <option value="@Model.InquilinoId" selected>
+                        @Model.Inquilino?.Persona.Nombre @Model.Inquilino?.Persona.Apellido - DNI @Model.Inquilino?.Dni
+                    </option>
+                }
+                else
+                {
+                    <option></option>
+                }
             </select>
             <span asp-validation-for="InquilinoId" class="text-danger small"></span>
         </div>
 
+
         <div class="col-md-6">
-            <label asp-for="InmuebleId" class="form-label">Inmueble</label>
-            <select asp-for="InmuebleId" asp-items="ViewBag.Inmuebles" class="form-select bg-dark text-white border-light">
-                <option value="">-- Seleccionar Inmueble --</option>
+            <label class="form-label text-light">Inmueble</label>
+            <select id="InmuebleId" name="InmuebleId" class="form-select w-100">
+                @if (Model?.InmuebleId > 0)
+                {
+                    <option value="@Model.InmuebleId" selected>
+                        @Model.Inmueble?.Direccion - @Model.Inmueble?.Localidad
+                    </option>
+                }
+                else
+                {
+                    <option></option>
+                }
             </select>
             <span asp-validation-for="InmuebleId" class="text-danger small"></span>
         </div>
+
 
         <div class="col-md-4">
             <label asp-for="Monto" class="form-label"></label>
@@ -64,7 +85,8 @@
         {
             <div class="col-md-4 d-flex align-items-center mt-4">
                 <label class="me-2">Estado:</label>
-                <span class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                <span
+                    class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
                     @Model.Estado
                 </span>
             </div>
@@ -94,7 +116,7 @@
                     <input type="hidden" name="id" value="@Model.Id" />
                     <input type="hidden" name="nuevoEstado" value="@estado" />
                     <button type="submit"
-                            class="btn btn-sm @(estado == "Vigente" ? "btn-outline-success" : estado == "Finalizado" ? "btn-outline-secondary" : "btn-outline-danger")">
+                        class="btn btn-sm @(estado == "Vigente" ? "btn-outline-success" : estado == "Finalizado" ? "btn-outline-secondary" : "btn-outline-danger")">
                         @textoBoton
                     </button>
                 </form>
@@ -112,8 +134,8 @@
         <li>❌ Validar que el inmueble no tenga contrato vigente</li>
         <li>✅ Controlar que la fecha Hasta sea posterior a Desde</li>
         <li>✅ Evitar monto cero o negativo</li>
-        <li>✅ Mostrar nombre completo del inquilino en el select</li>
         <li>❌ Llenar los select de inquilino y inmueble dinámicamente y trayendo pocos datos</li>
+        <li>❌ Inquilinos y Inmuebles activos solamente</li>
         <li>✅ Evitar spinner en campos numéricos</li>
         <li>❌ Que el campo Desde siempre esté con el día actual desde el inicio</li>
     </ul>
@@ -123,4 +145,62 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+<script>
+    $(document).ready(function () {
+        
+        $('#InquilinoId').select2({
+            theme: 'bootstrap-5',
+            language: 'es',
+            placeholder: "Buscar inquilino...",
+            minimumInputLength: 3,
+            ajax: {
+                delay: 250,
+                dataType: 'json',
+                cache: true,
+                url: function (params) {
+                    let q = params.term ? encodeURIComponent(params.term) : "";
+                    return `/Inquilino/Buscar/${q}`;
+                  
+                },
+                processResults: function (res) {
+                    return {
+                        results: res.datos.map(i => ({
+                            id: i.id,
+                            text: `${i.persona.nombre} ${i.persona.apellido} - DNI ${i.dni}`
+                        }))
+                    };
+                }
+            }
+        });
+
+        
+        $('#InmuebleId').select2({
+            theme: 'bootstrap-5',
+            language: 'es',
+            placeholder: "Buscar inmueble...",
+            minimumInputLength: 3,
+            
+            ajax: {
+                delay: 250,
+                dataType: 'json',
+                cache: true,
+                url: function (params) {
+                    let q = params.term ? encodeURIComponent(params.term) : "";
+                    return `/Inmueble/Buscar/${q}`;
+                },
+                processResults: function (res) {
+                    return {
+                        results: res.datos.map(i => ({
+                            id: i.id,
+                            text: `${i.direccion} - ${i.localidad}`
+                        }))
+                    };
+                }
+            }
+        });
+    });
+</script>
+
+
 }

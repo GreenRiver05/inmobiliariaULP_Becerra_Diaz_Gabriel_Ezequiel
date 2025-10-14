@@ -473,30 +473,64 @@ namespace inmobiliariaBD.Models
             }
         }
 
-        public IList<Inmueble> BuscarPorDireccion(string direccion)
+        public IList<Inmueble> Buscar(string nombre)
         {
-            throw new NotImplementedException();
+            var res = new List<Inmueble>();
+            nombre = "%" + nombre + "%";
+            Inmueble? i = null;
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                String sql = @"SELECT i.id, i.direccion, i.localidad, i.uso, i.estado AS estadoInmueble,
+                                t.tipo, pe.nombre AS nombrePropietario, pe.apellido AS apellidoPropietario
+                             FROM inmueble i
+                             INNER JOIN propietario p ON i.propietario_id = p.id
+                             INNER JOIN persona pe ON p.dni = pe.dni
+                             INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
+                             WHERE i.direccion LIKE @q OR i.localidad LIKE @q OR i.uso LIKE @q
+                             ORDER BY i.direccion ASC
+                             LIMIT 10";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@q", nombre);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        i = new Inmueble
+                        {
+                            Id = reader.GetInt32(nameof(i.Id)),
+                            Direccion = reader.GetString(nameof(i.Direccion)),
+                            Localidad = reader.GetString(nameof(i.Localidad)),
+                            Uso = reader.GetString(nameof(i.Uso)),
+                            Estado = reader.GetBoolean("estadoInmueble"),
+
+                            Propietario = new Propietario
+                            {
+                                Persona = new Persona
+                                {
+                                    Nombre = reader.GetString("nombrePropietario"),
+                                    Apellido = reader.GetString("apellidoPropietario")
+                                }
+                            },
+
+                            TipoInmueble = new TipoInmueble
+                            {
+                                Tipo = reader.GetString("tipo")
+                            }
+                        };
+                        res.Add(i);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+
+
         }
 
-        public IList<Inmueble> BuscarPorEstado(string estado)
-        {
-            throw new NotImplementedException();
-        }
 
-        public IList<Inmueble> BuscarPorLocalidad(string localidad)
-        {
-            throw new NotImplementedException();
-        }
 
-        public IList<Inmueble> BuscarPorPrecio(decimal precioMin, decimal precioMax)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IList<Inmueble> BuscarPorTipo(int tipoId)
-        {
-            throw new NotImplementedException();
-        }
-      
     }
 }

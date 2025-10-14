@@ -176,5 +176,19 @@ namespace inmobiliariaBD.Controllers
             return View(inquilino);
         }
 
+        [Route("Inquilino/Buscar/{q}")]
+        public IActionResult Buscar(string q)
+        {
+            try
+            {
+                var res = repositorio.Buscar(q);
+                return Json(new { datos = res });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
     }
 }
