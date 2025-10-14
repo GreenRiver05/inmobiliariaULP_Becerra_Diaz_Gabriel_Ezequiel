@@ -174,3 +174,43 @@ a {
 .tabla-checklist th {
     font-weight: 600;
 }
+
+/*------------------Estilos para Select2 (Select con búsqueda)-----------*/
+
+/* 🔳 Campo de entrada select2 (el que se ve en el formulario) */
+.select2-container--bootstrap-5 .select2-selection {
+    background-color: #13161a !important; /* tono más oscuro que el fondo base */
+}
+
+/* 📋 Dropdown de resultados */
+.select2-container--bootstrap-5 .select2-dropdown {
+   background-color: #13161a  !important; /* fondo oscuro */
+}
+
+/* 📄 Cada opción del dropdown */
+.select2-container--bootstrap-5 .select2-results__option {
+    border-bottom: 1px solid #2c3e50;
+    color: #989393;
+}
+
+
+/* ✅ Opción seleccionada en el dropdown */
+.select2-container--bootstrap-5 .select2-results__option[aria-selected="true"] {
+    background-color: #263238 !important;
+    color: #989393 !important;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field {
+    background-color: #263238 !important;
+    color: #ffffff !important;
+    border: 1px solid #6c757d !important;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    color: #ffffff !important;
+}
+/* 🔧 Ajuste para que el campo se expanda correctamente */
+.select2-container {
+    width: 100% !important;
+}
+

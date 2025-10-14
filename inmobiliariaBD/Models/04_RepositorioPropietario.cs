@@ -206,10 +206,54 @@ namespace inmobiliariaBD.Models
             }
             return p;
         }
-        public IList<Propietario> BuscarPorNombre(string nombre)
+        public IList<Propietario> Buscar(string nombre)
         {
-            throw new NotImplementedException();
+            var res = new List<Propietario>();
+            nombre = "%" + nombre + "%";
+            Propietario? p = null;
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
+                       FROM propietario p
+                       JOIN persona pe ON pe.dni = p.dni
+                       WHERE pe.nombre LIKE @nombre OR pe.apellido LIKE @nombre OR pe.dni LIKE @nombre
+                       ORDER BY pe.apellido ASC
+                       LIMIT 10";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.Parameters.AddWithValue("@nombre", nombre);
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        p = new Propietario
+                        {
+                            Id = reader.GetInt32(nameof(p.Id)),
+                            Dni = reader.GetInt32(nameof(p.Dni)),
+                            Estado = reader.GetBoolean(nameof(p.Estado)),
+                            Persona = new Persona
+                            {
+                                Nombre = reader.GetString(nameof(p.Persona.Nombre)),
+                                Apellido = reader.GetString(nameof(p.Persona.Apellido)),
+                                Direccion = reader.IsDBNull(nameof(p.Persona.Direccion)) ? null : reader.GetString(nameof(p.Persona.Direccion)),
+                                Localidad = reader.IsDBNull(nameof(p.Persona.Localidad)) ? null : reader.GetString(nameof(p.Persona.Localidad)),
+                                Correo = reader.IsDBNull(nameof(p.Persona.Correo)) ? null : reader.GetString(nameof(p.Persona.Correo)),
+                                Telefono = reader.GetInt64(nameof(p.Persona.Telefono))
+                            }
+
+                        };
+                        res.Add(p);
+                    }
+                    connection.Close();
+                }
+            }
+
+            return res;
         }
+
         public IList<Propietario> ObtenerPaginados(int pagina, int cantidadPorPagina, string? busqueda = null, bool? estado = null, DateTime? desde = null, DateTime? hasta = null, string? estadoPago = null)
         {
             var lista = new List<Propietario>();

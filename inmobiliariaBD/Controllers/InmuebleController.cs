@@ -62,12 +62,12 @@ namespace inmobiliariaBD.Controllers
             // Esto se usa en Razor con asp-items para poblar el <select> de PropietarioId
             //.Select(...) → Recorre cada propietario y lo transforma en un SelectListItem, que es lo que Razor necesita para armar un <select>
             //.ToList() → Convierte el resultado en una lista que se guarda en ViewBag.Propietarios
-            ViewBag.Propietarios = repositorioPropietario.ObtenerTodos()
-                .Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = $"{p.Persona.Apellido}, {p.Persona.Nombre} - {p.Dni}  "
-                }).ToList();
+            // ViewBag.Propietarios = repositorioPropietario.ObtenerTodos()
+            //     .Select(p => new SelectListItem
+            //     {
+            //         Value = p.Id.ToString(),
+            //         Text = $"{p.Persona.Apellido}, {p.Persona.Nombre} - {p.Dni}  "
+            //     }).ToList();
 
             ViewBag.TiposInmueble = repositorio.ObtenerTiposInmueble()
                 .Select(t => new SelectListItem
@@ -104,7 +104,7 @@ namespace inmobiliariaBD.Controllers
             }
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Baja(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
@@ -113,7 +113,7 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
         
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult ModificarEstado(int id, bool nuevoEstado)
         {

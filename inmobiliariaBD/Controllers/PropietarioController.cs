@@ -135,7 +135,7 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
 
         }
-        
+
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult ModificarEstado(int id)
@@ -174,6 +174,22 @@ namespace inmobiliariaBD.Controllers
 
             return View(propietario);
         }
+
+        [Route("Propietario/Buscar/{q}")]
+        public IActionResult Buscar(string q)
+        {
+            try
+            {
+                var res = repositorio.Buscar(q);
+                return Json(new { datos = res });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+
 
     }
 }

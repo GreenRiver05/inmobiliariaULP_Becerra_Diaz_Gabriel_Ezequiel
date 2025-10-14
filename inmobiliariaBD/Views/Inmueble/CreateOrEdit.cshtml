@@ -96,14 +96,32 @@
             <span asp-validation-for="TipoId" class="text-danger small"></span>
         </div>
 
-        <div class="col-md-4">
-            <label asp-for="PropietarioId" class="form-label"></label>
-            <select asp-for="PropietarioId" asp-items="ViewBag.Propietarios"
-                class="form-select bg-dark text-white border-light">
-                <option value="">-- Seleccione Propietario --</option>
-            </select>
+        <div class="col-md-6">
+            <label for="PropietarioId" class="form-label text-light">Propietario</label>
+
+            <div class="input-group">
+             
+
+                <select id="PropietarioId" name="PropietarioId"
+                    class="form-select w-100">
+                    @if (Model?.PropietarioId > 0)
+                    {
+                        <option value="@Model.PropietarioId" selected>
+                            @Model.Propietario?.Persona?.Nombre @Model.Propietario?.Persona?.Apellido - DNI @Model.Propietario?.Dni
+                        </option>
+                    }
+                    else
+                    {
+                        <option></option>
+                    }
+                </select>
+            </div>
+
             <span asp-validation-for="PropietarioId" class="text-danger small"></span>
         </div>
+
+
+
 
         <div class="col-md-6">
             <label asp-for="Observacion" class="form-label"></label>
@@ -159,8 +177,8 @@
     <ul class="small">
         <li>✅ Sacar spinners de los campos numéricos</li>
         <li>✅ Validar los campos numéricos con coma</li>
-        <li>❌ Cambiar los mensajes de validación</li>
-        <li>❌ ABM funcional</li>
+        <li>✅  Cambiar los mensajes de validación</li>
+        <li>✅ Cambiar el Select, por campo dinamico en propietario</li>
     </ul>
 </div>
 
@@ -168,4 +186,39 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            $('#PropietarioId').select2({ // Inicializa Select2 en el campo PropietarioId
+                theme: 'bootstrap-5', // Usa el tema de Bootstrap 5 para que combine con el diseño
+                language: 'es', // Idioma español
+                placeholder: "Buscar propietario...", // Texto que se muestra cuando no hay nada seleccionado
+                minimumInputLength: 3, // Mínimo 3 caracteres para iniciar la búsqueda
+
+                // Configuración de la búsqueda vía AJAX
+                ajax: {
+                    delay: 250, // Espera 250ms después de que el usuario deja de escribir para hacer la búsqueda
+                    dataType: 'json', //Se espera una respuesta JSON
+                    cache: true, // Cachea los resultados para no hacer tantas peticiones
+
+                    // URL del endpoint en el servidor que maneja la búsqueda
+                    url: function (params) {
+                        let q = params.term ? encodeURIComponent(params.term) : ""; // Término de búsqueda, codificado para URL
+                        return `/Propietario/Buscar/${q}`; // Construye la URL con el término de búsqueda
+                    },
+
+                    // Procesa los resultados devueltos por el servidor para que Select2 los entienda
+                    processResults: function (res) {
+                        return {
+                            // Mapea los datos recibidos a un formato que Select2 puede usar
+                            results: res.datos.map(p => ({
+                                id: p.id, // Valor que se enviará al servidor al seleccionar este propietario
+                                text: `${p.persona.nombre} ${p.persona.apellido} - DNI ${p.dni}` // Texto que se mostrará en el dropdown
+                            }))
+                        };
+                    }
+                }
+            });
+        });
+    </script>
+
 }
