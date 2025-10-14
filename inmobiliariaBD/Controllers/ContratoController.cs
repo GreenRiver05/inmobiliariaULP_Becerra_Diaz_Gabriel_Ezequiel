@@ -73,7 +73,6 @@ namespace inmobiliariaBD.Controllers
                 ModelState.AddModelError("Monto", "El monto debe ser mayor a cero.");
             }
 
-
             if (contrato.Desde >= contrato.Hasta)
                 ModelState.AddModelError("Hasta", "La fecha de finalización debe ser posterior a la de inicio.");
 
@@ -82,6 +81,16 @@ namespace inmobiliariaBD.Controllers
                 CargarViewBags();
                 return View("CreateOrEdit", contrato);
             }
+
+            if (repositorio.ExisteSuperposicion(contrato.InmuebleId, contrato.Desde, contrato.Hasta, contrato.Id))
+            {
+                contrato.Inquilino = repoInquilino.ObtenerPorId(contrato.InquilinoId);
+                contrato.Inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
+
+                TempData["Mensaje"] = "❌ El inmueble ya tiene un contrato vigente en ese rango de fechas.";
+                return View(contrato);
+            }
+
 
             if (contrato.Id == 0)
             {
@@ -98,7 +107,7 @@ namespace inmobiliariaBD.Controllers
         }
 
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Baja(int id)
         {

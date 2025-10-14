@@ -77,7 +77,7 @@
   {
     "Id": 16,
     "Titulo": "Controlar que no existe superposici\u00F3n de fechas de contratos al crear/editar contratos.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 17,

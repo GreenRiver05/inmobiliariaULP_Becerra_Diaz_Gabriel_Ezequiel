@@ -461,7 +461,7 @@ namespace inmobiliariaBD.Models
                         command.Parameters.AddWithValue("@desde", desde.Value);
                     if (hasta.HasValue)
                         command.Parameters.AddWithValue("@hasta", hasta.Value);
-                        
+
                     connection.Open();
                     var reader = command.ExecuteReader();
                     if (reader.Read())
@@ -474,6 +474,29 @@ namespace inmobiliariaBD.Models
         }
 
 
-       
+        public bool ExisteSuperposicion(int inmuebleId, DateTime desde, DateTime hasta, int contratoId = 0)
+        {
+            using var connection = new MySqlConnection(connectionString);
+            const string sql = @"
+                                SELECT COUNT(*) FROM contrato
+                                WHERE inmueble_id = @inmuebleId
+                                AND estado = 'Vigente'
+                                AND id != @contratoId
+                                AND (
+                                    desde <= @hasta AND hasta >= @desde
+                                );";
+
+            using var command = new MySqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@inmuebleId", inmuebleId);
+            command.Parameters.AddWithValue("@desde", desde);
+            command.Parameters.AddWithValue("@hasta", hasta);
+            command.Parameters.AddWithValue("@contratoId", contratoId);
+
+            connection.Open();
+            var count = Convert.ToInt32(command.ExecuteScalar());
+            return count > 0;
+        }
+
+
     }
 }
