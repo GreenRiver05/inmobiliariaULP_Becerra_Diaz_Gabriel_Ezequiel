@@ -72,7 +72,7 @@
   {
     "Id": 15,
     "Titulo": "Dadas dos fechas posibles de un contrato (inicio y fin), listar todos los inmuebles que no est\u00E9n ocupados en alg\u00FAn contrato entre esas fechas.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 16,

@@ -147,6 +147,13 @@ namespace inmobiliariaBD.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult DisponiblesEntreFechas(DateTime desde, DateTime hasta)
+        {
+            var lista = repositorio.BuscarDisponiblesEntreFechas(desde, hasta);
+            return Json(new { datos = lista });
+        }
+
 
 
     }

@@ -169,13 +169,13 @@ namespace inmobiliariaBD.Models
             Inmueble? i = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT i.Id, i.Propietario_Id AS PropietarioID, i.Tipo_Id AS TipoId, i.Direccion, i.Localidad, i.Longitud, i.Latitud, i.Uso, i.Ambientes, i.Observacion, i.Estado AS estadoInmueble, i.Precio,
+                string sql = @"SELECT i.Id, i.Propietario_Id AS PropietarioID, i.tipo_Id, i.Direccion, i.Localidad, i.Longitud, i.Latitud, i.Uso, i.Ambientes, i.Observacion, i.Estado AS estadoInmueble, i.Precio,
                                p.Dni, p.Estado AS estadoPropietario, pe.Nombre, pe.Apellido, pe.Direccion, pe.Localidad, pe.Correo, pe.Telefono,
                                t.Tipo, t.Descripcion
                                FROM Inmueble i
                                INNER JOIN Propietario p ON i.Propietario_Id = p.Id
                                INNER JOIN Persona pe ON p.Dni = pe.Dni
-                               INNER JOIN Tipo_Inmueble t ON i.Tipo_Id = t.Id
+                               INNER JOIN Tipo_Inmueble t ON i.tipo_id = t.id
                                WHERE i.Id = @id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -189,7 +189,7 @@ namespace inmobiliariaBD.Models
                         {
                             Id = reader.GetInt32(nameof(i.Id)),
                             PropietarioId = reader.GetInt32(nameof(i.PropietarioId)),
-                            TipoId = reader.GetInt32(nameof(i.TipoId)),
+                            TipoId = reader.GetInt32("tipo_Id"),
                             Direccion = reader.GetString(nameof(i.Direccion)),
                             Localidad = reader.GetString(nameof(i.Localidad)),
                             Longitud = reader.GetString(nameof(i.Longitud)),
@@ -218,7 +218,7 @@ namespace inmobiliariaBD.Models
                             },
                             TipoInmueble = new TipoInmueble
                             {
-                                Id = reader.GetInt32(nameof(i.TipoInmueble.Id)),
+                                Id = reader.GetInt32("tipo_id"),
                                 Tipo = reader.GetString(nameof(i.TipoInmueble.Tipo)),
                                 Descripcion = reader.IsDBNull(nameof(i.TipoInmueble.Descripcion)) ? null : reader.GetString(nameof(i.TipoInmueble.Descripcion))
                             }
@@ -530,6 +530,72 @@ namespace inmobiliariaBD.Models
 
         }
 
+
+
+        public IList<Inmueble> BuscarDisponiblesEntreFechas(DateTime desde, DateTime hasta)
+        {
+            var lista = new List<Inmueble>();
+            Inmueble? i = null;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = @"
+                            SELECT i.id, i.direccion, i.localidad, i.uso, i.precio, i.estado AS estadoInmueble,
+                            i.observacion, i.ambientes, i.propietario_id AS 'PropietarioId', t.tipo, i.latitud, i.longitud,
+                            t.descripcion, t.id AS 'TipoInmueble.Id'
+
+                            FROM inmueble i
+                            INNER JOIN tipo_inmueble t ON i.tipo_id = t.id
+                            WHERE i.estado = 1
+                            AND NOT EXISTS (
+                                SELECT 1
+                                FROM contrato c
+                                WHERE c.inmueble_id = i.id
+                                AND c.estado = 'Vigente'
+                                AND (
+                                    c.desde <= @hasta AND c.hasta >= @desde
+                                )
+                            )
+                            ORDER BY i.direccion ASC
+                            LIMIT 50";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@desde", desde);
+                    command.Parameters.AddWithValue("@hasta", hasta);
+
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        i = new Inmueble
+                        {
+                            Id = reader.GetInt32(nameof(i.Id)),
+                            Direccion = reader.GetString(nameof(i.Direccion)),
+                            Localidad = reader.GetString(nameof(i.Localidad)),
+                            Uso = reader.GetString(nameof(i.Uso)),
+                            Precio = reader.GetString(nameof(i.Precio)),
+                            Estado = reader.GetBoolean("estadoInmueble"),
+                            Observacion = reader.IsDBNull(nameof(i.Observacion)) ? null : reader.GetString(nameof(i.Observacion)),
+                            Ambientes = reader.GetInt32(nameof(i.Ambientes)),
+                            PropietarioId = reader.GetInt32("PropietarioId"),
+                          
+                            Latitud = reader.GetString(nameof(i.Latitud)),
+                            Longitud = reader.GetString(nameof(i.Longitud)),
+                            TipoInmueble = new TipoInmueble
+                            {
+                                Id = reader.GetInt32("TipoInmueble.Id"),
+                                Descripcion = reader.IsDBNull(nameof(i.TipoInmueble.Descripcion)) ? null : reader.GetString(nameof(i.TipoInmueble.Descripcion)),
+                                Tipo = reader.GetString("tipo")
+                            }
+                        };
+                        lista.Add(i);
+                    }
+                    connection.Close();
+                }
+            }
+
+            return lista;
+        }
 
 
     }

@@ -24,7 +24,7 @@
     <input type="hidden" asp-for="Estado" value="Vigente" />
 
     <div class="row g-3">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <label class="form-label text-light">Inquilino</label>
             <select id="InquilinoId" name="InquilinoId" class="form-select w-100">
                 @if (Model?.InquilinoId > 0)
@@ -41,24 +41,41 @@
             <span asp-validation-for="InquilinoId" class="text-danger small"></span>
         </div>
 
-
-        <div class="col-md-6">
+        <div class="col-md-7">
             <label class="form-label text-light">Inmueble</label>
             <select id="InmuebleId" name="InmuebleId" class="form-select w-100">
-                @if (Model?.InmuebleId > 0)
+                @if (Model?.InmuebleId > 0 && Model.Inmueble != null)
                 {
                     <option value="@Model.InmuebleId" selected>
-                        @Model.Inmueble?.Direccion - @Model.Inmueble?.Localidad
+                        @Model.Inmueble.Direccion - @Model.Inmueble.Localidad (@Model.Inmueble.TipoInmueble?.Tipo -
+                        @Model.Inmueble.Uso) | $@Model.Inmueble.Precio
                     </option>
                 }
                 else
                 {
-                    <option></option>
+                    <option value="">⬇️ Buscá por fecha primero</option>
                 }
             </select>
             <span asp-validation-for="InmuebleId" class="text-danger small"></span>
         </div>
 
+        <div class="col-md-12">
+            <label class="form-label text-light">📅 Fechas del contrato</label>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input asp-for="Desde" type="date" id="Desde" class="form-control bg-dark text-white border-light"
+                        placeholder="Desde" />
+                    <span asp-validation-for="Desde" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <input asp-for="Hasta" type="date" id="Hasta" class="form-control bg-dark text-white border-light"
+                        placeholder="Hasta" />
+                    <span asp-validation-for="Hasta" class="text-danger small"></span>
+                </div>
+            </div>
+            <button type="button" id="btnBuscarDisponibles" class="btn btn-outline-info mt-3">🔍 Buscar
+                disponibles</button>
+        </div>
 
         <div class="col-md-4">
             <label asp-for="Monto" class="form-label"></label>
@@ -67,18 +84,6 @@
                 <input asp-for="Monto" class="form-control bg-dark text-white border-light no-spinner" />
             </div>
             <span asp-validation-for="Monto" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Desde" class="form-label">Desde</label>
-            <input asp-for="Desde" type="date" class="form-control bg-dark text-white border-light" />
-            <span asp-validation-for="Desde" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Hasta" class="form-label">Hasta</label>
-            <input asp-for="Hasta" type="date" class="form-control bg-dark text-white border-light" />
-            <span asp-validation-for="Hasta" class="text-danger small"></span>
         </div>
 
         @if (Model.Id != 0)
@@ -101,14 +106,13 @@
 <div class="d-flex justify-content-center gap-3 mt-4">
     @if (Model.Id != 0)
     {
-        @foreach (var estado in new[] { "Vigente", "Finalizado", "Rescindido" })
+        @foreach (var estado in new[] { "Vigente", "Rescindido" })
         {
             if (estado != Model.Estado)
             {
                 string textoBoton = estado switch
                 {
                     "Vigente" => "Reactivar",
-                    "Finalizado" => "Finalizar",
                     "Rescindido" => "Rescindir",
                 };
 
@@ -146,61 +150,88 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-<script>
-    $(document).ready(function () {
-        
-        $('#InquilinoId').select2({
-            theme: 'bootstrap-5',
-            language: 'es',
-            placeholder: "Buscar inquilino...",
-            minimumInputLength: 3,
-            ajax: {
-                delay: 250,
-                dataType: 'json',
-                cache: true,
-                url: function (params) {
-                    let q = params.term ? encodeURIComponent(params.term) : "";
-                    return `/Inquilino/Buscar/${q}`;
-                  
-                },
-                processResults: function (res) {
-                    return {
-                        results: res.datos.map(i => ({
-                            id: i.id,
-                            text: `${i.persona.nombre} ${i.persona.apellido} - DNI ${i.dni}`
-                        }))
-                    };
+    <script>
+        $(document).ready(function () {
+
+            $('#InquilinoId').select2({
+                theme: 'bootstrap-5',
+                language: 'es',
+                placeholder: "Buscar inquilino...",
+                minimumInputLength: 3,
+                ajax: {
+                    delay: 250,
+                    dataType: 'json',
+                    cache: true,
+                    url: function (params) {
+                        let q = params.term ? encodeURIComponent(params.term) : "";
+                        return `/Inquilino/Buscar/${q}`;
+                    },
+                    processResults: function (res) {
+                        return {
+                            results: res.datos.map(i => ({
+                                id: i.id,
+                                text: `${i.persona.nombre} ${i.persona.apellido} - DNI ${i.dni}`
+                            }))
+                        };
+                    }
                 }
-            }
+            });
+
+            // Inmueble: inicializa vacio
+            $('#InmuebleId').select2({
+                theme: 'bootstrap-5',
+                language: 'es',
+                placeholder: "⬇️ Buscá por fecha primero",
+                minimumResultsForSearch: Infinity // oculto el buscador hasta que haya opciones
+            });
+
+            // Buscar disponibles por fechas
+            $('#btnBuscarDisponibles').on('click', function () {
+                const desde = $('#Desde').val();
+                const hasta = $('#Hasta').val();
+
+                if (!desde || !hasta || desde >= hasta) {
+                    alert("⚠️ Fechas inválidas. Verificá que 'Hasta' sea posterior a 'Desde'.");
+                    return;
+                }
+
+                $.ajax({
+                    url: `/Inmueble/DisponiblesEntreFechas`,
+                    method: 'GET',
+                    data: {
+                        desde: new Date(desde).toISOString(),
+                        hasta: new Date(hasta).toISOString()
+                    },
+                    success: function (res) {
+                        if (!res || !res.datos || res.datos.length === 0) {
+                            alert("ℹ️ No se encontraron inmuebles disponibles en ese rango.");
+                            return;
+                        }
+
+                        const $select = $('#InmuebleId');
+                        $select.select2('destroy');
+                        $select.empty().append('<option></option>');
+
+                        res.datos.forEach(i => {
+                            const texto = `${i.direccion} - ${i.localidad} (${i.tipoInmueble?.tipo} - ${i.uso}) | $${i.precio}`;
+                            const option = new Option(texto, i.id, false, false);
+                            $select.append(option);
+                        });
+
+                        $select.select2({
+                            theme: 'bootstrap-5',
+                            language: 'es',
+                            placeholder: "Seleccionar inmueble disponible...",
+                            minimumInputLength: 0
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("❌ Error AJAX:", status, error);
+                        alert("❌ Error al buscar inmuebles disponibles.");
+                    }
+                });
+            });
         });
 
-        
-        $('#InmuebleId').select2({
-            theme: 'bootstrap-5',
-            language: 'es',
-            placeholder: "Buscar inmueble...",
-            minimumInputLength: 3,
-            
-            ajax: {
-                delay: 250,
-                dataType: 'json',
-                cache: true,
-                url: function (params) {
-                    let q = params.term ? encodeURIComponent(params.term) : "";
-                    return `/Inmueble/Buscar/${q}`;
-                },
-                processResults: function (res) {
-                    return {
-                        results: res.datos.map(i => ({
-                            id: i.id,
-                            text: `${i.direccion} - ${i.localidad}`
-                        }))
-                    };
-                }
-            }
-        });
-    });
-</script>
-
-
+    </script>
 }

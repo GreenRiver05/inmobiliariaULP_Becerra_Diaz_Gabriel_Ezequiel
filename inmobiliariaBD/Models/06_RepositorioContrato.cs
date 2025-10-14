@@ -167,11 +167,12 @@ namespace inmobiliariaBD.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = @"SELECT c.id, c.inquilino_Id AS InquilinoID, c.inmueble_Id AS InmuebleId, c.monto, c.desde, c.hasta, c.estado,
-                             pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion, i.localidad
+                             pe.nombre, pe.apellido, pe.telefono, pe.dni, i.direccion, i.localidad, i.uso, i.precio,t.tipo, t.id AS 'TipoInmueble.Id'
                              FROM contrato c
                              JOIN inquilino inq ON inq.id = c.inquilino_Id
                              JOIN persona pe ON pe.dni = inq.dni
                              JOIN inmueble i ON i.id = c.inmueble_Id
+                             JOIN tipo_inmueble t ON t.id = i.tipo_id
                              WHERE c.id=@id";
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -207,7 +208,13 @@ namespace inmobiliariaBD.Models
                                 {
                                     Id = reader.GetInt32(nameof(c.InmuebleId)),
                                     Direccion = reader.GetString(nameof(c.Inmueble.Direccion)),
-                                    Localidad = reader.GetString(nameof(c.Inmueble.Localidad))
+                                    Localidad = reader.GetString(nameof(c.Inmueble.Localidad)),
+                                    Uso = reader.GetString(nameof(c.Inmueble.Uso)),
+                                    Precio = reader.GetString(nameof(c.Inmueble.Precio)),
+                                    TipoInmueble = new TipoInmueble
+                                    {
+                                        Tipo = reader.GetString(nameof(c.Inmueble.TipoInmueble.Tipo))
+                                    }
 
                                 }
                             };
