@@ -39,7 +39,7 @@ namespace inmobiliariaBD.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateOrEdit(int? id)
+        public IActionResult CreateOrEdit(int? id, bool esRenovacion = false, int? inquilinoId = null, int? inmuebleId = null, string? monto = null)
         {
             Contrato contrato;
 
@@ -51,21 +51,24 @@ namespace inmobiliariaBD.Controllers
             {
                 contrato = new Contrato
                 {
-                    Inquilino = new Inquilino { Persona = new Persona() },
-                    Inmueble = new Inmueble
-                    {
-                        Propietario = new Propietario { Persona = new Persona() }
-                    }
+                    Estado = "Vigente",
+                    Desde = DateTime.Today,
+                    Hasta = DateTime.Today.AddMonths(12),
+                    InquilinoId = inquilinoId ?? 0,
+                    InmuebleId = inmuebleId ?? 0,
+                    Monto = monto ?? "",
+                    Inquilino = inquilinoId.HasValue ? repoInquilino.ObtenerPorId(inquilinoId.Value) : new Inquilino { Persona = new Persona() },
+                    Inmueble = inmuebleId.HasValue ? repoInmueble.ObtenerPorId(inmuebleId.Value) : new Inmueble { Propietario = new Propietario { Persona = new Persona() } }
                 };
             }
 
-            CargarViewBags();
+            ViewBag.EsRenovacion = esRenovacion;
 
             return View(contrato);
         }
 
         [HttpPost]
-        public IActionResult CreateOrEdit(Contrato contrato)
+        public IActionResult CreateOrEdit(Contrato contrato, bool esRenovacion = false)
         {
             decimal montoDecimal = decimal.Parse(contrato.Monto, new CultureInfo("es-AR"));
             if (montoDecimal <= 0)
@@ -78,7 +81,8 @@ namespace inmobiliariaBD.Controllers
 
             if (!ModelState.IsValid)
             {
-                CargarViewBags();
+                ViewBag.EsRenovacion = esRenovacion;
+                // CargarViewBags();
                 return View("CreateOrEdit", contrato);
             }
 
@@ -88,23 +92,28 @@ namespace inmobiliariaBD.Controllers
                 contrato.Inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
 
                 TempData["Mensaje"] = "❌ El inmueble ya tiene un contrato vigente en ese rango de fechas.";
+                ViewBag.EsRenovacion = esRenovacion;
                 return View(contrato);
             }
 
 
             if (contrato.Id == 0)
             {
-                repositorio.Alta(contrato);
+                var nuevoId = repositorio.Alta(contrato);
                 TempData["Mensaje"] = "Contrato creado correctamente.";
+
+                return esRenovacion
+                    ? RedirectToAction("Detalles", new { id = nuevoId })
+                    : RedirectToAction("Index");
             }
             else
             {
                 repositorio.Modificacion(contrato);
                 TempData["Mensaje"] = "Contrato actualizado correctamente.";
+                return RedirectToAction("Index");
             }
-
-            return RedirectToAction("Index");
         }
+
 
 
         [Authorize(Roles = "Admin")]
@@ -116,15 +125,27 @@ namespace inmobiliariaBD.Controllers
             TempData["Mensaje"] = $"Contrato eliminado correctamente (N° Contrato: {contrato.Id}).";
             return RedirectToAction("Index");
         }
-
         public IActionResult ModificarEstado(int id, string nuevoEstado)
         {
             var contrato = repositorio.ObtenerPorId(id);
             contrato.Estado = nuevoEstado;
             repositorio.ModificarEstado(contrato);
-            TempData["Mensaje"] = $"El estado del contrato se cambio a {nuevoEstado}.";
+
+            if (nuevoEstado == "Rescindido")
+            {
+                TempData["Mensaje"] = "El contrato fue rescindido. Registrá la multa correspondiente.";
+                return RedirectToAction("CreateOrEdit", "Multa", new
+                {
+                    contratoId = contrato.Id,
+                    fechaAviso = DateTime.Today.ToString("yyyy-MM-dd"),
+                    fechaTerminacion = contrato.Hasta.ToString("yyyy-MM-dd")
+                });
+            }
+
+            TempData["Mensaje"] = $"El estado del contrato se cambió a {nuevoEstado}.";
             return RedirectToAction("CreateOrEdit", new { id = contrato.Id });
         }
+
 
         public IActionResult Detalles(
                             int id,
@@ -141,22 +162,22 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-        private void CargarViewBags()
-        {
-            ViewBag.Inquilinos = repoInquilino.ObtenerTodos()
-                .Select(i => new SelectListItem
-                {
-                    Value = i.Id.ToString(),
-                    Text = $"{i.Persona.ToStringSimple()}"
-                }).ToList();
+        // private void CargarViewBags()
+        // {
+        //     ViewBag.Inquilinos = repoInquilino.ObtenerTodos()
+        //         .Select(i => new SelectListItem
+        //         {
+        //             Value = i.Id.ToString(),
+        //             Text = $"{i.Persona.ToStringSimple()}"
+        //         }).ToList();
 
-            ViewBag.Inmuebles = repoInmueble.ObtenerTodos()
-                .Select(im => new SelectListItem
-                {
-                    Value = im.Id.ToString(),
-                    Text = $"{im.Direccion} - {im.Localidad}"
-                }).ToList();
-        }
+        //     ViewBag.Inmuebles = repoInmueble.ObtenerTodos()
+        //         .Select(im => new SelectListItem
+        //         {
+        //             Value = im.Id.ToString(),
+        //             Text = $"{im.Direccion} - {im.Localidad}"
+        //         }).ToList();
+        // }
 
     }
 }

@@ -82,12 +82,12 @@
   {
     "Id": 17,
     "Titulo": "Permitir renovar contratos (crea otro pre cargando datos del original).",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 18,
     "Titulo": "Permitir terminar tempranamente contratos indicando la multa y permitir cargar el pago de esa multa.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 19,

@@ -34,37 +34,46 @@ namespace inmobiliariaBD.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateOrEdit(int? id, int? contratoId)
+        public IActionResult CreateOrEdit(int? id, int? contratoId, string? fechaAviso = null, string? fechaTerminacion = null)
         {
+            Multa model;
+
             if (id == null)
             {
-                var nueva = new Multa
+                model = new Multa
                 {
                     ContratoId = contratoId ?? 0,
-                    FechaAviso = DateTime.Today,
-                    FechaTerminacion = DateTime.Today.AddDays(1),
-                    Contrato = new Contrato { Inquilino = new Inquilino { Persona = new Persona() } }
+                    FechaAviso = fechaAviso != null ? DateTime.Parse(fechaAviso) : DateTime.Today,
+                    FechaTerminacion = fechaTerminacion != null ? DateTime.Parse(fechaTerminacion) : DateTime.Today.AddDays(1),
+                    Contrato = new Contrato
+                    {
+                        Inquilino = new Inquilino
+                        {
+                            Persona = new Persona()
+                        }
+                    }
                 };
 
                 ViewBag.ContratoFijo = contratoId.HasValue;
-                ViewBag.Contratos = repoContrato.ObtenerTodos()
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.Id.ToString(),
-                        Text = $"Contrato #{c.Id} - {c.Inquilino.Persona.Nombre} {c.Inquilino.Persona.Apellido}"
-                    }).ToList();
-                return View(nueva);
+
             }
-            var multa = repo.ObtenerPorId(id.Value);
-            ViewBag.ContratoFijo = contratoId.HasValue;
+            else
+            {
+                model = repo.ObtenerPorId(id.Value);
+                ViewBag.ContratoFijo = contratoId.HasValue;
+
+            }
+
             ViewBag.Contratos = repoContrato.ObtenerTodos()
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
                     Text = $"Contrato #{c.Id} - {c.Inquilino.Persona.Apellido}, {c.Inquilino.Persona.Nombre}"
                 }).ToList();
-            return View(multa);
+
+            return View(model);
         }
+
 
         [HttpPost]
         public IActionResult CreateOrEdit(Multa multa, bool volverAContrato = false)

@@ -14,8 +14,38 @@
     </div>
 }
 
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-light mb-0">📄 Detalle del Contrato</h2>
 
-<h2 class="text-light mb-4">📄 Detalle del Contrato</h2>
+    <div class="d-flex flex-wrap gap-2">
+        @if (Model.Estado == "Vigente" && User.IsInRole("Admin"))
+        {
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal"
+                data-bs-target="#modalRescindir">
+                <i class="fa-solid fa-ban"></i> Rescindir contrato
+            </button>
+
+        }
+
+
+        <a asp-action="CreateOrEdit" asp-controller="Contrato" asp-route-esRenovacion="true"
+            asp-route-inquilinoId="@Model.InquilinoId" asp-route-inmuebleId="@Model.InmuebleId"
+            asp-route-monto="@Model.Monto" class="btn btn-sm btn-outline-success">
+            <i class="fa-solid fa-rotate-right"></i> Renovar contrato
+        </a>
+
+
+
+
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Volver Al Listado
+        </a>
+    </div>
+</div>
+
+
+
+
 
 <div class="card bg-dark text-white border-secondary mb-4">
     <div class="card-header bg-primary text-white">
@@ -42,24 +72,23 @@
             <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">Inquilino</dt>
-                    <dd class="col-sm-8">
+                    <dd class="col-sm-8 d-flex align-items-center gap-2">
                         @($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")
-                        <br />
                         <a asp-controller="Inquilino" asp-action="Detalles" asp-route-id="@Model.InquilinoId"
-                            class="btn btn-sm btn-outline-info mt-1">
-                            <i class="fa-solid fa-user"></i> Ver Inquilino
+                            class="btn btn-sm btn-outline-info">
+                            <i class="fa-solid fa-eye"></i>
                         </a>
                     </dd>
 
                     <dt class="col-sm-4">Inmueble</dt>
-                    <dd class="col-sm-8">
+                    <dd class="col-sm-8 d-flex align-items-center gap-2">
                         @($"{Model.Inmueble.Direccion} ({Model.Inmueble.Localidad})")
-                        <br />
                         <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@Model.InmuebleId"
-                            class="btn btn-sm btn-outline-info mt-1">
-                            <i class="fa-solid fa-building"></i> Ver Inmueble
+                            class="btn btn-sm btn-outline-info">
+                            <i class="fa-solid fa-eye"></i>
                         </a>
                     </dd>
+
 
                     <dt class="col-sm-4">Estado</dt>
                     <dd class="col-sm-8">
@@ -68,6 +97,7 @@
                             @Model.Estado
                         </span>
                     </dd>
+
                 </dl>
             </div>
         </div>
@@ -219,10 +249,8 @@ else
     <div class="alert alert-info text-dark">Este contrato no tiene multas registradas.</div>
 }
 
-<a asp-action="Index" class="btn btn-outline-secondary mt-4">
-    <i class="fa-solid fa-arrow-left"></i> Volver al listado
-</a>
 
+@*-----------------------------------------------MODAL ELIMINAR PAGO o CONTRATO---------------------------------------------*@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-dark text-white border-secondary">
@@ -255,6 +283,64 @@ else
         </div>
     </div>
 </div>
+
+@*------------------------------------------------MODAL RECINDIR--------------------------------------------------------*@
+<div class="modal fade" id="modalRescindir" tabindex="-1" aria-labelledby="modalRescindirLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalRescindirLabel">Confirmar rescisión</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro que querés <strong>rescindir este contrato</strong>?</p>
+                <div class="alert alert-danger text-dark mt-3">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    Al confirmar, se generará automáticamente una <strong>multa por rescisión anticipada</strong>.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form asp-action="ModificarEstado" asp-controller="Contrato" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="nuevoEstado" value="Rescindido" />
+                    <button type="submit" class="btn btn-outline-danger">Confirmar rescisión</button>
+                </form>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* 
+@if (User.IsInRole("Admin") )
+{
+    <h4 class="text-light mt-5 mb-3">🕵️ Auditoría del contrato</h4>
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-secondary text-light">
+                <tr>
+                    <th>Acción</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Auditoria)
+                {
+                    <tr>
+                        <td>@log.Accion</td>
+                        <td>@log.Usuario</td>
+                        <td>@log.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@log.Fecha.ToString("HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+} *@
+
 
 @section Scripts {
     <script>

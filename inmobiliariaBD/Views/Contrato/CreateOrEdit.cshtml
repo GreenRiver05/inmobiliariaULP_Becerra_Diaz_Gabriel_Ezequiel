@@ -16,12 +16,17 @@
 
 
 <h2 class="text-light mb-4">
-    @(Model.Id == 0 ? "🆕 Nuevo Contrato" : "✏️ Editar Contrato")
+    @(ViewBag.EsRenovacion != null && (bool)ViewBag.EsRenovacion
+        ? "🔁 Renovar Contrato"
+        : Model.Id == 0 ? "🆕 Nuevo Contrato" : "✏️ Editar Contrato")
 </h2>
+
 
 <form asp-action="CreateOrEdit" method="post" class="bg-dark text-white p-4 rounded border border-secondary">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Estado" value="Vigente" />
+    <input type="hidden" name="esRenovacion" value="@((ViewBag.EsRenovacion ?? false).ToString().ToLower())" />
+
 
     <div class="row g-3">
         <div class="col-md-5">
@@ -113,6 +118,7 @@
                 string textoBoton = estado switch
                 {
                     "Vigente" => "Reactivar",
+
                     "Rescindido" => "Rescindir",
                 };
 
