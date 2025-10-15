@@ -92,7 +92,7 @@
   {
     "Id": 19,
     "Titulo": "Registrar qu\u00E9 usuario cre\u00F3 un contrato y, en caso que corresponda, quien lo termin\u00F3. Similar para pagos, qui\u00E9n lo cre\u00F3 y, en caso que corresponda, quien lo anul\u00F3. Esta informaci\u00F3n de auditor\u00EDa s\u00F3lo es visible para administradores y en una vista de detalles de la entidad correspondiente.",
-    "Completado": false
+    "Completado": true
   },
   {
     "Id": 20,

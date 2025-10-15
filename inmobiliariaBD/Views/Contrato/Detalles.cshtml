@@ -249,7 +249,7 @@ else
     <div class="alert alert-info text-dark">Este contrato no tiene multas registradas.</div>
 }
 
-@if (User.IsInRole("Admin") && Model.Auditoria?.Any() == true)
+@if (User.IsInRole("Admin"))
 {
     <h4 class="text-light mt-5 mb-3">
         <i class="fa-solid fa-user-secret"></i> Auditoría del contrato
@@ -281,13 +281,6 @@ else
         </table>
     </div>
 }
-else if (User.IsInRole("Admin"))
-{
-    <div class="alert alert-warning mt-4">
-        <i class="fa-solid fa-circle-info"></i> No hay registros de auditoría para este contrato.
-    </div>
-}
-
 
 
 

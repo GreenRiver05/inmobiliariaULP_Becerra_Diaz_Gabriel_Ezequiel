@@ -7,5 +7,6 @@ namespace inmobiliariaBD.Models
         public Inquilino Inquilino { get; set; }
         public Propietario Propietario { get; set; }
         public Inmueble Inmueble { get; set; }
+        public List<Gestion> Auditoria { get; set; }
     }
 }

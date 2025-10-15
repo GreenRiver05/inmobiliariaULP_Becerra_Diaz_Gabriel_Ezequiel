@@ -66,15 +66,51 @@
     </div>
 </div>
 
+
+@if (User.IsInRole("Admin"))
+{
+    <h4 class="text-light mt-5 mb-3">
+        <i class="fa-solid fa-user-secret"></i> Auditoría de la multa
+    </h4>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-gradient bg-secondary text-light text-center">
+                <tr>
+                    <th style="width: 25%">Acción realizada</th>
+                    <th style="width: 35%">Usuario responsable</th>
+                    <th style="width: 15%">DNI</th>
+                    <th style="width: 20%">Fecha</th>
+                    <th style="width: 20%">Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Auditoria.OrderByDescending(l => l.Fecha))
+                {
+                    <tr>
+                        <td>@log.Accion</td>
+                        <td>@($"{log.Usuario.Persona.Nombre} {log.Usuario.Persona.Apellido}")</td>
+                        <td>@log.Usuario.Persona.Dni</td>
+                        <td>@log.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@log.Fecha.ToString("HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
 <div class="d-flex justify-content-center mt-4">
 
     @if (ViewBag.VolverAContrato != null && (bool)ViewBag.VolverAContrato)
     {
         <a asp-controller="Contrato" asp-action="Detalles" asp-route-id="@Model.Contrato.Id"
-           class="btn btn-outline-secondary me-2">
+            class="btn btn-outline-secondary me-2">
             <i class="fa-solid fa-arrow-left"></i> Volver al contrato
         </a>
-    }else
+    }
+    else
     {
         <a asp-action="Index" class="btn btn-outline-secondary">
             <i class="fa-solid fa-arrow-left"></i> Volver al listado

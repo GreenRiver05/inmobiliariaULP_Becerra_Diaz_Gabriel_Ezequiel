@@ -108,7 +108,7 @@ namespace inmobiliariaBD.Controllers
             }
 
 
-            
+
             int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             if (multa.Id == 0)
@@ -141,6 +141,7 @@ namespace inmobiliariaBD.Controllers
                                         [FromServices] IRepositorioInquilino repoInquilino,
                                         [FromServices] IRepositorioPropietario repoPropietario,
                                         [FromServices] IRepositorioInmueble repoInmueble,
+                                        [FromServices] RepositorioGestion repoGestion,
                                         bool volverAContrato = false)
         {
             var multa = repo.ObtenerPorId(id);
@@ -148,6 +149,7 @@ namespace inmobiliariaBD.Controllers
             var inquilino = repoInquilino.ObtenerPorId(contrato.InquilinoId);
             var inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
             var propietario = repoPropietario.ObtenerPorId(inmueble.PropietarioId);
+            var auditoria = repoGestion.ObtenerPorEntidad("Multa", id);
             ViewBag.VolverAContrato = volverAContrato;
 
             var modelo = new MultaDetalleViewModel
@@ -156,7 +158,8 @@ namespace inmobiliariaBD.Controllers
                 Contrato = contrato,
                 Inquilino = inquilino,
                 Propietario = propietario,
-                Inmueble = inmueble
+                Inmueble = inmueble,
+                Auditoria = auditoria
             };
 
             return View(modelo);

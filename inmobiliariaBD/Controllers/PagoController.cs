@@ -134,6 +134,7 @@ namespace inmobiliariaBD.Controllers
                                         [FromServices] IRepositorioInquilino repoInquilino,
                                         [FromServices] IRepositorioPropietario repoPropietario,
                                         [FromServices] IRepositorioInmueble repoInmueble,
+                                        [FromServices] RepositorioGestion repoGestion,
                                         bool volverAContrato = false)
         {
             var pago = repo.ObtenerPorId(id);
@@ -142,6 +143,7 @@ namespace inmobiliariaBD.Controllers
             var inquilino = repoInquilino.ObtenerPorId(contrato.InquilinoId);
             var inmueble = repoInmueble.ObtenerPorId(contrato.InmuebleId);
             var propietario = repoPropietario.ObtenerPorId(inmueble.PropietarioId);
+            var auditoria = repoGestion.ObtenerPorEntidad("Pago", id);
             ViewBag.VolverAContrato = volverAContrato;
 
             var modelo = new PagoDetalleViewModel
@@ -150,7 +152,8 @@ namespace inmobiliariaBD.Controllers
                 Contrato = contrato,
                 Inquilino = inquilino,
                 Propietario = propietario,
-                Inmueble = inmueble
+                Inmueble = inmueble,
+                Auditoria = auditoria
             };
 
             return View(modelo);
@@ -193,11 +196,11 @@ namespace inmobiliariaBD.Controllers
             }
             return RedirectToAction("Index");
         }
-       
-       
-       
-       
-       
+
+
+
+
+
         private void RegistrarGestion(int usuarioId, int entidadId, string entidadTipo, string accion)
         {
             var repoGestion = new RepositorioGestion(config);
