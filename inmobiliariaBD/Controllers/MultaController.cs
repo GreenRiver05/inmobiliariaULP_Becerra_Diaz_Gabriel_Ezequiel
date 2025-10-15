@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace inmobiliariaBD.Controllers
 {
@@ -32,6 +33,10 @@ namespace inmobiliariaBD.Controllers
             ViewBag.Hasta = hasta?.ToString("yyyy-MM-dd");
             return View(multas);
         }
+
+
+
+
 
         [HttpGet]
         public IActionResult CreateOrEdit(int? id, int? contratoId, string? fechaAviso = null, string? fechaTerminacion = null)
@@ -75,6 +80,9 @@ namespace inmobiliariaBD.Controllers
         }
 
 
+
+
+
         [HttpPost]
         public IActionResult CreateOrEdit(Multa multa, bool volverAContrato = false)
         {
@@ -99,16 +107,23 @@ namespace inmobiliariaBD.Controllers
                 return View(multa);
             }
 
+
+            
+            int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             if (multa.Id == 0)
             {
-                repo.Alta(multa);
+                var nuevoId = repo.Alta(multa);
+                RegistrarGestion(usuarioId, nuevoId, "Multa", "Alta");
                 TempData["Mensaje"] = "Multa registrada correctamente.";
             }
             else
             {
                 repo.Modificacion(multa);
+                RegistrarGestion(usuarioId, multa.Id, "Multa", "Modificación");
                 TempData["Mensaje"] = "Multa actualizada correctamente.";
             }
+
 
             if (volverAContrato)
             {
@@ -117,6 +132,10 @@ namespace inmobiliariaBD.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+
+
 
         public IActionResult Detalles(int id,
                                         [FromServices] IRepositorioInquilino repoInquilino,
@@ -145,6 +164,8 @@ namespace inmobiliariaBD.Controllers
 
 
 
+
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Baja(int id, bool volverAContrato = false)
@@ -158,5 +179,24 @@ namespace inmobiliariaBD.Controllers
             }
             return RedirectToAction("Index");
         }
+
+
+
+
+        private void RegistrarGestion(int usuarioId, int entidadId, string entidadTipo, string accion)
+        {
+            var repoGestion = new RepositorioGestion(config);
+            var gestion = new Gestion
+            {
+                UsuarioId = usuarioId,
+                EntidadId = entidadId,
+                EntidadTipo = entidadTipo,
+                Accion = accion,
+                Fecha = DateTime.Now
+            };
+            repoGestion.Alta(gestion);
+        }
+
+
     }
 }

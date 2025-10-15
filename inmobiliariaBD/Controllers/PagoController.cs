@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace inmobiliariaBD.Controllers
 {
@@ -36,6 +37,7 @@ namespace inmobiliariaBD.Controllers
 
             return View(pagos);
         }
+
 
 
 
@@ -78,6 +80,9 @@ namespace inmobiliariaBD.Controllers
         }
 
 
+
+
+
         [HttpPost]
         public IActionResult CreateOrEdit(Pago pago, bool volverAContrato = false)
         {
@@ -97,16 +102,21 @@ namespace inmobiliariaBD.Controllers
                 return View(pago);
             }
 
+            int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             if (pago.Id == 0)
             {
-                repo.Alta(pago);
+                var nuevoId = repo.Alta(pago);
+                RegistrarGestion(usuarioId, nuevoId, "Pago", "Alta");
                 TempData["Mensaje"] = "Pago registrado correctamente.";
             }
             else
             {
                 repo.Modificacion(pago);
+                RegistrarGestion(usuarioId, pago.Id, "Pago", "Modificación");
                 TempData["Mensaje"] = "Pago actualizado correctamente.";
             }
+
 
             if (volverAContrato)
             {
@@ -115,6 +125,10 @@ namespace inmobiliariaBD.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+
+
 
         public IActionResult Detalles(int id,
                                         [FromServices] IRepositorioInquilino repoInquilino,
@@ -143,12 +157,21 @@ namespace inmobiliariaBD.Controllers
         }
 
 
+
+
+
+
         public IActionResult ModificarEstado(int id, string nuevoEstado)
         {
             var pago = repo.ObtenerPorId(id);
             pago.Estado = nuevoEstado;
             repo.ModificarEstado(pago);
             TempData["Mensaje"] = $"Se modificó el estado del inmueble correctamente.";
+
+            int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            RegistrarGestion(usuarioId, pago.Id, "Pago", $"Cambio de estado a {nuevoEstado}");
+
+
 
             return RedirectToAction("CreateOrEdit", new { id = pago.Id, contratoId = pago.ContratoId });
         }
@@ -169,6 +192,24 @@ namespace inmobiliariaBD.Controllers
                 return RedirectToAction("Detalles", "Contrato", new { id = pago.ContratoId });
             }
             return RedirectToAction("Index");
+        }
+       
+       
+       
+       
+       
+        private void RegistrarGestion(int usuarioId, int entidadId, string entidadTipo, string accion)
+        {
+            var repoGestion = new RepositorioGestion(config);
+            var gestion = new Gestion
+            {
+                UsuarioId = usuarioId,
+                EntidadId = entidadId,
+                EntidadTipo = entidadTipo,
+                Accion = accion,
+                Fecha = DateTime.Now
+            };
+            repoGestion.Alta(gestion);
         }
     }
 }

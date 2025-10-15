@@ -41,6 +41,9 @@ builder.Services.AddScoped<IRepositorioPago, RepositorioPago>();
 builder.Services.AddScoped<IRepositorioMulta, RepositorioMulta>();
 builder.Services.AddScoped<RepositorioTipoInmueble, RepositorioTipoInmueble>();
 builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
+builder.Services.AddScoped<RepositorioGestion>();
+
+
 // Registra los repositorios personalizados para inyección de dependencias con ciclo de vida Scoped.
 
 

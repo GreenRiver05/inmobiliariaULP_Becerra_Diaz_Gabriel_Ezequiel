@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security.Claims;
 using inmobiliariaBD.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,10 @@ namespace inmobiliariaBD.Controllers
             return View(contratos);
         }
 
+
+
+
+
         [HttpGet]
         public IActionResult CreateOrEdit(int? id, bool esRenovacion = false, int? inquilinoId = null, int? inmuebleId = null, string? monto = null)
         {
@@ -66,6 +71,10 @@ namespace inmobiliariaBD.Controllers
 
             return View(contrato);
         }
+
+
+
+
 
         [HttpPost]
         public IActionResult CreateOrEdit(Contrato contrato, bool esRenovacion = false)
@@ -97,9 +106,14 @@ namespace inmobiliariaBD.Controllers
             }
 
 
+            // Obtengo el usuario actual desde los claims
+            int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             if (contrato.Id == 0)
             {
                 var nuevoId = repositorio.Alta(contrato);
+                RegistrarGestion(usuarioId, nuevoId, "Contrato", esRenovacion ? "Renovación" : "Alta");
+
                 TempData["Mensaje"] = "Contrato creado correctamente.";
 
                 return esRenovacion
@@ -109,10 +123,13 @@ namespace inmobiliariaBD.Controllers
             else
             {
                 repositorio.Modificacion(contrato);
+                RegistrarGestion(usuarioId, contrato.Id, "Contrato", "Modificación");
                 TempData["Mensaje"] = "Contrato actualizado correctamente.";
                 return RedirectToAction("Index");
             }
         }
+
+
 
 
 
@@ -125,11 +142,21 @@ namespace inmobiliariaBD.Controllers
             TempData["Mensaje"] = $"Contrato eliminado correctamente (N° Contrato: {contrato.Id}).";
             return RedirectToAction("Index");
         }
+
+
+
+
+
         public IActionResult ModificarEstado(int id, string nuevoEstado)
         {
             var contrato = repositorio.ObtenerPorId(id);
             contrato.Estado = nuevoEstado;
             repositorio.ModificarEstado(contrato);
+
+
+            int usuarioId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // Obtengo el usuario actual desde los claims
+            RegistrarGestion(usuarioId, contrato.Id, "Contrato", $"Cambio de estado a {nuevoEstado}");
+
 
             if (nuevoEstado == "Rescindido")
             {
@@ -147,19 +174,47 @@ namespace inmobiliariaBD.Controllers
         }
 
 
-        public IActionResult Detalles(
-                            int id,
-                            [FromServices] IRepositorioPago repositorioPago,
-                            [FromServices] IRepositorioMulta repositorioMulta)
-        {
 
+
+
+        public IActionResult Detalles(
+            int id,
+            [FromServices] IRepositorioPago repositorioPago,
+            [FromServices] IRepositorioMulta repositorioMulta
+          )
+        {
+             var repoGestion = new RepositorioGestion(config);
             var contrato = repositorio.ObtenerPorId(id);
+            var auditoria = repoGestion.ObtenerPorEntidad("Contrato", id);
+
             ViewBag.Pagos = repositorioPago.ObtenerPagosPorContrato(id);
             ViewBag.Multas = repositorioMulta.ObtenerMultasPorContrato(id);
 
+            var modelo = new ContratoDetalleViewModel
+            {
+                Contrato = contrato,
+                Auditoria = auditoria
+            };
 
-            return View(contrato);
+            return View(modelo);
+        }
 
+
+
+
+
+        private void RegistrarGestion(int usuarioId, int entidadId, string entidadTipo, string accion)
+        {
+            var repoGestion = new RepositorioGestion(config);
+            var gestion = new Gestion
+            {
+                UsuarioId = usuarioId,
+                EntidadId = entidadId,
+                EntidadTipo = entidadTipo,
+                Accion = accion,
+                Fecha = DateTime.Now
+            };
+            repoGestion.Alta(gestion);
         }
 
         // private void CargarViewBags()

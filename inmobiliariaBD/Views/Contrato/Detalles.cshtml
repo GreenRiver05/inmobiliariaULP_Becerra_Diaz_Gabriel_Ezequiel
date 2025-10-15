@@ -1,4 +1,4 @@
-@model inmobiliariaBD.Models.Contrato
+@model inmobiliariaBD.Models.ContratoDetalleViewModel
 @{
     ViewData["Title"] = "Detalle de Contrato";
     var pagos = ViewBag.Pagos as List<inmobiliariaBD.Models.Pago>;
@@ -18,7 +18,7 @@
     <h2 class="text-light mb-0">📄 Detalle del Contrato</h2>
 
     <div class="d-flex flex-wrap gap-2">
-        @if (Model.Estado == "Vigente" && User.IsInRole("Admin"))
+        @if (Model.Contrato.Estado == "Vigente" && User.IsInRole("Admin"))
         {
             <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal"
                 data-bs-target="#modalRescindir">
@@ -29,8 +29,8 @@
 
 
         <a asp-action="CreateOrEdit" asp-controller="Contrato" asp-route-esRenovacion="true"
-            asp-route-inquilinoId="@Model.InquilinoId" asp-route-inmuebleId="@Model.InmuebleId"
-            asp-route-monto="@Model.Monto" class="btn btn-sm btn-outline-success">
+            asp-route-inquilinoId="@Model.Contrato.InquilinoId" asp-route-inmuebleId="@Model.Contrato.InmuebleId"
+            asp-route-monto="@Model.Contrato.Monto" class="btn btn-sm btn-outline-success">
             <i class="fa-solid fa-rotate-right"></i> Renovar contrato
         </a>
 
@@ -56,16 +56,16 @@
             <div class="col-md-6 mb-3">
                 <dl class="row">
                     <dt class="col-sm-4">N°</dt>
-                    <dd class="col-sm-8">@Model.Id</dd>
+                    <dd class="col-sm-8">@Model.Contrato.Id</dd>
 
                     <dt class="col-sm-4">Monto</dt>
-                    <dd class="col-sm-8">$ @Model.Monto</dd>
+                    <dd class="col-sm-8">$ @Model.Contrato.Monto</dd>
 
                     <dt class="col-sm-4">Desde</dt>
-                    <dd class="col-sm-8">@Model.Desde.ToString("dd/MM/yyyy")</dd>
+                    <dd class="col-sm-8">@Model.Contrato.Desde.ToString("dd/MM/yyyy")</dd>
 
                     <dt class="col-sm-4">Hasta</dt>
-                    <dd class="col-sm-8">@Model.Hasta.ToString("dd/MM/yyyy")</dd>
+                    <dd class="col-sm-8">@Model.Contrato.Hasta.ToString("dd/MM/yyyy")</dd>
                 </dl>
             </div>
 
@@ -73,8 +73,8 @@
                 <dl class="row">
                     <dt class="col-sm-4">Inquilino</dt>
                     <dd class="col-sm-8 d-flex align-items-center gap-2">
-                        @($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")
-                        <a asp-controller="Inquilino" asp-action="Detalles" asp-route-id="@Model.InquilinoId"
+                        @($"{Model.Contrato.Inquilino.Persona.Nombre} {Model.Contrato.Inquilino.Persona.Apellido}")
+                        <a asp-controller="Inquilino" asp-action="Detalles" asp-route-id="@Model.Contrato.InquilinoId"
                             class="btn btn-sm btn-outline-info">
                             <i class="fa-solid fa-eye"></i>
                         </a>
@@ -82,8 +82,8 @@
 
                     <dt class="col-sm-4">Inmueble</dt>
                     <dd class="col-sm-8 d-flex align-items-center gap-2">
-                        @($"{Model.Inmueble.Direccion} ({Model.Inmueble.Localidad})")
-                        <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@Model.InmuebleId"
+                        @($"{Model.Contrato.Inmueble.Direccion} ({Model.Contrato.Inmueble.Localidad})")
+                        <a asp-controller="Inmueble" asp-action="Detalles" asp-route-id="@Model.Contrato.InmuebleId"
                             class="btn btn-sm btn-outline-info">
                             <i class="fa-solid fa-eye"></i>
                         </a>
@@ -93,8 +93,8 @@
                     <dt class="col-sm-4">Estado</dt>
                     <dd class="col-sm-8">
                         <span
-                            class="badge @(Model.Estado == "Vigente" ? "bg-success" : Model.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
-                            @Model.Estado
+                            class="badge @(Model.Contrato.Estado == "Vigente" ? "bg-success" : Model.Contrato.Estado == "Finalizado" ? "bg-secondary" : "bg-danger") px-3 py-2">
+                            @Model.Contrato.Estado
                         </span>
                     </dd>
 
@@ -106,7 +106,7 @@
 
 <h4 class="text-light mb-3">
     💰 Pagos realizados
-    <a asp-controller="Pago" asp-action="CreateOrEdit" asp-route-contratoId="@Model.Id"
+    <a asp-controller="Pago" asp-action="CreateOrEdit" asp-route-contratoId="@Model.Contrato.Id"
         class="btn btn-sm btn-outline-success ms-3">
         <i class="fa-solid fa-plus"></i> Registrar nuevo pago
     </a>
@@ -155,7 +155,7 @@
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a asp-controller="Pago" asp-action="CreateOrEdit" asp-route-id="@pago.Id"
-                                asp-route-contratoId="@Model.Id" class="btn btn-sm btn-outline-warning me-1">
+                                asp-route-contratoId="@Model.Contrato.Id" class="btn btn-sm btn-outline-warning me-1">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
 
@@ -163,7 +163,7 @@
                             {
                                 <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                                     data-bs-target="#confirmModal" data-id="@pago.Id" data-contrato="@pago.ContratoId"
-                                    data-inquilino="@($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")"
+                                    data-inquilino="@($"{Model.Contrato.Inquilino.Persona.Nombre} {Model.Contrato.Inquilino.Persona.Apellido}")"
                                     data-numero="@pago.NumeroPago" data-monto="@pago.Monto"
                                     data-fecha="@pago.Fecha.ToString("dd/MM/yyyy")" data-tipo="Pago">
                                     <i class="fa-solid fa-trash"></i>
@@ -185,7 +185,7 @@ else
 }
 <h4 class="text-light mb-3">
     ⚠️ Multas registradas
-    <a asp-controller="Multa" asp-action="CreateOrEdit" asp-route-contratoId="@Model.Id"
+    <a asp-controller="Multa" asp-action="CreateOrEdit" asp-route-contratoId="@Model.Contrato.Id"
         class="btn btn-sm btn-outline-danger ms-3">
         <i class="fa-solid fa-plus"></i> Registrar nueva multa
     </a>
@@ -219,7 +219,7 @@ else
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             <a asp-controller="Multa" asp-action="CreateOrEdit" asp-route-id="@multa.Id"
-                                asp-route-contratoId="@Model.Id" class="btn btn-sm btn-outline-warning me-1">
+                                asp-route-contratoId="@Model.Contrato.Id" class="btn btn-sm btn-outline-warning me-1">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
 
@@ -227,7 +227,7 @@ else
                             {
                                 <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                                     data-bs-target="#confirmModal" data-id="@multa.Id" data-contrato="@multa.ContratoId"
-                                    data-inquilino="@($"{Model.Inquilino.Persona.Nombre} {Model.Inquilino.Persona.Apellido}")"
+                                    data-inquilino="@($"{Model.Contrato.Inquilino.Persona.Nombre} {Model.Contrato.Inquilino.Persona.Apellido}")"
                                     data-numero="—" data-monto="@multa.Monto" data-fecha="@multa.FechaAviso.ToString("dd/MM/yyyy")"
                                     data-tipo="Multa">
                                     <i class="fa-solid fa-trash"></i>
@@ -248,6 +248,47 @@ else
 {
     <div class="alert alert-info text-dark">Este contrato no tiene multas registradas.</div>
 }
+
+@if (User.IsInRole("Admin") && Model.Auditoria?.Any() == true)
+{
+    <h4 class="text-light mt-5 mb-3">
+        <i class="fa-solid fa-user-secret"></i> Auditoría del contrato
+    </h4>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover tabla-index">
+            <thead class="bg-gradient bg-secondary text-light text-center">
+                <tr>
+                    <th style="width: 25%">Acción realizada</th>
+                    <th style="width: 35%">Usuario responsable</th>
+                    <th style="width: 15%">DNI</th>
+                    <th style="width: 20%">Fecha</th>
+                    <th style="width: 20%">Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Auditoria.OrderByDescending(l => l.Fecha))
+                {
+                    <tr>
+                        <td>@log.Accion</td>
+                        <td>@($"{log.Usuario.Persona.Nombre} {log.Usuario.Persona.Apellido}")</td>
+                        <td>@log.Usuario.Persona.Dni</td>
+                        <td>@log.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@log.Fecha.ToString("HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else if (User.IsInRole("Admin"))
+{
+    <div class="alert alert-warning mt-4">
+        <i class="fa-solid fa-circle-info"></i> No hay registros de auditoría para este contrato.
+    </div>
+}
+
+
 
 
 @*-----------------------------------------------MODAL ELIMINAR PAGO o CONTRATO---------------------------------------------*@
@@ -302,7 +343,7 @@ else
             </div>
             <div class="modal-footer">
                 <form asp-action="ModificarEstado" asp-controller="Contrato" method="post">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="id" value="@Model.Contrato.Id" />
                     <input type="hidden" name="nuevoEstado" value="Rescindido" />
                     <button type="submit" class="btn btn-outline-danger">Confirmar rescisión</button>
                 </form>
@@ -312,34 +353,6 @@ else
     </div>
 </div>
 
-@* 
-@if (User.IsInRole("Admin") )
-{
-    <h4 class="text-light mt-5 mb-3">🕵️ Auditoría del contrato</h4>
-    <div class="table-responsive">
-        <table class="table table-dark table-bordered table-hover tabla-index">
-            <thead class="bg-secondary text-light">
-                <tr>
-                    <th>Acción</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var log in Model.Auditoria)
-                {
-                    <tr>
-                        <td>@log.Accion</td>
-                        <td>@log.Usuario</td>
-                        <td>@log.Fecha.ToString("dd/MM/yyyy")</td>
-                        <td>@log.Fecha.ToString("HH:mm:ss")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-} *@
 
 
 @section Scripts {
