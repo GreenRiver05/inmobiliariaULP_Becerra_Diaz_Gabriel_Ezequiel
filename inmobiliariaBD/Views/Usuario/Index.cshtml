@@ -79,10 +79,12 @@
                     }
                 </td>
                 <td class="text-center">
-                    <a asp-action="Detalles" asp-route-id="@u.Id" class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                    @* <a asp-action="Detalles" asp-route-id="@u.Id" class="btn btn-sm btn-outline-info me-1"
+                        title="Ver detalles">
                         <i class="fa-solid fa-eye"></i>
-                    </a>
-                    <a asp-action="CreateOrEdit" asp-route-id="@u.Id" class="btn btn-sm btn-outline-warning me-1" title="Editar">
+                    </a> *@
+                    <a asp-action="CreateOrEdit" asp-route-id="@u.Id" class="btn btn-sm btn-outline-warning me-1"
+                        title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </a>
                     <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
@@ -129,6 +131,7 @@
             </a>
         </li>
     </ul>
+    <br>
 </nav>
 
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
@@ -143,7 +146,8 @@
                     <p>¿Estás seguro que querés eliminar al siguiente usuario?</p>
                     <ul class="list-unstyled">
                         <li><strong>ID:</strong> <span id="modal-id"></span></li>
-                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span></li>
+                        <li><strong>Nombre:</strong> <span id="modal-nombre"></span> <span id="modal-apellido"></span>
+                        </li>
                         <li><strong>Email:</strong> <span id="modal-email"></span></li>
                     </ul>
                     <input type="hidden" name="id" id="form-id" />

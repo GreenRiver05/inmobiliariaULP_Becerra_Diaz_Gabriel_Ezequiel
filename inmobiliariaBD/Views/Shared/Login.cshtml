@@ -3,30 +3,52 @@
     ViewData["Title"] = "Login";
 }
 
-<h2 class="text-center mt-4">Iniciar sesión</h2>
+<h2 class="text-center text-light mt-4 mb-3">
+    <i class="fa-solid fa-right-to-bracket me-2"></i> Iniciar sesión
+</h2>
 
 <div class="row justify-content-center">
-    <div class="col-md-4">
-        <form asp-controller="Usuario" asp-action="Login" method="post">
-            <div class="form-group mb-3">
-                <label asp-for="Usuario" class="form-label"></label>
-                <input asp-for="Usuario" class="form-control" />
-                <span asp-validation-for="Usuario" class="text-danger"></span>
-            </div>
+    <div class="col-md-5">
+        <div class="card bg-dark text-light shadow-lg border-info">
+            <div class="card-body p-4">
 
-            <div class="form-group mb-3">
-                <label asp-for="Clave" class="form-label">Contraseña</label>
-                <input asp-for="Clave" class="form-control" type="password" />
-                <span asp-validation-for="Clave" class="text-danger"></span>
-            </div>
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-            <div class="form-group text-center">
-                <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                <form asp-controller="Usuario" asp-action="Login" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Usuario" class="form-label">
+                            <i class="fa-solid fa-envelope me-1"></i> Email
+                        </label>
+                        <input asp-for="Usuario" class="form-control" placeholder="ejemplo@mail.com" />
+                        <span asp-validation-for="Usuario" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Clave" class="form-label">
+                            <i class="fa-solid fa-lock me-1"></i> Contraseña
+                        </label>
+                        <input asp-for="Clave" class="form-control" type="password" placeholder="••••••••" />
+                        <span asp-validation-for="Clave" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Ingresar
+                        </button>
+                    </div>
+                </form>
+
             </div>
-        </form>
+        </div>
     </div>
+</div>
+<div>
+    <br>
+    <br>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
