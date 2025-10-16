@@ -262,7 +262,7 @@ namespace inmobiliariaBD.Controllers
 
 
         // POST: /Usuario/Baja
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Baja(int id)
         {
@@ -273,7 +273,7 @@ namespace inmobiliariaBD.Controllers
         }
 
         // POST: /Usuario/ModificarEstado
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult ModificarEstado(int id)
         {

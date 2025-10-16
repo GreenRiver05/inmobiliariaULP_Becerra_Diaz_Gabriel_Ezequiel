@@ -10,10 +10,22 @@
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["Mensaje"]
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3"
+        style="background-color: #1e2a38;">
+        <i class="fa-solid fa-circle-info me-2 text-info"></i>
+        <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
     </div>
 }
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3"
+         style="background-color: #2a1e1e;">
+        <i class="fa-solid fa-circle-exclamation me-2 text-danger"></i>
+        <span class="fw-semibold text-danger">Error:</span> @TempData["Error"]
+    </div>
+}
+
 
 <h2 class="text-light mb-4">👥 Listado de Inquilinos</h2>
 
@@ -150,7 +162,7 @@
         <li>✅ Implementar eliminación</li>
         <li>✅ Implementar detalles</li>
         <li>✅ Paginación</li>
-        <li>❌ Validaciones antes de eliminar (si tiene o no contrato)</li>
+        <li>✅ Validaciones antes de eliminar (si tiene o no contrato)</li>
         <li>✅ Colocar estado o filtrar por estado</li>
         <li>✅ Buscar Inquilino</li>
         <li>✅ ABM</li>

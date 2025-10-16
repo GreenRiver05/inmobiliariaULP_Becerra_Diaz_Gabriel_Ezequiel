@@ -135,9 +135,20 @@ namespace inmobiliariaBD.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Baja(int id)
+        public IActionResult Baja(int id,
+                                    [FromServices] IRepositorioPago repositorioPago,
+                                    [FromServices] IRepositorioMulta repositorioMulta)
         {
             var contrato = repositorio.ObtenerPorId(id);
+            var pagos = repositorioPago.ObtenerPagosPorContrato(id);
+            var multas = repositorioMulta.ObtenerMultasPorContrato(id);
+
+            if ((pagos != null && pagos.Count > 0) || (multas != null && multas.Count > 0))
+            {
+                TempData["Error"] = $"❌ No se puede eliminar el contrato N° {contrato.Id} porque tiene pagos o multas registradas.";
+                return RedirectToAction("Index");
+            }
+
             repositorio.Baja(contrato);
             TempData["Mensaje"] = $"Contrato eliminado correctamente (N° Contrato: {contrato.Id}).";
             return RedirectToAction("Index");
@@ -183,7 +194,7 @@ namespace inmobiliariaBD.Controllers
             [FromServices] IRepositorioMulta repositorioMulta
           )
         {
-             var repoGestion = new RepositorioGestion(config);
+            var repoGestion = new RepositorioGestion(config);
             var contrato = repositorio.ObtenerPorId(id);
             var auditoria = repoGestion.ObtenerPorEntidad("Contrato", id);
 

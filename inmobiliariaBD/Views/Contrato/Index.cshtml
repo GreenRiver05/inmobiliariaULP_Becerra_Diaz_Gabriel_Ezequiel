@@ -19,6 +19,16 @@
     </div>
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3"
+         style="background-color: #2a1e1e;">
+        <i class="fa-solid fa-circle-exclamation me-2 text-danger"></i>
+        <span class="fw-semibold text-danger">Error:</span> @TempData["Error"]
+    </div>
+}
+
+
 <h2 class="text-light mb-4">📄 Listado de Contratos</h2>
 
 <a asp-action="CreateOrEdit" class="btn btn-outline-success mb-4">
@@ -146,11 +156,10 @@
     <ul class="small">
         <li>✅ Implementar eliminación</li>
         <li>✅ Paginación</li>
-        <li>❌ Buscar</li>
-        <li>❌ Filtrar por estado</li>
+        <li>✅ Buscar</li>
+        <li>✅ Filtrar por estado</li>
         <li>✅ Implementar eliminar</li>
         <li>✅ Implementar detalles</li>
-        <li>❌ Validación antes de eliminar si aún está vigente</li>
         <li>❌ Validación antes de eliminar si tiene pagos o multas</li>
         <li>✅ ABM</li>
     </ul>

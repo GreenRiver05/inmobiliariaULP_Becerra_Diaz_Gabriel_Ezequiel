@@ -135,7 +135,7 @@ namespace inmobiliariaBD.Models
             Propietario? p = null;
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono
+                string sql = @"SELECT p.id, p.dni, p.estado, pe.nombre, pe.apellido, pe.direccion, pe.localidad, pe.correo, pe.telefono, pe.dni
                              FROM propietario p 
                              JOIN persona pe ON pe.dni = p.dni
                              WHERE p.id = @id";
@@ -155,6 +155,7 @@ namespace inmobiliariaBD.Models
                             Persona = new Persona
                             {
                                 Nombre = reader.GetString(nameof(p.Persona.Nombre)),
+                                Dni = reader.GetInt32(nameof(p.Persona.Dni)),
                                 Apellido = reader.GetString(nameof(p.Persona.Apellido)),
                                 Direccion = reader.IsDBNull(nameof(p.Persona.Direccion)) ? null : reader.GetString(nameof(p.Persona.Direccion)),
                                 Localidad = reader.IsDBNull(nameof(p.Persona.Localidad)) ? null : reader.GetString(nameof(p.Persona.Localidad)),

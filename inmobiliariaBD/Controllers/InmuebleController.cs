@@ -99,7 +99,13 @@ namespace inmobiliariaBD.Controllers
             }
             else
             {
-                ViewBag.Error = "No se pudo guardar el inmueble";
+                TempData["Error"] = $"❌ No se puede Crear el inmueble.";
+                ViewBag.TiposInmueble = repositorio.ObtenerTiposInmueble()
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Tipo
+                }).ToList();
                 return View("CreateOrEdit", inmueble);
             }
         }
@@ -108,6 +114,13 @@ namespace inmobiliariaBD.Controllers
         public IActionResult Baja(int id)
         {
             var inmueble = repositorio.ObtenerPorId(id);
+            var contratos = repositorioContrato.ObtenerPorInmueble(id);
+
+            if (contratos != null && contratos.Count > 0)
+            {
+                TempData["Error"] = $"❌ No se puede eliminar el inmueble porque está vinculado a contratos registrados.";
+                return RedirectToAction("Index");
+            }
             repositorio.Baja(inmueble);
             TempData["Mensaje"] = $"Se Elimino Correctamente el inmueble";
             return RedirectToAction("Index");

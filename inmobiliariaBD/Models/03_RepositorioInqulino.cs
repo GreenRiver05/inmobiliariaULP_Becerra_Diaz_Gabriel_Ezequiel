@@ -163,6 +163,7 @@ namespace inmobiliariaBD.Models
                                 Estado = reader.GetBoolean(nameof(i.Estado)),
                                 Persona = new Persona
                                 {
+                                    Dni = reader.GetInt32(nameof(i.Dni)),
                                     Nombre = reader.GetString(nameof(i.Persona.Nombre)),
                                     Apellido = reader.GetString(nameof(i.Persona.Apellido)),
                                     Direccion = reader.IsDBNull(nameof(i.Persona.Direccion)) ? null : reader.GetString(nameof(i.Persona.Direccion)),

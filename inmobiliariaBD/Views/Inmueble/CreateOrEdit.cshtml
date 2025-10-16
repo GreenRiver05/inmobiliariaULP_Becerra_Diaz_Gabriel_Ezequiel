@@ -15,6 +15,14 @@
     </div>
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3"
+         style="background-color: #2a1e1e;">
+        <i class="fa-solid fa-circle-exclamation me-2 text-danger"></i>
+        <span class="fw-semibold text-danger">Error:</span> @TempData["Error"]
+    </div>
+}
 
 @if (ViewBag.Error != null)
 {
@@ -75,9 +83,9 @@
                 <label asp-for="Estado" class="form-label"></label>
                 <select asp-for="Estado" class="form-select bg-dark text-white border-light">
                     <option value="">-- Seleccione Estado --</option>
-                    <option value="Disponible">Disponible</option>
+                    <option value="true">Disponible</option>
 
-                    <option value="No Disponible">No Disponible</option>
+                    <option value="false">No Disponible</option>
                 </select>
                 <span asp-validation-for="Estado" class="text-danger small"></span>
             </div>

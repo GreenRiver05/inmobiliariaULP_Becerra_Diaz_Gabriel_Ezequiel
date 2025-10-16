@@ -11,9 +11,12 @@
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert alert-danger">@TempData["Mensaje"]</div>
+    <div class="alert text-white bg-opacity-75 border-start border-4 border-info shadow-sm px-4 py-3 rounded-3"
+        style="background-color: #1e2a38;">
+        <i class="fa-solid fa-circle-info me-2 text-info"></i>
+        <span class="fw-semibold text-info">Info:</span> @TempData["Mensaje"]
+    </div>
 }
-
 <h2 class="text-light mb-4">⚠️ Listado de Multas</h2>
 
 <a asp-action="CreateOrEdit" class="btn btn-outline-danger mb-4">

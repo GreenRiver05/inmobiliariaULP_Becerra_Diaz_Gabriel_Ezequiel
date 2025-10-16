@@ -124,11 +124,18 @@ namespace inmobiliariaBD.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Baja(int id)
         {
             var propietario = repositorio.ObtenerPorId(id);
+            var inmuebles = repositorioInmueble.ObtenerPorPropietario(id);
+
+            if (inmuebles != null && inmuebles.Count > 0)
+            {
+                TempData["Error"] = $"❌ No se puede eliminar al propietario {propietario.Persona.ToStringSimple()} porque tiene inmuebles registrados.";
+                return RedirectToAction("Index");
+            }
             propietario.Persona.Dni = propietario.Dni;
             repositorio.Baja(propietario);
             TempData["Mensaje"] = $"Se Elimino Correctamente al Propietario {propietario.Persona.ToStringSimple()} ";
@@ -136,7 +143,7 @@ namespace inmobiliariaBD.Controllers
 
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult ModificarEstado(int id)
         {
