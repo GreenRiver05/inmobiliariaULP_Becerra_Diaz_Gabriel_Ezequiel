@@ -29,7 +29,6 @@
 
     <input type="hidden" name="pagina" value="1" />
 
-    <!-- Fila 1: Botones de estado -->
     <div class="col-12 d-flex flex-wrap gap-2 mb-2">
         <button type="submit" name="estadoPago" value=""
             class="btn @(string.IsNullOrEmpty(estadoPago) ? "btn-secondary" : "btn-outline-secondary")">
@@ -49,7 +48,7 @@
         </button>
     </div>
 
-    <!-- Fila 2: búsqueda, fechas y botón -->
+
     <div class="col-md-4">
         <input type="text" name="busqueda" value="@busqueda" class="form-control"
             placeholder="🔍 Buscar por contrato o inquilino" />
@@ -135,7 +134,7 @@
         <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
             <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
                 asp-action="Index" asp-route-pagina="@(paginaActual - 1)" asp-route-busqueda="@busqueda"
-                asp-route-estado="@estadoPago" asp-route-desde="@ViewBag.Desde" asp-route-hasta="@ViewBag.Hasta">
+                asp-route-estadoPago="@estadoPago" asp-route-desde="@ViewBag.Desde" asp-route-hasta="@ViewBag.Hasta">
                 <i class="fa-solid fa-chevron-left me-1"></i> Anterior
             </a>
         </li>
@@ -144,7 +143,7 @@
         {
             <li class="page-item @(i == paginaActual ? "active" : "")">
                 <a class="page-link @(i == paginaActual ? "bg-info text-dark border-info" : "bg-dark text-info border-info")"
-                    asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda" asp-route-estado="@estadoPago"
+                    asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda" asp-route-estadoPago="@estadoPago"
                     asp-route-desde="@ViewBag.Desde" asp-route-hasta="@ViewBag.Hasta">@i</a>
             </li>
         }
@@ -152,7 +151,7 @@
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
             <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
                 asp-action="Index" asp-route-pagina="@(paginaActual + 1)" asp-route-busqueda="@busqueda"
-                asp-route-estado="@estadoPago" asp-route-desde="@ViewBag.Desde" asp-route-hasta="@ViewBag.Hasta">
+                asp-route-estadoPago="@estadoPago" asp-route-desde="@ViewBag.Desde" asp-route-hasta="@ViewBag.Hasta">
                 Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
             </a>
         </li>
@@ -167,7 +166,7 @@
         <li>✅ Paginación y filtros por estado</li>
         <li>✅ Búsqueda por contrato e inquilino</li>
         <li>✅ Filtro por rango de fechas</li>
-        <li>❌ Validación de duplicado en número de pago</li>
+        <li>✅ Validación de duplicado en número de pago</li>
         <li>❌ Validación de contrato activo antes de registrar</li>
         <li>✅ Eliminación con confirmación</li>
         <li>✅ Detalles individuales por pago</li>

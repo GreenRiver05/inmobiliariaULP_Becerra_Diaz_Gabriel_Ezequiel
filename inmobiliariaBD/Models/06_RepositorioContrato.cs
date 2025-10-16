@@ -367,7 +367,7 @@ namespace inmobiliariaBD.Models
                              JOIN persona pe ON pe.dni = inq.dni
                              JOIN inmueble i ON i.id = c.inmueble_Id
                              {where}
-                             ORDER BY c.desde DESC
+                             ORDER BY c.desde ASC
                              LIMIT @cantidad OFFSET @offset";
 
                 using (var command = new MySqlCommand(sql, connection))

@@ -5,7 +5,7 @@
     var paginaActual = ViewBag.PaginaActual as int? ?? 1;
     var totalPaginas = ViewBag.TotalPaginas as int? ?? 1;
     var busqueda = ViewBag.Busqueda as string ?? "";
-    var estado = ViewBag.Estado as string ?? "";
+    var estadoPago = ViewBag.EstadoPago as string ?? "";
     var desde = ViewBag.Desde as string ?? "";
     var hasta = ViewBag.Hasta as string ?? "";
 }
@@ -22,7 +22,7 @@
 @if (TempData["Error"] != null)
 {
     <div class="alert text-white bg-opacity-75 border-start border-4 border-danger shadow-sm px-4 py-3 rounded-3"
-         style="background-color: #2a1e1e;">
+        style="background-color: #2a1e1e;">
         <i class="fa-solid fa-circle-exclamation me-2 text-danger"></i>
         <span class="fw-semibold text-danger">Error:</span> @TempData["Error"]
     </div>
@@ -41,13 +41,13 @@
     <!-- Filtros por estado -->
     <div class="col-12 d-flex flex-wrap gap-2 mb-2">
         <button type="submit" name="estadoPago" value=""
-            class="btn @(string.IsNullOrEmpty(estado) ? "btn-secondary" : "btn-outline-secondary")">Todos</button>
+            class="btn @(string.IsNullOrEmpty(estadoPago) ? "btn-secondary" : "btn-outline-secondary")">Todos</button>
 
         <button type="submit" name="estadoPago" value="Vigente"
-            class="btn @(estado == "Vigente" ? "btn-success" : "btn-outline-success")">Vigentes</button>
+            class="btn @(estadoPago == "Vigente" ? "btn-success" : "btn-outline-success")">Vigentes</button>
 
         <button type="submit" name="estadoPago" value="Rescindido"
-            class="btn @(estado == "Rescindido" ? "btn-danger" : "btn-outline-danger")">Rescindidos</button>
+            class="btn @(estadoPago == "Rescindido" ? "btn-danger" : "btn-outline-danger")">Rescindidos</button>
     </div>
 
     <!-- Filtros por búsqueda y fechas -->
@@ -126,7 +126,7 @@
         <li class="page-item @(paginaActual == 1 ? "disabled" : "")">
             <a class="page-link @(paginaActual == 1 ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
                 asp-action="Index" asp-route-pagina="@(paginaActual - 1)" asp-route-busqueda="@busqueda"
-                asp-route-estado="@estado" asp-route-desde="@desde" asp-route-hasta="@hasta">
+                asp-route-estadoPago="@estadoPago" asp-route-desde="@desde" asp-route-hasta="@hasta">
                 <i class="fa-solid fa-chevron-left me-1"></i> Anterior
             </a>
         </li>
@@ -135,7 +135,7 @@
         {
             <li class="page-item @(i == paginaActual ? "active" : "")">
                 <a class="page-link @(i == paginaActual ? "bg-info text-dark border-info" : "bg-dark text-info border-info")"
-                    asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda" asp-route-estado="@estado"
+                    asp-action="Index" asp-route-pagina="@i" asp-route-busqueda="@busqueda" asp-route-estadoPago="@estadoPago"
                     asp-route-desde="@desde" asp-route-hasta="@hasta">@i</a>
             </li>
         }
@@ -143,7 +143,7 @@
         <li class="page-item @(paginaActual == totalPaginas ? "disabled" : "")">
             <a class="page-link @(paginaActual == totalPaginas ? "bg-dark text-muted border-dark opacity-50" : "bg-dark text-info border-info")"
                 asp-action="Index" asp-route-pagina="@(paginaActual + 1)" asp-route-busqueda="@busqueda"
-                asp-route-estado="@estado" asp-route-desde="@desde" asp-route-hasta="@hasta">
+                asp-route-estadoPago="@estadoPago" asp-route-desde="@desde" asp-route-hasta="@hasta">
                 Siguiente <i class="fa-solid fa-chevron-right ms-1"></i>
             </a>
         </li>

@@ -33,7 +33,7 @@ namespace inmobiliariaBD.Controllers
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)total / cantidadPorPagina);
             ViewBag.Busqueda = busqueda;
-            ViewBag.Estado = estado;
+            ViewBag.EstadoPago = estadoPago;
             ViewBag.Desde = desde?.ToString("yyyy-MM-dd");
             ViewBag.Hasta = hasta?.ToString("yyyy-MM-dd");
             return View(contratos);
