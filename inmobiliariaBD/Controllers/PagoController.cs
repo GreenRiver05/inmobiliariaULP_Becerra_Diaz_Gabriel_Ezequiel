@@ -54,6 +54,11 @@ namespace inmobiliariaBD.Controllers
                     Contrato = new Contrato { Inquilino = new Inquilino { Persona = new Persona() } }
                 };
 
+                if (contratoId.HasValue)
+                {
+                    var pagos = repo.ObtenerPagosPorContrato(contratoId.Value);
+                    nuevo.NumeroPago = pagos.Count + 1;
+                }
                 ViewBag.ContratoFijo = contratoId.HasValue;
                 ViewBag.Contratos = repoContrato.ObtenerTodos()
                     .Select(c => new SelectListItem
@@ -80,6 +85,13 @@ namespace inmobiliariaBD.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult ObtenerNumeroPago(int contratoId)
+        {
+            var pagos = repo.ObtenerPagosPorContrato(contratoId);
+            int numero = pagos.Count + 1;
+            return Json(new { numero });
+        }
 
 
 
@@ -106,6 +118,8 @@ namespace inmobiliariaBD.Controllers
 
             if (pago.Id == 0)
             {
+                var pagosExistentes = repo.ObtenerPagosPorContrato(pago.ContratoId);
+                pago.NumeroPago = pagosExistentes.Count + 1;
                 var nuevoId = repo.Alta(pago);
                 RegistrarGestion(usuarioId, nuevoId, "Pago", "Alta");
                 TempData["Mensaje"] = "Pago registrado correctamente.";

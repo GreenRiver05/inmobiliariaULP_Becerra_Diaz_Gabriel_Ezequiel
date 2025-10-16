@@ -49,21 +49,45 @@
 
         <div class="col-md-2">
             <label asp-for="NumeroPago" class="form-label"></label>
-            <input asp-for="NumeroPago" class="form-control bg-dark text-white border-light no-spinner" />
+            @if (Model.Id == 0)
+            {
+                <input asp-for="NumeroPago" class="form-control bg-dark text-white border-light no-spinner" readonly />
+            }
+            else
+            {
+                <input asp-for="NumeroPago" class="form-control bg-dark text-white border-light no-spinner" readonly />
+            }
             <span asp-validation-for="NumeroPago" class="text-danger small"></span>
         </div>
 
+
         <div class="col-md-2">
             <label asp-for="Monto" class="form-label"></label>
-            <input asp-for="Monto" class="form-control bg-dark text-white border-light" />
+            @if (Model.Id == 0)
+            {
+                <input asp-for="Monto" class="form-control bg-dark text-white border-light" />
+            }
+            else
+            {
+                <input asp-for="Monto" class="form-control bg-dark text-white border-light" readonly />
+            }
             <span asp-validation-for="Monto" class="text-danger small"></span>
         </div>
 
+
         <div class="col-md-3">
             <label asp-for="Fecha" class="form-label"></label>
-            <input asp-for="Fecha" type="date" class="form-control bg-dark text-white border-light" />
+            @if (Model.Id == 0)
+            {
+                <input asp-for="Fecha" type="date" class="form-control bg-dark text-white border-light" />
+            }
+            else
+            {
+                <input asp-for="Fecha" type="date" class="form-control bg-dark text-white border-light" readonly />
+            }
             <span asp-validation-for="Fecha" class="text-danger small"></span>
         </div>
+
 
         <div class="col-md-6">
             <label asp-for="Detalle" class="form-label">Observación</label>
@@ -73,13 +97,22 @@
 
         <div class="col-md-3">
             <label asp-for="Tipo" class="form-label"></label>
-            <select asp-for="Tipo" class="form-select bg-dark text-white border-light">
-                <option value="">-- Seleccione Tipo --</option>
-                <option value="Total">Total</option>
-                <option value="Parcial">Parcial</option>
-            </select>
+            @if (Model.Id == 0)
+            {
+                <select asp-for="Tipo" class="form-select bg-dark text-white border-light">
+                    <option value="">-- Seleccione Tipo --</option>
+                    <option value="Total">Total</option>
+                    <option value="Parcial">Parcial</option>
+                </select>
+            }
+            else
+            {
+                <input class="form-control bg-dark text-white border-light" value="@Model.Tipo" readonly />
+                <input type="hidden" asp-for="Tipo" />
+            }
             <span asp-validation-for="Tipo" class="text-danger small"></span>
         </div>
+
 
         @if (Model.Id == 0)
         {
@@ -169,4 +202,26 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const contratoSelect = document.querySelector("#ContratoId");
+            const numeroPagoInput = document.querySelector("#NumeroPago");
+
+            if (contratoSelect && numeroPagoInput && !contratoSelect.disabled) {
+                contratoSelect.addEventListener("change", function () {
+                    const contratoId = this.value;
+
+                    fetch(`/Pago/ObtenerNumeroPago?contratoId=${contratoId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            numeroPagoInput.value = data.numero;
+                        });
+                });
+            }
+        });
+    </script>
+
+
 }
